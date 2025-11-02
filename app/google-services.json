@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "166916917269",
+    "project_id": "elayangdesa-5d5c3",
+    "storage_bucket": "elayangdesa-5d5c3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166916917269:android:a7728fe7c57aa49e17e61c",
+        "android_client_info": {
+          "package_name": "com.ELayang.Desa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166916917269-knqrm021jgoigae61cvg8re7kggnddd3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ELayang.Desa",
+            "certificate_hash": "51642387426edc7b2c7bf92812b98701f321d0e5"
+          }
+        },
+        {
+          "client_id": "166916917269-kqbfbo2jjtk2nn06ujisl9h279eh3ks6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi2ZCaziYxuI6zm6CW__GgFC0-DTkpfXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166916917269-g8vrorobqchcmh9i0d5r6ekilv8p51b7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
