@@ -42,11 +42,15 @@ public class NotifikasiActivityAspirasi extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponNotifikasi> call, Response<ResponNotifikasi> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<ModelNotifikasi> list = response.body().getNotifikasi();
-                    adapter = new NotifikasiAdapterAspirasi(list);
-                    recyclerView.setAdapter(adapter);
+                    List<ModelNotifikasi> list = response.body().getData();
+                    if (list != null && !list.isEmpty()) {
+                        adapter = new NotifikasiAdapterAspirasi(list);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Toast.makeText(NotifikasiActivityAspirasi.this, "Tidak ada notifikasi", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(NotifikasiActivityAspirasi.this, "Tidak ada notifikasi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NotifikasiActivityAspirasi.this, "Response gagal", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -55,6 +59,7 @@ public class NotifikasiActivityAspirasi extends AppCompatActivity {
                 Toast.makeText(NotifikasiActivityAspirasi.this, "Gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 }
 

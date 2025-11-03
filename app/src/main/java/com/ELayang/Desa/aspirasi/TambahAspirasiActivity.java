@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.util.Log;
+
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -115,43 +117,56 @@ public class TambahAspirasiActivity extends AppCompatActivity {
         RequestBody rbDeskripsi = RequestBody.create(MediaType.parse("text/plain"), deskripsi);
 
         MultipartBody.Part partFoto = null;
-        if (imagePath != null) {
+
+        if (imagePath != null && !imagePath.isEmpty()) {
             File file = new File(imagePath);
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             partFoto = MultipartBody.Part.createFormData("foto", file.getName(), reqFile);
+
+            Log.d("UPLOAD_ASPIRASI", "Foto dipilih: " + file.getAbsolutePath());
+        } else {
+            // Kirim part kosong supaya Retrofit tidak error
+            RequestBody empty = RequestBody.create(MediaType.parse("text/plain"), "");
+            partFoto = MultipartBody.Part.createFormData("foto", "", empty);
+            Log.d("UPLOAD_ASPIRASI", "Tidak ada foto yang diunggah");
         }
 
+        Log.d("UPLOAD_ASPIRASI", "Username: " + username);
+        Log.d("UPLOAD_ASPIRASI", "Judul: " + judul);
+        Log.d("UPLOAD_ASPIRASI", "Kategori: " + kategori);
+        Log.d("UPLOAD_ASPIRASI", "Deskripsi: " + deskripsi);
+
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<AspirasiResponse> call = api.buatAspirasi(rbUsername, rbJudul, rbKategori, rbDeskripsi, partFoto);
+        Call<AspirasiResponse> call = api.kirimAspirasi(rbUsername, rbJudul, rbKategori, rbDeskripsi, partFoto);
 
         call.enqueue(new Callback<AspirasiResponse>() {
             @Override
             public void onResponse(Call<AspirasiResponse> call, Response<AspirasiResponse> response) {
                 pd.dismiss();
 
-                String pesan = "Gagal mengirim aspirasi"; // default
                 if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().getPesan() != null && !response.body().getPesan().isEmpty()) {
-                        pesan = response.body().getPesan();
-                    }
+                    String pesan = response.body().getPesan();
+                    int kode = response.body().getKode();
+
+                    Log.d("UPLOAD_ASPIRASI", "Response kode: " + kode);
+                    Log.d("UPLOAD_ASPIRASI", "Response pesan: " + pesan);
 
                     Toast.makeText(TambahAspirasiActivity.this, pesan, Toast.LENGTH_SHORT).show();
 
-                    if (response.body().getKode() == 1) {
+                    if (kode == 1) {
                         finish();
                     }
-
                 } else {
-                    pesan += ": " + response.message();
-                    Toast.makeText(TambahAspirasiActivity.this, pesan, Toast.LENGTH_SHORT).show();
+                    Log.e("UPLOAD_ASPIRASI", "Response gagal: " + response.message());
+                    Toast.makeText(TambahAspirasiActivity.this, "Gagal mengirim aspirasi", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AspirasiResponse> call, Throwable t) {
                 pd.dismiss();
-                Toast.makeText(TambahAspirasiActivity.this,
-                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("UPLOAD_ASPIRASI", "Error: " + t.getMessage(), t);
+                Toast.makeText(TambahAspirasiActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import com.google.gson.Gson;
+
 
 import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
@@ -22,6 +24,7 @@ import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
 import com.ELayang.Desa.MainActivity;
 import com.ELayang.Desa.R;
+import com.ELayang.Desa.aspirasi.SharedPrefManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,8 +71,9 @@ public class NotificationServiceAspirasi extends JobIntentService {
 
     /** 🔹 Cek notifikasi aspirasi dari server */
     private void checkNotifikasiAspirasi() {
-        SharedPreferences prefs = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
-        String username = prefs.getString("username", "");
+        String username = SharedPrefManager.getInstance(this).getUsername();
+        Log.d("NOTIF_USERNAME", "Username dikirim: " + username);
+
 
         if (username == null || username.isEmpty()) return;
 
@@ -86,7 +90,8 @@ public class NotificationServiceAspirasi extends JobIntentService {
                         showNotification("Aspirasi Ditanggapi", "Tanggapan: " + tanggapan);
                     }
                 } else {
-                    Log.d("NotifAspirasi", "Tidak ada notifikasi baru");
+                    Log.d("NotifAspirasi", "Response: " + new Gson().toJson(response.body()));
+
                 }
             }
 

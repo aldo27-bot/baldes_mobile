@@ -71,17 +71,17 @@ public interface APIRequestData {
 
     @GET("aspirasi.php")
     Call<AspirasiResponse> getAspirasi();
-
-
     @Multipart
-    @POST("buat_aspirasi.php")
-    Call<AspirasiResponse> buatAspirasi(
+    @POST("simpan_aspirasi.php")
+    Call<AspirasiResponse> kirimAspirasi(
             @Part("username") RequestBody username,
             @Part("judul") RequestBody judul,
             @Part("kategori") RequestBody kategori,
             @Part("deskripsi") RequestBody deskripsi,
-            @Part MultipartBody.Part foto
+            @Part MultipartBody.Part foto // foto boleh null
     );
+
+
 
     @Multipart
     @POST("surat/skck.php")
