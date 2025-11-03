@@ -6,25 +6,26 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
-import com.google.gson.Gson;
-
 
 import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
-import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
+import com.ELayang.Desa.DataModel.Notifikasi.ModelNotifikasiAspirasi;
+import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasiAspirasi;
 import com.ELayang.Desa.MainActivity;
 import com.ELayang.Desa.R;
 import com.ELayang.Desa.aspirasi.SharedPrefManager;
+import com.google.gson.Gson;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,7 +36,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
     private static int notificationId = 0;
     private static final String CHANNEL_ID = "AspirasiChannelID";
     private static final int DELAY_INTERVAL = 60000; // 1 menit
-
     private final Handler handler = new Handler(Looper.getMainLooper());
     private String lastTanggapan = "";
 
@@ -50,15 +50,7 @@ public class NotificationServiceAspirasi extends JobIntentService {
         startPolling();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        requestNotificationPermission();
-        createNotificationChannel();
-        startPolling();
-        return START_STICKY;
-    }
-
-    /** 🔹 Jalankan pengecekan notifikasi tiap 1 menit */
+    /** 🔹 Loop pengecekan tiap 1 menit */
     private void startPolling() {
         handler.postDelayed(new Runnable() {
             @Override
@@ -66,56 +58,74 @@ public class NotificationServiceAspirasi extends JobIntentService {
                 checkNotifikasiAspirasi();
                 handler.postDelayed(this, DELAY_INTERVAL);
             }
-        }, 3000); // pertama kali dijalankan setelah 3 detik
+        }, 3000);
+    }
+
+    /** 🔹 Stop polling jika service berhenti */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 
     /** 🔹 Cek notifikasi aspirasi dari server */
     private void checkNotifikasiAspirasi() {
         String username = SharedPrefManager.getInstance(this).getUsername();
+
+        if (username == null || username.trim().isEmpty()) {
+            Log.w("NOTIF_USERNAME", "Username masih null — pastikan tersimpan saat login!");
+            return;
+        }
+
         Log.d("NOTIF_USERNAME", "Username dikirim: " + username);
 
-
-        if (username == null || username.isEmpty()) return;
-
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponNotifikasi> call = api.notifikasi_aspirasi(username);
+        Call<ResponNotifikasiAspirasi> call = api.getNotifikasiAspirasi(username);
 
-        call.enqueue(new Callback<ResponNotifikasi>() {
+        call.enqueue(new Callback<ResponNotifikasiAspirasi>() {
             @Override
-            public void onResponse(Call<ResponNotifikasi> call, Response<ResponNotifikasi> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
-                    String tanggapan = response.body().getTanggapan();
-                    if (tanggapan != null && !tanggapan.equals(lastTanggapan)) {
-                        lastTanggapan = tanggapan;
-                        showNotification("Aspirasi Ditanggapi", "Tanggapan: " + tanggapan);
+            public void onResponse(Call<ResponNotifikasiAspirasi> call, Response<ResponNotifikasiAspirasi> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("API_RESPONSE", "Respon: " + new Gson().toJson(response.body()));
+
+                    List<ModelNotifikasiAspirasi> list = response.body().getData();
+                    if (list != null && !list.isEmpty()) {
+                        String tanggapanBaru = list.get(0).getTanggapan();
+                        if (tanggapanBaru != null && !tanggapanBaru.equals(lastTanggapan)) {
+                            lastTanggapan = tanggapanBaru;
+                            showNotification("Aspirasi Ditanggapi", "Tanggapan: " + tanggapanBaru);
+                        }
+                    } else {
+                        Log.d("API_RESPONSE", "Data kosong");
                     }
                 } else {
-                    Log.d("NotifAspirasi", "Response: " + new Gson().toJson(response.body()));
-
+                    Log.e("API_RESPONSE", "Response gagal atau kosong: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponNotifikasi> call, Throwable t) {
-                Log.e("NotifAspirasi", "Gagal fetch notifikasi: " + t.getMessage());
+            public void onFailure(Call<ResponNotifikasiAspirasi> call, Throwable t) {
+                Log.e("API_RESPONSE", "Gagal koneksi: " + t.getMessage());
             }
         });
     }
 
-    /** 🔹 Builder notifikasi */
+    /** 🔹 Tampilkan notifikasi */
     private void showNotification(String title, String message) {
         if (!isNotificationPermissionGranted()) return;
 
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 0, intent, PendingIntent.FLAG_IMMUTABLE
+        );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(notificationId++, builder.build());
@@ -135,7 +145,7 @@ public class NotificationServiceAspirasi extends JobIntentService {
         }
     }
 
-    /** 🔹 Izin notifikasi */
+    /** 🔹 Cek izin notifikasi */
     private boolean isNotificationPermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             return checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -144,6 +154,7 @@ public class NotificationServiceAspirasi extends JobIntentService {
         return true;
     }
 
+    /** 🔹 Minta izin notifikasi */
     private void requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)

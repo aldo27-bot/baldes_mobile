@@ -10,11 +10,29 @@ public class KodeNotif extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-// Create a NotificationChannel (for Android 8.0 and higher)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("prayoga", "E-lades", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            // Channel utama (default)
+            NotificationChannel channel = new NotificationChannel(
+                    "prayoga",
+                    "E-lades",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+
+            // Channel tambahan untuk notifikasi aspirasi
+            NotificationChannel channelAspirasi = new NotificationChannel(
+                    "AspirasiChannelID",
+                    "Notifikasi Aspirasi",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channelAspirasi.setDescription("Channel untuk notifikasi aspirasi warga");
+
+            // Daftarkan kedua channel ke sistem
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+                manager.createNotificationChannel(channelAspirasi);
+            }
         }
     }
 }

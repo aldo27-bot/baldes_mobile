@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroServer {
     //    public static String server = "https://elades.pbltifnganjuk.com";
-    public static String server = "http://10.0.2.2/baldes_web";
+    public static String server = "http://10.0.2.2/si-kunir-web";
     //    private static final String baseURL = "http://" + server + "/coding/ELaDes%20WEB/DatabaseMobile/";
     private static final String finalurl = server + "/DatabaseMobile/";
     public static final String API_IMAGE = server + "/uploads/";

@@ -6,6 +6,7 @@ import com.ELayang.Desa.DataModel.Lupa_Password.ResponPassword1;
 import com.ELayang.Desa.DataModel.Lupa_Password.ResponPassword2;
 import com.ELayang.Desa.DataModel.Akun.ResponLogin;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
+import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasiAspirasi;
 import com.ELayang.Desa.DataModel.Register.ResponDelete;
 import com.ELayang.Desa.DataModel.Register.ResponOTP;
 import com.ELayang.Desa.DataModel.Register.ResponRegister1;
@@ -81,7 +82,11 @@ public interface APIRequestData {
             @Part MultipartBody.Part foto // foto boleh null
     );
 
-
+    @FormUrlEncoded
+    @POST("ambil_notifikasi_aspirasi.php")
+    Call<ResponNotifikasiAspirasi> getNotifikasiAspirasi(
+            @Field("username") String username
+    );
 
     @Multipart
     @POST("surat/skck.php")
