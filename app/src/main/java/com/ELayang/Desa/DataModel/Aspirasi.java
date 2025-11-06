@@ -3,9 +3,8 @@ package com.ELayang.Desa.DataModel;
 import com.google.gson.annotations.SerializedName;
 
 public class Aspirasi {
-
     @SerializedName("id_aspirasi")
-    private String id;
+    private String idAspirasi;
 
     @SerializedName("judul")
     private String judul;
@@ -29,7 +28,7 @@ public class Aspirasi {
     private String tanggal;
 
     // Getter
-    public String getId() { return id; }
+    public String getIdAspirasi() { return idAspirasi; }
     public String getJudul() { return judul; }
     public String getKategori() { return kategori; }
     public String getDeskripsi() { return deskripsi; }
@@ -37,14 +36,4 @@ public class Aspirasi {
     public String getStatus() { return status; }
     public String getTanggapan() { return tanggapan; }
     public String getTanggal() { return tanggal; }
-
-    // Setter (opsional)
-    public void setId(String id) { this.id = id; }
-    public void setJudul(String judul) { this.judul = judul; }
-    public void setKategori(String kategori) { this.kategori = kategori; }
-    public void setDeskripsi(String deskripsi) { this.deskripsi = deskripsi; }
-    public void setFoto(String foto) { this.foto = foto; }
-    public void setStatus(String status) { this.status = status; }
-    public void setTanggapan(String tanggapan) { this.tanggapan = tanggapan; }
-    public void setTanggal(String tanggal) { this.tanggal = tanggal; }
 }

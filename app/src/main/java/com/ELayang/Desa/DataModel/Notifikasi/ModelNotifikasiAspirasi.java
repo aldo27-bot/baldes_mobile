@@ -1,25 +1,29 @@
 package com.ELayang.Desa.DataModel.Notifikasi;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ModelNotifikasiAspirasi {
+
+    @SerializedName("id")
     private String id;
-    private String judul;
+
+    @SerializedName("pesan")
     private String pesan;
-    private String tanggapan;
+
+    @SerializedName("status")
+    private String status;
+
+    @SerializedName("tanggal")
     private String tanggal;
 
-    // Getter & Setter
+    @SerializedName("tanggapan") // ⚡ tambahkan ini
+    private String tanggapan;
+
+    // Constructor, getter dan setter
+
     public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public String getJudul() { return judul; }
-    public void setJudul(String judul) { this.judul = judul; }
-
     public String getPesan() { return pesan; }
-    public void setPesan(String pesan) { this.pesan = pesan; }
-
-    public String getTanggapan() { return tanggapan; }
-    public void setTanggapan(String tanggapan) { this.tanggapan = tanggapan; }
-
+    public String getStatus() { return status; }
     public String getTanggal() { return tanggal; }
-    public void setTanggal(String tanggal) { this.tanggal = tanggal; }
+    public String getTanggapan() { return tanggapan; } // ⚡ getter baru
 }

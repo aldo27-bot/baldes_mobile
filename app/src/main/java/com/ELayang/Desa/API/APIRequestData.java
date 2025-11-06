@@ -88,6 +88,14 @@ public interface APIRequestData {
             @Field("username") String username
     );
 
+    @FormUrlEncoded
+    @POST("DatabaseMobile/kirim_notifikasi_user.php")
+    Call<ResponNotifikasiAspirasi> kirimNotifikasiUser(
+            @Field("id") int id,
+            @Field("status") String status,
+            @Field("tanggapan") String tanggapan
+    );
+
     @Multipart
     @POST("surat/skck.php")
     Call<ResponSkck> uploadFile(
