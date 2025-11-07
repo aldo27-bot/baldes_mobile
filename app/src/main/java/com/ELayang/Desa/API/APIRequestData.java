@@ -129,15 +129,14 @@ public interface APIRequestData {
             @Part MultipartBody.Part file
     );
 
-
     @FormUrlEncoded
     @POST("register/register1.php")
     Call<ResponRegister1> register1(
             @Field("username") String username,
             @Field("email") String email,
             @Field("nama") String nama
-
     );
+
 
     @FormUrlEncoded
     @POST("register/register2.php")
