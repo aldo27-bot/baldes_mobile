@@ -11,60 +11,309 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
-        <!-- Toolbar dengan tombol hamburger -->
+        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blue_dark_200"
-            android:titleTextColor="@android:color/white"
-            app:title="Permintaan Surat"
-            app:navigationIcon="@drawable/ic_menu" />
+            android:background="@color/white"
+            android:theme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Pengajuan Surat"
+            app:titleTextColor="@color/black"
+            app:navigationIcon="@drawable/back_2" />
 
-        <!-- RecyclerView (daftar surat) -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/view"
+        <!-- Konten Scrollable -->
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="10dp" />
-
-        <!-- Tombol Aspirasi -->
-        <LinearLayout
-            android:id="@+id/item_aspirasi"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:background="#ddd"
-            android:layout_marginBottom="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:src="@drawable/ic_comment"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp"/>
+            android:padding="16dp">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Surat Domisili -->
+                <LinearLayout
+                    android:id="@+id/item_surat_domisili"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Aspirasi"
-                    android:textStyle="bold"/>
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:id="@+id/icon_surat_domisili"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/domisili"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_surat_domisili"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Surat Domisili"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_surat_domisili"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+                <!-- SKTM -->
+                <LinearLayout
+                    android:id="@+id/item_surat_sktm"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ajukan aspirasi / saran untuk desa"/>
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_surat_sktm"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/sktm"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_surat_sktm"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="SKTM"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_surat_sktm"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+                <!-- Surat Kehilangan -->
+                <LinearLayout
+                    android:id="@+id/item_surat_kehilangan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_surat_kehilangan"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/icon_kehilangan"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_surat_kehilangan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Surat Kehilangan"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_surat_kehilangan"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+                <!-- Surat Beda Nama -->
+                <LinearLayout
+                    android:id="@+id/item_surat_bedanama"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_surat_bedanama"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/icon_beda_nama"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_surat_bedanama"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Surat Beda Nama"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_surat_bedanama"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+                <!-- Surat Usaha -->
+                <LinearLayout
+                    android:id="@+id/item_surat_usaha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_surat_usaha"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/icon_usaha"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_surat_usaha"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Surat Usaha"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_surat_usaha"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+                <!-- Surat Kematian -->
+                <LinearLayout
+                    android:id="@+id/item_surat_kematian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_surat_kematian"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/icon_kematian"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_surat_kematian"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Surat Kematian"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_surat_kematian"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+
+                <!-- Surat Kematian -->
+
+                <!-- Aspirasi -->
+                <LinearLayout
+                    android:id="@+id/item_skbb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_card_surat"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/icon_skbb"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/icon_kelakuanbaik" />
+
+                    <TextView
+                        android:id="@+id/text_skbb"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Surat Kematian"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_skbb"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/item_aspirasi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_surat"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_aspirasi"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_home"
+                        android:tint="@color/biru_laut"
+                        android:layout_marginEnd="16dp" />
+
+                    <TextView
+                        android:id="@+id/text_aspirasi"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Aspirasi/Saran Desa"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrow_aspirasi"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_right" />
+                </LinearLayout>
+
             </LinearLayout>
-        </LinearLayout>
-
+        </ScrollView>
     </LinearLayout>
 
     <!-- =============== NAVIGATION DRAWER =============== -->
