@@ -17,6 +17,7 @@ import com.ELayang.Desa.DataModel.Surat.ResponSkck;
 import com.ELayang.Desa.DataModel.ResponSurat;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponDiajukan;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponSelesai;
+import com.ELayang.Desa.DataModel.Surat.ResponSkk;
 import com.ELayang.Desa.DataModel.Surat.ResponSktm;
 import com.ELayang.Desa.DataModel.Surat.ResponSuratijin;
 import com.ELayang.Desa.DataModel.AspirasiResponse;
@@ -282,6 +283,43 @@ public interface APIRequestData {
     Call<ResponLogin> logingoogle(
             @Field("email") String email
     );
+
+    @Multipart
+    @POST("surat/skk.php")
+    Call<ResponSkk> kirimSkk(
+            @Part("username") RequestBody username,
+            @Part("nama") RequestBody nama,
+            @Part("agama") RequestBody agama,
+            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+            @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("alamat") RequestBody alamat,
+            @Part("kewarganegaraan") RequestBody kewarganegaraan,
+            @Part("keterangan") RequestBody keterangan,
+            @Part MultipartBody.Part file
+    );
+
+    @FormUrlEncoded
+    @POST("updatesurat/skk.php")
+    Call<ResponSkk> ambilSkk(
+            @Field("no_pengajuan") String no_pengajuan,
+            @Field("kode") String kode
+    );
+
+    @Multipart
+    @POST("updatesurat/skk.php")
+    Call<ResponSkk> updateSkk(
+            @Part("no_pengajuan") RequestBody no_pengajuan,
+            @Part("kode") RequestBody kode,
+            @Part("nama") RequestBody nama,
+            @Part("agama") RequestBody agama,
+            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+            @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("alamat") RequestBody alamat,
+            @Part("kewarganegaraan") RequestBody kewarganegaraan,
+            @Part("keterangan") RequestBody keterangan,
+            @Part MultipartBody.Part file
+    );
+
 
     @FormUrlEncoded
     @POST("updatesurat/skck.php")

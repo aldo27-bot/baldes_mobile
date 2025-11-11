@@ -45,7 +45,7 @@
             android:exported="false" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="prayoga" /> <!-- Perbaiki typo pada nama service -->
+            android:value="Ferdian" /> <!-- Perbaiki typo pada nama service -->
         <service
             android:name=".Asset.Notifikasi.NotificationService"
             android:exported="false"
@@ -82,6 +82,9 @@
             tools:ignore="Instantiatable" />
         <activity
             android:name=".Surat.SKCK"
+            android:exported="false" />
+        <activity
+            android:name=".Surat.SKK"
             android:exported="false" />
         <activity
             android:name=".Menu.detail_permintaan_surat"

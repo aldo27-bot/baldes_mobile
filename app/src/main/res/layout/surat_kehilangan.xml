@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/kembali_panah"
+            android:onClick="kembali" />
+
+        <!-- Nama Pelapor -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="SURAT KETERANGAN KEHILANGAN"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView android:text="Nama Pelapor" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <EditText
+            android:id="@+id/e_nama_pelapor"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/esurat"
+            android:hint="Masukkan Nama"/>
+
+        <TextView android:text="Agama Pelapor" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <EditText
+            android:id="@+id/e_agama"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/esurat"
+            android:hint="Masukkan Agama"/>
+
+<!--        <TextView android:text="Jenis Kelamin" android:layout_marginTop="10dp" android:textColor="@color/black"-->
+<!--            android:layout_height="5px"-->
+<!--            android:layout_width="10px"/>-->
+<!--        <EditText-->
+<!--            android:id="@+id/e_jenis_kelamin"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background="@drawable/esurat"-->
+<!--            android:hint="Masukkan Jenis Kelamin"/>-->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih Jenis Kelamin"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"/>
+
+        <Spinner
+            android:id="@+id/e_jenis_kelamin"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@android:drawable/editbox_dropdown_light_frame" />
+
+
+        <!-- Tempat & Tanggal Lahir -->
+        <TextView android:text="Tempat, Tanggal Lahir" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <EditText
+            android:id="@+id/e_tempat_tanggal_lahir"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/esurat"
+            android:hint="Masukkan Tempat dan Tanggal Lahir" />
+
+        <!-- Alamat -->
+        <TextView android:text="Alamat Pelapor" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <EditText
+            android:id="@+id/e_alamat_pelapor"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/esurat"
+            android:gravity="top"
+            android:hint="Masukkan Alamat"/>
+
+        <TextView android:text="Kewarganegaraan" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <EditText
+            android:id="@+id/e_kewarganegaraan"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/esurat"
+            android:hint="Masukkan Kewarganegaraan"/>
+
+        <TextView android:text="Keterangan Kehilangan" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <EditText
+            android:id="@+id/e_keterangan"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/esurat"
+            android:gravity="top"
+            android:hint="Masukkan Keterangan Secara Detail"/>
+
+        <!-- File -->
+        <TextView android:text="Lampiran (Opsional)" android:layout_marginTop="10dp" android:textColor="@color/black"
+            android:layout_height="5px"
+            android:layout_width="10px"/>
+        <Button
+            android:id="@+id/btn_choose_file"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="@drawable/esurat"
+            android:text="Pilih File"
+            android:onClick="chooseFile"/>
+
+
+        <TextView
+            android:id="@+id/t_file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/black"/>
+
+        <Button
+            android:id="@+id/kirim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="KIRIM"
+            android:onClick="kirimSurat"
+            android:background="@color/tombol"/>
+
+        <Button
+            android:id="@+id/update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UPDATE"
+            android:onClick="updateSurat"
+            android:layout_marginTop="10dp"
+            android:background="@color/tombol"/>
+
+    </LinearLayout>
+</ScrollView>
