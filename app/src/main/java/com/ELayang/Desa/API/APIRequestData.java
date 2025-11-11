@@ -13,6 +13,7 @@ import com.ELayang.Desa.DataModel.Register.ResponRegister1;
 import com.ELayang.Desa.DataModel.Register.ResponRegister2;
 import com.ELayang.Desa.DataModel.Register.ResponRegister3;
 import com.ELayang.Desa.DataModel.StatusDasboardRespon;
+import com.ELayang.Desa.DataModel.Surat.ResponDomisili;
 import com.ELayang.Desa.DataModel.Surat.ResponSkck;
 import com.ELayang.Desa.DataModel.ResponSurat;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponDiajukan;
@@ -238,6 +239,22 @@ public interface APIRequestData {
             @Part("alamat") RequestBody alamat,
             @Part MultipartBody.Part file
     );
+
+    @FormUrlEncoded
+    @POST("Surat/surat_domisili.php")
+    Call<ResponDomisili> kirimSuratDomisili(
+            @Field("nama") String nama,
+            @Field("nik") String nik,
+            @Field("tempat_tanggal_lahir") String ttl,
+            @Field("alamat") String alamat,
+            @Field("jenis_kelamin") String jk,
+            @Field("pekerjaan") String pekerjaan,
+            @Field("agama") String agama,
+            @Field("status_perkawinan") String status,
+            @Field("keterangan") String keterangan
+    );
+
+
 
     @FormUrlEncoded
     @POST("update_akun.php")

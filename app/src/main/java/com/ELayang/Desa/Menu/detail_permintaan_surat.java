@@ -50,7 +50,7 @@ public class detail_permintaan_surat extends AppCompatActivity {
         } else if (Objects.equals(kodeSurat, "SKTM")) {
             pindah(SKTM.class, noPengajuan);
 
-        } else if (Objects.equals(kodeSurat, "SKK")) { // ✅ SURAT KEHILANGAN
+        } else if (Objects.equals(kodeSurat, "SKK")) {
             pindah(SKK.class, noPengajuan);
 
         } else if (Objects.equals(kodeSurat, "aspirasi")) {

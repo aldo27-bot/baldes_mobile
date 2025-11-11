@@ -124,6 +124,8 @@
             android:exported="false" />
         <activity android:name=".aspirasi.TambahAspirasiActivity"
             android:exported="false" />
+        <activity android:name=".Surat.FormSuratDomisiliActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true" >

@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class RetroServer {
     //    public static String server = "https://elades.pbltifnganjuk.com";
-    public static String server = "http://10.0.2.2/si-kunir-web";
+    public static String server = "http://10.0.2.2/si-kunir-web-1";
     private static final String finalurl = server + "/DatabaseMobile/";
 
     public static final String API_IMAGE = server + "/uploads/";
