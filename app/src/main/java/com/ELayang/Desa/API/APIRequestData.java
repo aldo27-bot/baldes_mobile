@@ -241,7 +241,7 @@ public interface APIRequestData {
     );
 
     @FormUrlEncoded
-    @POST("Surat/surat_domisili.php")
+    @POST("surat/surat_domisili.php")
     Call<ResponDomisili> kirimSuratDomisili(
             @Field("nama") String nama,
             @Field("nik") String nik,
@@ -251,10 +251,9 @@ public interface APIRequestData {
             @Field("pekerjaan") String pekerjaan,
             @Field("agama") String agama,
             @Field("status_perkawinan") String status,
-            @Field("keterangan") String keterangan
+            @Field("keterangan") String keterangan,
+            @Field("username") String username
     );
-
-
 
     @FormUrlEncoded
     @POST("update_akun.php")

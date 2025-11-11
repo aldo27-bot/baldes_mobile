@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
-            android:id="@+id/etTempatTanggalLahir"
+            android:id="@+id/etTTL"
             android:hint="Tempat, Tanggal Lahir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
-            android:id="@+id/etJenisKelamin"
+            android:id="@+id/etJK"
             android:hint="Jenis Kelamin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
