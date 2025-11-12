@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import android.database.Cursor;
@@ -35,11 +34,9 @@ import retrofit2.Response;
 public class SKK extends AppCompatActivity {
 
     private static final int PICK_FILE_REQUEST = 1;
-    private static final String TAG = "SKKActivity";
 
     Spinner spJenisKelamin;
     EditText eNama, eAgama, eTTL, eAlamat, eKewarganegaraan, eKeterangan;
-
     Button btnKirim, btnUpdate, btnChooseFile;
 
     String username, fileNameSaved = "";
@@ -48,14 +45,14 @@ public class SKK extends AppCompatActivity {
     ProgressDialog progressDialog;
     DatePickerDialog picker;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.surat_kehilangan);
 
+        // Ambil username dari SharedPreferences
         SharedPreferences sp = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
-        username = sp.getString("username","");
+        username = sp.getString("username", "").trim();
 
         eNama = findViewById(R.id.e_nama_pelapor);
         eAgama = findViewById(R.id.e_agama);
@@ -83,6 +80,7 @@ public class SKK extends AppCompatActivity {
         progressDialog.setMessage("Memproses...");
         progressDialog.setCancelable(false);
 
+        // Cek apakah mode edit
         Intent intent = getIntent();
         currentNoPengajuan = intent.getStringExtra("no_pengajuan");
 
@@ -94,7 +92,6 @@ public class SKK extends AppCompatActivity {
         }
 
         btnChooseFile.setOnClickListener(v -> chooseFile());
-
         eTTL.setOnClickListener(v -> showDatePicker());
 
         btnKirim.setOnClickListener(v -> {
@@ -105,9 +102,6 @@ public class SKK extends AppCompatActivity {
             if(isValid()) konfirmasiUpdate(currentNoPengajuan);
         });
     }
-
-
-    /*==================== VALIDASI ====================*/
 
     private boolean isValid(){
         if(eNama.getText().toString().trim().isEmpty()){
@@ -134,9 +128,6 @@ public class SKK extends AppCompatActivity {
         picker.show();
     }
 
-
-    /*==================== KIRIM ====================*/
-
     private void konfirmasiKirim(){
         new AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
@@ -159,14 +150,12 @@ public class SKK extends AppCompatActivity {
                 rb(eAlamat.getText().toString()),
                 rb(eKewarganegaraan.getText().toString()),
                 rb(eKeterangan.getText().toString()),
+                rb("SKK"), // ✅ KODE SURAT FIXED
                 getFilePart()
         );
 
         call.enqueue(DefaultCallback("Berhasil mengirim surat"));
     }
-
-
-    /*==================== LOAD DATA ====================*/
 
     private void loadData(String no){
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
@@ -186,9 +175,6 @@ public class SKK extends AppCompatActivity {
             @Override public void onFailure(Call<ResponSkk> call, Throwable t){}
         });
     }
-
-
-    /*==================== UPDATE ====================*/
 
     private void konfirmasiUpdate(String no){
         new AlertDialog.Builder(this)
@@ -215,9 +201,6 @@ public class SKK extends AppCompatActivity {
                 getFilePart()
         ).enqueue(DefaultCallback("Berhasil update"));
     }
-
-
-    /*==================== FILE ====================*/
 
     private void chooseFile(){
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -263,9 +246,6 @@ public class SKK extends AppCompatActivity {
         RequestBody rb = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         return MultipartBody.Part.createFormData("file", file.getName(), rb);
     }
-
-
-    /*==================== UTIL ====================*/
 
     private Callback<ResponSkk> DefaultCallback(String successMessage){
         return new Callback<ResponSkk>() {

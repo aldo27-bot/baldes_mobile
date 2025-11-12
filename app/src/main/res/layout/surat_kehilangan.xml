@@ -14,7 +14,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/kembali_panah"
+            android:src="@drawable/back_2"
             android:onClick="kembali" />
 
         <!-- Nama Pelapor -->
@@ -59,6 +59,28 @@
 <!--            android:background="@drawable/esurat"-->
 <!--            android:hint="Masukkan Jenis Kelamin"/>-->
 
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="5dp"-->
+<!--                android:text="JENIS KELAMIN ANAK"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="16dp" />-->
+
+<!--            <Spinner-->
+<!--                android:id="@+id/jeniskelamin"-->
+<!--                style="@style/Widget.AppCompat.Light.DropDownItem.Spinner"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="50dp"-->
+<!--                android:layout_marginTop="5dp" />-->
+<!--        </LinearLayout>-->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,9 +90,10 @@
 
         <Spinner
             android:id="@+id/e_jenis_kelamin"
+            style="@style/Widget.AppCompat.Light.DropDownItem.Spinner"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:background="@android:drawable/editbox_dropdown_light_frame" />
+            android:layout_height="45dp" />
+<!--            android:background="@android:drawable/editbox_dropdown_light_frame" />-->
 
 
         <!-- Tempat & Tanggal Lahir -->

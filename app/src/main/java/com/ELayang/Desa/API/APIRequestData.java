@@ -33,9 +33,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
 
 
 public interface APIRequestData {
@@ -311,7 +308,9 @@ public interface APIRequestData {
             @Part("alamat") RequestBody alamat,
             @Part("kewarganegaraan") RequestBody kewarganegaraan,
             @Part("keterangan") RequestBody keterangan,
+            @Part("kode_surat") RequestBody kode_surat,
             @Part MultipartBody.Part file
+
     );
 
     @FormUrlEncoded
