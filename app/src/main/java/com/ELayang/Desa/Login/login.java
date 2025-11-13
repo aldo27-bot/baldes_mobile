@@ -316,7 +316,7 @@ public class login extends AppCompatActivity {
                     String token = task.getResult();
                     Log.d("FCM_TOKEN", "Token: " + token);
 
-                    String url = "http://10.0.2.2/si-kunir-web/DatabaseMobile/update_token.php"; // ganti sesuai lokasi file PHP-mu
+                    String url = "http://10.0.2.2/si-kunir-web-1/DatabaseMobile/update_token.php"; // ganti sesuai lokasi file PHP-mu
                     StringRequest request = new StringRequest(Request.Method.POST, url,
                             response -> Log.d("TOKEN_UPDATE", "Token berhasil dikirim: " + response),
                             error -> Log.e("TOKEN_UPDATE", "Error kirim token: " + error.getMessage())
