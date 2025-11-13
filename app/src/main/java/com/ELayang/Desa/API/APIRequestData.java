@@ -231,6 +231,25 @@ public interface APIRequestData {
             @Part MultipartBody.Part file
     );
 
+    @Multipart
+    @POST("surat/beda_nama.php")
+    Call<ResponBedaNama> bedaNama(
+            @Part("username") RequestBody username,
+            @Part("kode_surat") RequestBody kode_surat,
+
+            @Part("nama_lama") RequestBody nama_lama,
+            @Part("nama_baru") RequestBody nama_baru,
+            @Part("nik") RequestBody nik,
+            @Part("alamat") RequestBody alamat,
+            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+            @Part("pekerjaan") RequestBody pekerjaan,
+            @Part("keterangan") RequestBody keterangan,
+
+            // bagian file upload (bukti pendukung, foto, atau dokumen)
+            @Part MultipartBody.Part file
+    );
+
+
     @FormUrlEncoded
     @POST("update_akun.php")
     Call<ResponUpdate> update_akun(
@@ -355,6 +374,32 @@ public interface APIRequestData {
             @Part("bagian") RequestBody bagian,
             @Part("tanggal") RequestBody tanggal,
             @Part("alasan") RequestBody alasan,
+            @Part MultipartBody.Part file
+    );
+
+    @FormUrlEncoded
+    @POST("updatesurat/beda_nama.php")
+    Call<ResponBedaNama> ambilBedaNama(
+            @Field("no_pengajuan") String no_pengajuan,
+            @Field("kode_surat") String kode_surat
+    );
+
+    @Multipart
+    @POST("updatesurat/beda_nama.php")
+    Call<ResponBedaNama> updateBedaNama(
+            @Part("no_pengajuan") RequestBody no_pengajuan,
+            @Part("kode_surat") RequestBody kode_surat,
+
+            @Part("nama_lama") RequestBody nama_lama,
+            @Part("nama_baru") RequestBody nama_baru,
+            @Part("nik") RequestBody nik,
+            @Part("alamat") RequestBody alamat,
+            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+            @Part("pekerjaan") RequestBody pekerjaan,
+            @Part("keterangan") RequestBody keterangan,
+            @Part("username") RequestBody username,
+
+            // bagian file upload
             @Part MultipartBody.Part file
     );
 

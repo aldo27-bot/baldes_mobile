@@ -47,6 +47,6 @@
     <color name="gray">#757575</color>
     <color name="teal_700">#018786</color>
 
-
-
+    <color name="color_title_text">#343434</color>
+    <color name="color_label_text">#6C7278</color>
 </resources>
