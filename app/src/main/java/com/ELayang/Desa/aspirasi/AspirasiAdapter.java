@@ -12,6 +12,7 @@ import com.ELayang.Desa.R;
 import com.ELayang.Desa.DataModel.Aspirasi;
 import java.util.ArrayList;
 import java.util.List;
+import com.ELayang.Desa.DataModel.Aspirasi;
 
 public class AspirasiAdapter extends RecyclerView.Adapter<AspirasiAdapter.ViewHolder> {
 

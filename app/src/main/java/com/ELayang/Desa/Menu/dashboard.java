@@ -122,24 +122,19 @@ public class dashboard extends Fragment {
         call.enqueue(new Callback<StatusDasboardRespon>() {
             @Override
             public void onResponse(Call<StatusDasboardRespon> call, Response<StatusDasboardRespon> response) {
-                if (response.body().isKode() == true) {
-                    StatusDasboardModel model = response.body().getData().get(0);
-                    if( model.getSelesai() != null) {
-                        selesai.setText(model.getSelesai());
-                    }else{
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().isKode()) {
+                        StatusDasboardModel model = response.body().getData().get(0);
+                        selesai.setText(model.getSelesai() != null ? model.getSelesai() : "0");
+                        tolak.setText(model.getTolak() != null ? model.getTolak() : "0");
+                        masuk.setText(model.getMasuk() != null ? model.getMasuk() : "0");
+                    } else {
                         selesai.setText("0");
-                    }
-                    if(model.getTolak() != null){
-                        tolak.setText(model.getTolak());
-                    }else{
                         tolak.setText("0");
-                    }
-                    if(model.getMasuk() != null) {
-                        masuk.setText(model.getMasuk());
-                    }else{
                         masuk.setText("0");
                     }
                 } else {
+                    Log.e("Dashboard", "Response gagal / null");
                     selesai.setText("0");
                     tolak.setText("0");
                     masuk.setText("0");

@@ -16,13 +16,13 @@ import android.util.Log;
 import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
 
+import com.ELayang.Desa.MainActivity;
+import com.ELayang.Desa.R;
+import com.ELayang.Desa.aspirasi.SharedPrefManager;
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Notifikasi.ModelNotifikasiAspirasi;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasiAspirasi;
-import com.ELayang.Desa.MainActivity;
-import com.ELayang.Desa.R;
-import com.ELayang.Desa.aspirasi.SharedPrefManager;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -50,7 +50,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
         startPolling();
     }
 
-    /** 🔹 Loop pengecekan tiap 1 menit */
     private void startPolling() {
         handler.postDelayed(new Runnable() {
             @Override
@@ -61,23 +60,18 @@ public class NotificationServiceAspirasi extends JobIntentService {
         }, 3000);
     }
 
-    /** 🔹 Stop polling jika service berhenti */
     @Override
     public void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
     }
 
-    /** 🔹 Cek notifikasi aspirasi dari server */
     private void checkNotifikasiAspirasi() {
         String username = SharedPrefManager.getInstance(this).getUsername();
-
         if (username == null || username.trim().isEmpty()) {
-            Log.w("NOTIF_USERNAME", "Username masih null — pastikan tersimpan saat login!");
+            Log.w("NOTIF_USERNAME", "Username masih null");
             return;
         }
-
-        Log.d("NOTIF_USERNAME", "Username dikirim: " + username);
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponNotifikasiAspirasi> call = api.getNotifikasiAspirasi(username);
@@ -86,8 +80,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
             @Override
             public void onResponse(Call<ResponNotifikasiAspirasi> call, Response<ResponNotifikasiAspirasi> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d("API_RESPONSE", "Respon: " + new Gson().toJson(response.body()));
-
                     List<ModelNotifikasiAspirasi> list = response.body().getData();
                     if (list != null && !list.isEmpty()) {
                         String tanggapanBaru = list.get(0).getTanggapan();
@@ -95,11 +87,7 @@ public class NotificationServiceAspirasi extends JobIntentService {
                             lastTanggapan = tanggapanBaru;
                             showNotification("Aspirasi Ditanggapi", "Tanggapan: " + tanggapanBaru);
                         }
-                    } else {
-                        Log.d("API_RESPONSE", "Data kosong");
                     }
-                } else {
-                    Log.e("API_RESPONSE", "Response gagal atau kosong: " + response.code());
                 }
             }
 
@@ -110,7 +98,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
         });
     }
 
-    /** 🔹 Tampilkan notifikasi */
     private void showNotification(String title, String message) {
         if (!isNotificationPermissionGranted()) return;
 
@@ -131,7 +118,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
         manager.notify(notificationId++, builder.build());
     }
 
-    /** 🔹 Channel untuk Android 8+ */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -145,7 +131,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
         }
     }
 
-    /** 🔹 Cek izin notifikasi */
     private boolean isNotificationPermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             return checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -154,7 +139,6 @@ public class NotificationServiceAspirasi extends JobIntentService {
         return true;
     }
 
-    /** 🔹 Minta izin notifikasi */
     private void requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)

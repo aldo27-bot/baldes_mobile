@@ -41,6 +41,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+// 🔥 Tambahan import untuk FCM dan Volley
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -136,6 +142,10 @@ public class login extends AppCompatActivity {
                             editor.putString("profile_image", user.getAPI_IMAGE());
                             editor.apply();
                             Log.e("pue", "profil: " + user.getAPI_IMAGE());
+
+                            // 🔥 Tambahan: kirim token FCM ke server
+                            sendTokenToServer(user.getUsername());
+
                             Intent pindah = new Intent(login.this, menu.class);
                             startActivity(pindah);
                             finish();
@@ -169,14 +179,6 @@ public class login extends AppCompatActivity {
                         .setFilterByAuthorizedAccounts(true)
                         .build())
                 .build();
-
-
-        //            GoogleSignInOptions gso = null;
-        //            mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        //            SignInButton btnGoogleSignIn = findViewById(R.id.login_google);
-        //            btnGoogleSignIn.setOnClickListener(v -> signInWithGoogle());
-
     }
 
     public void bregister(View view) {
@@ -194,15 +196,12 @@ public class login extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-
     //firebase baru
     public void signInWithGoogle() {
         // Memulai proses login dengan Google dan memilih akun
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -212,13 +211,10 @@ public class login extends AppCompatActivity {
                 try {
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
                     String idToken = credential.getGoogleIdToken();
-                    if (idToken !=  null) {
-                        // Got an ID token from Google. Use it to authenticate
-                        // with Firebase.
+                    if (idToken != null) {
                         Log.d(TAG, "Got ID token.");
                     }
                 } catch (ApiException e) {
-                    // ...
                 }
                 break;
         }
@@ -239,7 +235,6 @@ public class login extends AppCompatActivity {
             Log.e(TAG, "Google Sign-In gagal, code: " + e.getStatusCode(), e);
         }
     }
-
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
@@ -272,10 +267,13 @@ public class login extends AppCompatActivity {
                                 editor.apply();
                                 Log.d("DEBUG", "Password disimpan: " + sharedPreferences.getString("password", ""));
 
+                                // 🔥 Tambahan: kirim token FCM ke server juga di login Google
+                                sendTokenToServer(user.getUsername());
+
                                 Intent pindah = new Intent(login.this, menu.class);
                                 revokeAccess();
                                 startActivity(pindah);
-                                finish(); // Pastikan untuk menutup activity saat ini setelah pindah ke menu.class
+                                finish();
                             } else {
                                 Intent intent = new Intent(login.this, register1.class);
                                 intent.putExtra("email", user.getEmail());
@@ -306,4 +304,33 @@ public class login extends AppCompatActivity {
         revokeAccess();
     }
 
+    // 🔥 Tambahan baru di bawah sini
+    private void sendTokenToServer(String username) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Gagal ambil token FCM", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult();
+                    Log.d("FCM_TOKEN", "Token: " + token);
+
+                    String url = "http://10.0.2.2/si-kunir-web/DatabaseMobile/update_token.php"; // ganti sesuai lokasi file PHP-mu
+                    StringRequest request = new StringRequest(Request.Method.POST, url,
+                            response -> Log.d("TOKEN_UPDATE", "Token berhasil dikirim: " + response),
+                            error -> Log.e("TOKEN_UPDATE", "Error kirim token: " + error.getMessage())
+                    ) {
+                        @Override
+                        protected Map<String, String> getParams() {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("username", username);
+                            params.put("token", token);
+                            return params;
+                        }
+                    };
+
+                    Volley.newRequestQueue(getApplicationContext()).add(request);
+                });
+    }
 }

@@ -19,159 +19,228 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/desc_back_button"
             android:minWidth="48dp"
             android:minHeight="48dp"
             android:padding="8dp"
             android:src="@drawable/ic_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/black" /> <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_beda_nama"
-        android:textColor="@color/color_title_text" android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
-        app:layout_constraintStart_toEndOf="@+id/btnBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnBack"
-        app:layout_constraintHorizontal_bias="0"  android:layout_marginStart="8dp" /> <LinearLayout
-        android:id="@+id/inputContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+            app:tint="@color/black"
+            android:contentDescription="@string/desc_back_button"/>
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_nama_lengkap"
-            android:textSize="14sp"
-            android:textColor="@color/color_label_text" android:labelFor="@id/etNamaLengkap" />
-        <EditText
-            android:id="@+id/etNamaLengkap"
+            android:text="@string/title_beda_nama"
+            android:textColor="@color/color_title_text"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+            app:layout_constraintStart_toEndOf="@+id/btnBack"
+            app:layout_constraintTop_toTopOf="@+id/btnBack" />
+
+        <LinearLayout
+            android:id="@+id/inputContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
-            android:inputType="textPersonName"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:singleLine="true"
-            android:hint=""
-            android:minHeight="48dp"
-            android:autofillHints="personName" />
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/label_nik"
-            android:textSize="14sp"
-            android:textColor="@color/color_label_text" android:labelFor="@id/etNIK" />
-        <EditText
-            android:id="@+id/etNIK"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
-            android:inputType="number"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:singleLine="true"
-            android:hint=""
-            android:minHeight="48dp"
-            android:autofillHints="none" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Lama"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/label_ttl"
-            android:textSize="14sp"
-            android:textColor="@color/color_label_text" android:labelFor="@id/etTTL" />
-        <EditText
-            android:id="@+id/etTTL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
-            android:inputType="text"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:singleLine="true"
-            android:hint=""
-            android:minHeight="48dp" />
+            <EditText
+                android:id="@+id/etNamaLama"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Nama lengkap lama di dokumen"
+                android:minHeight="48dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/label_pekerjaan"
-            android:textSize="14sp"
-            android:textColor="@color/color_label_text" android:labelFor="@id/etPekerjaan" />
-        <EditText
-            android:id="@+id/etPekerjaan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
-            android:inputType="text"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:singleLine="true"
-            android:hint=""
-            android:minHeight="48dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Nama Baru"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/label_alamat"
-            android:textSize="14sp"
-            android:textColor="@color/color_label_text" android:labelFor="@id/etAlamat" />
-        <EditText
-            android:id="@+id/etAlamat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
-            android:inputType="textPostalAddress"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:singleLine="true"
-            android:hint=""
-            android:minHeight="48dp"
-            android:autofillHints="postalAddress" />
+            <EditText
+                android:id="@+id/etNamaBaru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Nama lengkap baru yang benar"
+                android:minHeight="48dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/label_keterangan"
-            android:textSize="14sp"
-            android:textColor="@color/color_label_text" android:labelFor="@id/etKeterangan" />
-        <EditText
-            android:id="@+id/etKeterangan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
-            android:gravity="top"
-            android:minLines="5"
-            android:inputType="textMultiLine"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:hint=""
-            android:minHeight="48dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/label_nik"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/etNIK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:inputType="number"
+                android:maxLength="16"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Masukkan Nomor Induk Kependudukan"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Tempat/Tanggal Lahir"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+
+            <EditText
+                android:id="@+id/etTTL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:inputType="text"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Contoh: Jakarta, 17-08-1945"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/label_pekerjaan"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+
+            <EditText
+                android:id="@+id/etPekerjaan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:inputType="text"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Pekerjaan saat ini"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/label_alamat"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+
+            <EditText
+                android:id="@+id/etAlamat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:gravity="top"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Alamat lengkap (RT/RW)"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/label_keterangan"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+
+            <EditText
+                android:id="@+id/etKeterangan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bg"
+                android:minLines="5"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Tambahkan Informasi lainnya"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Upload File"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+
+            <LinearLayout
+                android:id="@+id/filePickerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_rounded_bg"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/btnChooseFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="12dp"
+                    android:text="Pilih File"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:background="@drawable/btn_pilih_file_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp" />
+
+                <TextView
+                android:id="@+id/tvNamaFile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="12dp"
+                android:text="Tidak ada file yang dipilih"
+                android:textSize="16sp"
+                android:textColor="#555555"
+                android:singleLine="true"
+                android:ellipsize="start"/>
+            </LinearLayout>
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnKirim"
@@ -183,11 +252,11 @@
             android:background="@drawable/btn_gradient_bedanama"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginHorizontal="16dp"
             app:layout_constraintTop_toBottomOf="@id/inputContainer"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="32dp"
-            android:layout_marginHorizontal="16dp"/>
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

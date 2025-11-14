@@ -7,78 +7,64 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ELayang.Desa.DataModel.ModelKolom;
 import com.ELayang.Desa.R;
 import com.ELayang.Desa.Surat.SKCK;
+import com.ELayang.Desa.Surat.SKK;
 import com.ELayang.Desa.Surat.SKTM;
 import com.ELayang.Desa.Surat.Surat_Ijin;
-import com.ELayang.Desa.aspirasi.TambahAspirasiActivity; // ✅ tambahkan import aspirasi
+import com.ELayang.Desa.aspirasi.TambahAspirasiActivity;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class detail_permintaan_surat extends AppCompatActivity {
     private ImageView kembali;
-    ArrayList<ModelKolom> modelKoloms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_permintaan_surat);
 
-        TextView kodeSuratTextView = null;
-        String kodeSurat = null;
-        String nopengajuan = null;
-
         kembali = findViewById(R.id.kembali);
         kembali.setOnClickListener(v -> finish());
 
         Intent intent = getIntent();
-        if (intent != null) {
+        String kodeSurat = intent.getStringExtra("kode_surat");
+        String keterangan = intent.getStringExtra("keterangan");
+        String noPengajuan = intent.getStringExtra("no_pengajuan");
 
-            kodeSurat = intent.getStringExtra("kode_surat");
-            String keterangan = intent.getStringExtra("keterangan");
-            nopengajuan = intent.getStringExtra("no_pengajuan");
+        TextView kodeSuratTextView = findViewById(R.id.kode_surat);
+        TextView keteranganTextView = findViewById(R.id.keterangan);
 
-            // Tampilkan data di TextView atau komponen lainnya
-            kodeSuratTextView = findViewById(R.id.kode_surat);
-            TextView keteranganTextView = findViewById(R.id.keterangan);
-
-            kodeSuratTextView.setText(kodeSurat);
-            keteranganTextView.setText(keterangan);
-        }
+        kodeSuratTextView.setText(kodeSurat);
+        keteranganTextView.setText(keterangan);
 
         Toast.makeText(this, "Kode surat: " + kodeSurat, Toast.LENGTH_LONG).show();
 
-
-        // 🔹 Cek jenis surat dan arahkan ke activity yang sesuai
+        // ✅ Routing yang benar
         if (Objects.equals(kodeSurat, "skck")) {
-            intent = new Intent(this, SKCK.class);
-            intent.putExtra("nopengajuan", nopengajuan);
-            finish();
-            startActivity(intent);
+            pindah(SKCK.class, noPengajuan);
 
         } else if (Objects.equals(kodeSurat, "surat_ijin")) {
-            intent = new Intent(this, Surat_Ijin.class);
-            intent.putExtra("nopengajuan", nopengajuan);
-            finish();
-            startActivity(intent);
+            pindah(Surat_Ijin.class, noPengajuan);
 
-        } else if (Objects.equals(kodeSurat, "sktm")) {
-            intent = new Intent(this, SKTM.class);
-            intent.putExtra("nopengajuan", nopengajuan);
-            finish();
-            startActivity(intent);
+        } else if (Objects.equals(kodeSurat, "SKTM")) {
+            pindah(SKTM.class, noPengajuan);
+
+        } else if (Objects.equals(kodeSurat, "SKK")) {
+            pindah(SKK.class, noPengajuan);
 
         } else if (Objects.equals(kodeSurat, "aspirasi")) {
-            intent = new Intent(this, TambahAspirasiActivity.class);
-            intent.putExtra("nopengajuan", nopengajuan);
-            finish();
-            startActivity(intent);
+            pindah(TambahAspirasiActivity.class, noPengajuan);
 
         } else {
-            Toast.makeText(this, "maaf sedang terjadi error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Kode surat tidak dikenali", Toast.LENGTH_SHORT).show();
         }
+    }
 
+    private void pindah(Class<?> tujuan, String noPengajuan) {
+        Intent i = new Intent(this, tujuan);
+        i.putExtra("nopengajuan", noPengajuan);
+        startActivity(i);
+        finish();
     }
 }

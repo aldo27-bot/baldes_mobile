@@ -13,13 +13,16 @@ import com.ELayang.Desa.DataModel.Register.ResponRegister1;
 import com.ELayang.Desa.DataModel.Register.ResponRegister2;
 import com.ELayang.Desa.DataModel.Register.ResponRegister3;
 import com.ELayang.Desa.DataModel.StatusDasboardRespon;
+import com.ELayang.Desa.DataModel.Surat.ResponDomisili;
 import com.ELayang.Desa.DataModel.Surat.ResponSkck;
 import com.ELayang.Desa.DataModel.ResponSurat;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponDiajukan;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponSelesai;
+import com.ELayang.Desa.DataModel.Surat.ResponSkk;
 import com.ELayang.Desa.DataModel.Surat.ResponSktm;
 import com.ELayang.Desa.DataModel.Surat.ResponSuratijin;
 import com.ELayang.Desa.DataModel.AspirasiResponse;
+import com.ELayang.Desa.DataModel.Surat.ResponBedaNama;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -31,9 +34,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
 
 
 public interface APIRequestData {
@@ -88,6 +88,14 @@ public interface APIRequestData {
             @Field("username") String username
     );
 
+    @FormUrlEncoded
+    @POST("DatabaseMobile/kirim_notifikasi_user.php")
+    Call<ResponNotifikasiAspirasi> kirimNotifikasiUser(
+            @Field("id") int id,
+            @Field("status") String status,
+            @Field("tanggapan") String tanggapan
+    );
+
     @Multipart
     @POST("surat/skck.php")
     Call<ResponSkck> uploadFile(
@@ -121,15 +129,14 @@ public interface APIRequestData {
             @Part MultipartBody.Part file
     );
 
-
     @FormUrlEncoded
     @POST("register/register1.php")
     Call<ResponRegister1> register1(
             @Field("username") String username,
             @Field("email") String email,
             @Field("nama") String nama
-
     );
+
 
     @FormUrlEncoded
     @POST("register/register2.php")
@@ -236,7 +243,6 @@ public interface APIRequestData {
     Call<ResponBedaNama> bedaNama(
             @Part("username") RequestBody username,
             @Part("kode_surat") RequestBody kode_surat,
-
             @Part("nama_lama") RequestBody nama_lama,
             @Part("nama_baru") RequestBody nama_baru,
             @Part("nik") RequestBody nik,
@@ -244,11 +250,25 @@ public interface APIRequestData {
             @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
             @Part("pekerjaan") RequestBody pekerjaan,
             @Part("keterangan") RequestBody keterangan,
-
-            // bagian file upload (bukti pendukung, foto, atau dokumen)
+            // Bagian file upload - HARUS menggunakan MultipartBody.Part
             @Part MultipartBody.Part file
     );
 
+
+    @FormUrlEncoded
+    @POST("surat/surat_domisili.php")
+    Call<ResponDomisili> kirimSuratDomisili(
+            @Field("nama") String nama,
+            @Field("nik") String nik,
+            @Field("tempat_tanggal_lahir") String ttl,
+            @Field("alamat") String alamat,
+            @Field("jenis_kelamin") String jk,
+            @Field("pekerjaan") String pekerjaan,
+            @Field("agama") String agama,
+            @Field("status_perkawinan") String status,
+            @Field("keterangan") String keterangan,
+            @Field("username") String username
+    );
 
     @FormUrlEncoded
     @POST("update_akun.php")
@@ -294,6 +314,45 @@ public interface APIRequestData {
     Call<ResponLogin> logingoogle(
             @Field("email") String email
     );
+
+    @Multipart
+    @POST("surat/skk.php")
+    Call<ResponSkk> kirimSkk(
+            @Part("username") RequestBody username,
+            @Part("nama") RequestBody nama,
+            @Part("agama") RequestBody agama,
+            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+            @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("alamat") RequestBody alamat,
+            @Part("kewarganegaraan") RequestBody kewarganegaraan,
+            @Part("keterangan") RequestBody keterangan,
+            @Part("kode_surat") RequestBody kode_surat,
+            @Part MultipartBody.Part file
+
+    );
+
+    @FormUrlEncoded
+    @POST("updatesurat/skk.php")
+    Call<ResponSkk> ambilSkk(
+            @Field("no_pengajuan") String no_pengajuan,
+            @Field("kode") String kode
+    );
+
+    @Multipart
+    @POST("updatesurat/skk.php")
+    Call<ResponSkk> updateSkk(
+            @Part("no_pengajuan") RequestBody no_pengajuan,
+            @Part("kode") RequestBody kode,
+            @Part("nama") RequestBody nama,
+            @Part("agama") RequestBody agama,
+            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+            @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("alamat") RequestBody alamat,
+            @Part("kewarganegaraan") RequestBody kewarganegaraan,
+            @Part("keterangan") RequestBody keterangan,
+            @Part MultipartBody.Part file
+    );
+
 
     @FormUrlEncoded
     @POST("updatesurat/skck.php")
@@ -374,32 +433,6 @@ public interface APIRequestData {
             @Part("bagian") RequestBody bagian,
             @Part("tanggal") RequestBody tanggal,
             @Part("alasan") RequestBody alasan,
-            @Part MultipartBody.Part file
-    );
-
-    @FormUrlEncoded
-    @POST("updatesurat/beda_nama.php")
-    Call<ResponBedaNama> ambilBedaNama(
-            @Field("no_pengajuan") String no_pengajuan,
-            @Field("kode_surat") String kode_surat
-    );
-
-    @Multipart
-    @POST("updatesurat/beda_nama.php")
-    Call<ResponBedaNama> updateBedaNama(
-            @Part("no_pengajuan") RequestBody no_pengajuan,
-            @Part("kode_surat") RequestBody kode_surat,
-
-            @Part("nama_lama") RequestBody nama_lama,
-            @Part("nama_baru") RequestBody nama_baru,
-            @Part("nik") RequestBody nik,
-            @Part("alamat") RequestBody alamat,
-            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
-            @Part("pekerjaan") RequestBody pekerjaan,
-            @Part("keterangan") RequestBody keterangan,
-            @Part("username") RequestBody username,
-
-            // bagian file upload
             @Part MultipartBody.Part file
     );
 
