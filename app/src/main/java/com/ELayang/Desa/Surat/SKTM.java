@@ -6,21 +6,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-import java.io.IOException;
-
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Surat.ResponSktm;
+import com.ELayang.Desa.Menu.permintaan_surat;
 import com.ELayang.Desa.R;
-import com.ELayang.Desa.utils.FileUtils;
 
-
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -40,18 +40,18 @@ public class SKTM extends AppCompatActivity {
     Uri uriFoto;
     MultipartBody.Part filePart;
 
-    SharedPreferences sp;
-    String usernameUser, idPejabatDesa, kodeSurat = "SKTM";
+    String usernameUser;
+    String kodeSurat = "SKTM";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.surat_sktm);
 
-        // Ambil SharedPreferences user login
-        sp = getSharedPreferences("USER_DATA", MODE_PRIVATE);
-        usernameUser = sp.getString("username", "");
-        idPejabatDesa = sp.getString("id_pejabat_desa", "");
+        SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
+        usernameUser = pref.getString("username", "");
+
+        Log.d("SKTM_PREF", "Username dari SharedPref: " + usernameUser);
 
         etNama = findViewById(R.id.etNama);
         etTtl = findViewById(R.id.etTtl);
@@ -86,8 +86,24 @@ public class SKTM extends AppCompatActivity {
             imgPreview.setImageURI(uriFoto);
 
             try {
-                // pakai helper FileUtils baru
-                filePart = FileUtils.prepareFilePart(this, "file", uriFoto);
+                InputStream is = getContentResolver().openInputStream(uriFoto);
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                int nRead;
+                byte[] temp = new byte[4096];
+                while ((nRead = is.read(temp, 0, temp.length)) != -1) {
+                    buffer.write(temp, 0, nRead);
+                }
+                byte[] fileBytes = buffer.toByteArray();
+                is.close();
+
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), fileBytes);
+                filePart = MultipartBody.Part.createFormData(
+                        "file",
+                        "sktm_" + System.currentTimeMillis() + ".jpg",
+                        reqFile
+                );
+
+                Log.d("SKTM_DEBUG", "Foto berhasil dibaca & siap upload");
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Gagal membaca file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -95,15 +111,34 @@ public class SKTM extends AppCompatActivity {
         }
     }
 
-
     private void kirimData() {
-
-        if (filePart == null) {
-            Toast.makeText(this, "Silakan pilih foto terlebih dahulu", Toast.LENGTH_SHORT).show();
+        // Cek username
+        if (usernameUser == null || usernameUser.isEmpty()) {
+            Toast.makeText(this, "Akun belum login! Username kosong", Toast.LENGTH_LONG).show();
+            Log.e("SKTM_DEBUG", "USERNAME KOSONG! Tidak bisa kirim data");
             return;
         }
 
+        // Cek field wajib
+        if (etNama.getText().toString().isEmpty() ||
+                etTtl.getText().toString().isEmpty() ||
+                etAsalSekolah.getText().toString().isEmpty() ||
+                etKeperluan.getText().toString().isEmpty() ||
+                etNamaOrtu.getText().toString().isEmpty() ||
+                etNikOrtu.getText().toString().isEmpty() ||
+                etAlamatOrtu.getText().toString().isEmpty() ||
+                etTtlOrtu.getText().toString().isEmpty() ||
+                etPekerjaanOrtu.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d("SKTM_DEBUG", "Mulai kirim data SKTM oleh user: " + usernameUser);
+
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+
+        MultipartBody.Part fotoPartFix =
+                (filePart != null) ? filePart : MultipartBody.Part.createFormData("file", "");
 
         Call<ResponSktm> call = api.sktm(
                 rb(etNama.getText().toString()),
@@ -115,26 +150,35 @@ public class SKTM extends AppCompatActivity {
                 rb(etAlamatOrtu.getText().toString()),
                 rb(etTtlOrtu.getText().toString()),
                 rb(etPekerjaanOrtu.getText().toString()),
-                rb(kodeSurat),         // FIX: Tidak dummy
-                rb(idPejabatDesa),     // FIX: Ambil dari SharedPreferences
-                rb(usernameUser),      // FIX: Ambil dari SharedPreferences
-                filePart
+                rb(kodeSurat),
+                rb(usernameUser),
+                fotoPartFix
         );
 
         call.enqueue(new Callback<ResponSktm>() {
             @Override
             public void onResponse(Call<ResponSktm> call, Response<ResponSktm> response) {
+                Log.d("SKTM_DEBUG", "Response code: " + response.code());
 
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SKTM.this, response.body().getPesan(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SKTM.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("SKTM_DEBUG", "Pesan server: " + response.body().getMessage());
+
+                    // Kembali ke menu Pengajuan Surat
+                    Intent intent = new Intent(SKTM.this, permintaan_surat.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish(); // Tutup activity SKTM
                 } else {
                     Toast.makeText(SKTM.this, "Response tidak lengkap", Toast.LENGTH_SHORT).show();
+                    Log.e("SKTM_DEBUG", "Response tidak lengkap");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponSktm> call, Throwable t) {
                 Toast.makeText(SKTM.this, "Gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("SKTM_DEBUG", "Gagal kirim SKTM: " + t.getMessage());
             }
         });
     }

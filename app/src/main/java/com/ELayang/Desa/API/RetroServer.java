@@ -15,7 +15,7 @@ public class RetroServer {
     public static String server = "http://10.0.2.2/si-kunir-web";
     private static final String finalurl = server + "/DatabaseMobile/";
 
-    public static final String API_IMAGE = server + "/uploads/";
+    public static final String API_IMAGE = server + "/surat/upload_surat/";
     public static final String API_FotoProfil = server + "/";
 
     private static Retrofit retro;

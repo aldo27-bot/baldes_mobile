@@ -252,30 +252,33 @@ public interface APIRequestData {
             @Part("tempat_tanggal_lahir") RequestBody ttl,
             @Part("asal_sekolah") RequestBody asalSekolah,
             @Part("keperluan") RequestBody keperluan,
-            @Part("nama_orangtua") RequestBody namaOrangtua,
-            @Part("nik_orangtua") RequestBody nikOrangtua,
-            @Part("alamat_orangtua") RequestBody alamatOrangtua,
-            @Part("tempat_tanggal_lahir_orangtua") RequestBody ttlOrangtua,
-            @Part("pekerjaan_orangtua") RequestBody pekerjaanOrangtua,
+
+            @Part("nama_orangtua") RequestBody namaOrtu,
+            @Part("nik_orangtua") RequestBody nikOrtu,
+            @Part("alamat_orangtua") RequestBody alamatOrtu,
+            @Part("tempat_tanggal_lahir_orangtua") RequestBody ttlOrtu,
+            @Part("pekerjaan_orangtua") RequestBody kerjaOrtu,
+
             @Part("kode_surat") RequestBody kodeSurat,
-            @Part("id_pejabat_desa") RequestBody idPejabatDesa,
             @Part("username") RequestBody username,
+
             @Part MultipartBody.Part file
     );
 
-    @FormUrlEncoded
+    @Multipart
     @POST("surat/surat_domisili.php")
     Call<ResponDomisili> kirimSuratDomisili(
-            @Field("nama") String nama,
-            @Field("nik") String nik,
-            @Field("tempat_tanggal_lahir") String ttl,
-            @Field("alamat") String alamat,
-            @Field("jenis_kelamin") String jk,
-            @Field("pekerjaan") String pekerjaan,
-            @Field("agama") String agama,
-            @Field("status_perkawinan") String status,
-            @Field("keterangan") String keterangan,
-            @Field("username") String username
+            @Part("nama") RequestBody nama,
+            @Part("nik") RequestBody nik,
+            @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("alamat") RequestBody alamat,
+            @Part("jenis_kelamin") RequestBody jk,
+            @Part("pekerjaan") RequestBody pekerjaan,
+            @Part("agama") RequestBody agama,
+            @Part("status_perkawinan") RequestBody status,
+            @Part("keterangan") RequestBody keterangan,
+            @Part("username") RequestBody username,
+            @Part MultipartBody.Part file  // field tetap 'file' di PHP
     );
 
     @FormUrlEncoded
