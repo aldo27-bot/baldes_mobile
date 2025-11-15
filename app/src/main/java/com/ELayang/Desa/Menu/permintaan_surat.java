@@ -12,7 +12,7 @@ import com.ELayang.Desa.R;
 import com.ELayang.Desa.Surat.FormSuratDomisiliActivity;
 import com.ELayang.Desa.Surat.SKTM;
 import com.ELayang.Desa.Surat.SKK;
-//import com.ELayang.Desa.Surat.SuratBedaNamaActivity;
+import com.ELayang.Desa.Surat.Beda_Nama;
 //import com.ELayang.Desa.Surat.SuratUsahaActivity;
 //import com.ELayang.Desa.Surat.SuratKematianActivity;
 //import com.ELayang.Desa.Surat.SuratKelakuanBaikActivity;
@@ -54,9 +54,9 @@ public class permintaan_surat extends AppCompatActivity {
         itemSuratKehilangan.setOnClickListener(v ->
                 startActivity(new Intent(this, SKK.class)));
 
-//        itemSuratBedaNama.setOnClickListener(v ->
-//                startActivity(new Intent(this, SuratBedaNamaActivity.class)));
-//
+        itemSuratBedaNama.setOnClickListener(v ->
+              startActivity(new Intent(this, Beda_Nama.class)));
+
 //        itemSuratUsaha.setOnClickListener(v ->
 //                startActivity(new Intent(this, SuratUsahaActivity.class)));
 //
