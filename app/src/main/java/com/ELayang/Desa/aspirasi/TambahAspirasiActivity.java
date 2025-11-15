@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.util.Log;
+import java.io.File;
+import java.io.InputStream; // <-- tambahkan ini
+
 
 
 import androidx.annotation.Nullable;
@@ -101,7 +104,6 @@ public class TambahAspirasiActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        // Ambil username dari SharedPreferences
         SharedPreferences prefs = getSharedPreferences("prefLogin", MODE_PRIVATE);
         String username = prefs.getString("username", "");
         if (username.isEmpty()) {
@@ -110,7 +112,6 @@ public class TambahAspirasiActivity extends AppCompatActivity {
             return;
         }
 
-        // Konversi ke RequestBody
         RequestBody rbUsername = RequestBody.create(MediaType.parse("text/plain"), username);
         RequestBody rbJudul = RequestBody.create(MediaType.parse("text/plain"), judul);
         RequestBody rbKategori = RequestBody.create(MediaType.parse("text/plain"), kategori);
@@ -118,23 +119,28 @@ public class TambahAspirasiActivity extends AppCompatActivity {
 
         MultipartBody.Part partFoto = null;
 
-        if (imagePath != null && !imagePath.isEmpty()) {
-            File file = new File(imagePath);
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-            partFoto = MultipartBody.Part.createFormData("foto", file.getName(), reqFile);
+        try {
+            if (uriFoto != null) {
+                InputStream is = getContentResolver().openInputStream(uriFoto);
+                byte[] bytes = new byte[is.available()];
+                is.read(bytes);
+                is.close();
 
-            Log.d("UPLOAD_ASPIRASI", "Foto dipilih: " + file.getAbsolutePath());
-        } else {
-            // Kirim part kosong supaya Retrofit tidak error
-            RequestBody empty = RequestBody.create(MediaType.parse("text/plain"), "");
-            partFoto = MultipartBody.Part.createFormData("foto", "", empty);
-            Log.d("UPLOAD_ASPIRASI", "Tidak ada foto yang diunggah");
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), bytes);
+                partFoto = MultipartBody.Part.createFormData("foto", "upload.jpg", reqFile);
+
+                Log.d("UPLOAD_ASPIRASI", "Foto siap diupload dari URI: " + uriFoto);
+            } else {
+                RequestBody empty = RequestBody.create(MediaType.parse("text/plain"), "");
+                partFoto = MultipartBody.Part.createFormData("foto", "", empty);
+                Log.d("UPLOAD_ASPIRASI", "Tidak ada foto yang diunggah");
+            }
+        } catch (Exception e) {
+            pd.dismiss();
+            Log.e("UPLOAD_ASPIRASI", "Gagal membaca foto: " + e.getMessage(), e);
+            Toast.makeText(this, "Gagal membaca foto", Toast.LENGTH_SHORT).show();
+            return;
         }
-
-        Log.d("UPLOAD_ASPIRASI", "Username: " + username);
-        Log.d("UPLOAD_ASPIRASI", "Judul: " + judul);
-        Log.d("UPLOAD_ASPIRASI", "Kategori: " + kategori);
-        Log.d("UPLOAD_ASPIRASI", "Deskripsi: " + deskripsi);
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<AspirasiResponse> call = api.kirimAspirasi(rbUsername, rbJudul, rbKategori, rbDeskripsi, partFoto);
@@ -143,21 +149,10 @@ public class TambahAspirasiActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AspirasiResponse> call, Response<AspirasiResponse> response) {
                 pd.dismiss();
-
                 if (response.isSuccessful() && response.body() != null) {
-                    String pesan = response.body().getPesan();
-                    int kode = response.body().getKode();
-
-                    Log.d("UPLOAD_ASPIRASI", "Response kode: " + kode);
-                    Log.d("UPLOAD_ASPIRASI", "Response pesan: " + pesan);
-
-                    Toast.makeText(TambahAspirasiActivity.this, pesan, Toast.LENGTH_SHORT).show();
-
-                    if (kode == 1) {
-                        finish();
-                    }
+                    Toast.makeText(TambahAspirasiActivity.this, response.body().getPesan(), Toast.LENGTH_SHORT).show();
+                    if (response.body().getKode() == 1) finish();
                 } else {
-                    Log.e("UPLOAD_ASPIRASI", "Response gagal: " + response.message());
                     Toast.makeText(TambahAspirasiActivity.this, "Gagal mengirim aspirasi", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -165,8 +160,8 @@ public class TambahAspirasiActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<AspirasiResponse> call, Throwable t) {
                 pd.dismiss();
-                Log.e("UPLOAD_ASPIRASI", "Error: " + t.getMessage(), t);
                 Toast.makeText(TambahAspirasiActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("UPLOAD_ASPIRASI", "Error upload: ", t);
             }
         });
     }

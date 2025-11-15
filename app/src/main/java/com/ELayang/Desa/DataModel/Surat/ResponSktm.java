@@ -1,35 +1,19 @@
 package com.ELayang.Desa.DataModel.Surat;
 
-import java.util.ArrayList;
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 public class ResponSktm {
-    boolean kode;
+    @SerializedName("kode")
+    private int kode;
 
-    public boolean isKode() {
-        return kode;
-    }
+    @SerializedName("pesan")
+    private String pesan;
 
-    public void setKode(boolean kode) {
-        this.kode = kode;
-    }
+    @SerializedName("data")
+    private List<ModelSktm> data;
 
-   private String pesan;
-
-    public String getPesan() {
-        return pesan;
-    }
-
-    public void setPesan(String pesan) {
-        this.pesan = pesan;
-    }
-
-    ArrayList<ModelSktm> data;
-
-    public ArrayList<ModelSktm> getData() {
-        return data;
-    }
-
-    public void setData(ArrayList<ModelSktm> data) {
-        this.data = data;
-    }
+    public int getKode() { return kode; }
+    public String getPesan() { return pesan; }
+    public List<ModelSktm> getData() { return data; }
 }
