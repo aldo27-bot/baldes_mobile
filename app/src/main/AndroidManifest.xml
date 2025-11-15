@@ -76,6 +76,9 @@
             android:name=".Surat.SKCK"
             android:exported="false" />
         <activity
+            android:name=".Surat.Beda_Nama"
+            android:exported="false"/>
+        <activity
             android:name=".Menu.detail_permintaan_surat"
             android:exported="false" />
         <activity
