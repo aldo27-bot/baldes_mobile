@@ -126,6 +126,10 @@
             android:exported="false" />
         <activity android:name=".Surat.FormSuratDomisiliActivity"
             android:exported="false" />
+        <activity android:name=".Surat.SKM"
+            android:exported="false" />
+        <activity android:name=".Surat.SKB"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true" >
