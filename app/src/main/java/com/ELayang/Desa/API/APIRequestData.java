@@ -24,6 +24,7 @@ import com.ELayang.Desa.DataModel.Surat.ResponSktm;
 import com.ELayang.Desa.DataModel.Surat.ResponSuratijin;
 import com.ELayang.Desa.DataModel.Surat.ResponSkb;
 import com.ELayang.Desa.DataModel.AspirasiResponse;
+import com.ELayang.Desa.DataModel.Surat.ResponSuratUsaha;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -440,6 +441,21 @@ public interface APIRequestData {
             @Part("bagian") RequestBody bagian,
             @Part("tanggal") RequestBody tanggal,
             @Part("alasan") RequestBody alasan,
+            @Part MultipartBody.Part file
+    );
+
+    @Multipart
+    @POST("surat/surat_usaha.php")
+    Call<ResponSuratUsaha> kirimSuratUsaha(
+            @Part("username") RequestBody username,
+            @Part("kode_surat") RequestBody kode_surat,
+            @Part("nama") RequestBody nama,
+            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+            @Part("alamat") RequestBody alamat,
+            @Part("lokasi_usaha") RequestBody lokasi_usaha,
+            @Part("nama_usaha") RequestBody nama_usaha,
+            @Part("jenis_usaha") RequestBody jenis_usaha,
+            @Part("tahun_berdiri") RequestBody tahun_berdiri,
             @Part MultipartBody.Part file
     );
 
