@@ -64,7 +64,7 @@ public class Beda_Nama extends AppCompatActivity {
 
         setContentView(R.layout.surat_beda_nama); // Pastikan ini layout yang benar
 
-        // Ambil username dari SharedPreferences (Menyesuaikan SKK)
+        // Ambil username dari SharedPreferences
         SharedPreferences sp = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
         username = sp.getString("username", "").trim();
 
@@ -98,10 +98,13 @@ public class Beda_Nama extends AppCompatActivity {
     }
 
     private boolean isValid(){
+        // Validasi Username (Wajib)
         if(TextUtils.isEmpty(username)){
             Toast.makeText(this, "Username tidak ditemukan. Harap login ulang.", Toast.LENGTH_LONG).show();
             return false;
         }
+
+        // Validasi Semua Field Text Wajib
         if(etNamaLama.getText().toString().trim().isEmpty()){
             etNamaLama.setError("Nama Lama wajib diisi");
             return false;
@@ -130,6 +133,7 @@ public class Beda_Nama extends AppCompatActivity {
             etKeterangan.setError("Keterangan wajib diisi");
             return false;
         }
+        // File bersifat opsional, tidak perlu validasi
         return true;
     }
 
@@ -150,11 +154,12 @@ public class Beda_Nama extends AppCompatActivity {
         String namaLama = etNamaLama.getText().toString().trim();
         String namaBaru = etNamaBaru.getText().toString().trim();
         String nik = etNIK.getText().toString().trim();
-        String ttl = etTTL.getText().toString().trim();
+        // Ganti nama variabel lokal 'ttl' menjadi 'tempat_tanggal_lahir' agar konsisten
+        String tempat_tanggal_lahir = etTTL.getText().toString().trim();
         String pekerjaan = etPekerjaan.getText().toString().trim();
         String alamat = etAlamat.getText().toString().trim();
         String keterangan = etKeterangan.getText().toString().trim();
-        String kodeSurat = "SBN"; // Kode Surat Beda Nama
+        String kodeSurat = "SBN";
 
         Call<ResponBedaNama> call = api.bedaNama(
                 rb(username),
@@ -163,7 +168,7 @@ public class Beda_Nama extends AppCompatActivity {
                 rb(namaBaru),
                 rb(nik),
                 rb(alamat),
-                rb(ttl),
+                rb(tempat_tanggal_lahir), // Kirim data TTL dengan key yang benar
                 rb(pekerjaan),
                 rb(keterangan),
                 getFilePart()
@@ -224,15 +229,18 @@ public class Beda_Nama extends AppCompatActivity {
     }
 
     private MultipartBody.Part getFilePart(){
+        // File OPSIONAL: Jika tidak ada file, kirim NULL
         if(fileNameSaved.isEmpty() || fileUri == null) {
-            return null; // File OPSIONAL
+            return null;
         }
         File file = new File(getFilesDir(), fileNameSaved);
+
         // Pastikan file tersebut ada
         if (!file.exists()) {
             Toast.makeText(this, "Error: File tidak ditemukan di penyimpanan internal.", Toast.LENGTH_LONG).show();
             return null;
         }
+
         // Key "file" HARUS SAMA dengan $_FILES['file'] di PHP
         RequestBody rb = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         return MultipartBody.Part.createFormData("file", file.getName(), rb);
@@ -243,6 +251,11 @@ public class Beda_Nama extends AppCompatActivity {
         return new Callback<ResponBedaNama>() {
             @Override public void onResponse(Call<ResponBedaNama> call, Response<ResponBedaNama> response){
                 progressDialog.dismiss();
+                // Opsional: Hapus file lokal setelah berhasil dikirim
+                if(fileNameSaved!=null && !fileNameSaved.isEmpty()) {
+                    new File(getFilesDir(), fileNameSaved).delete();
+                }
+
                 if(response.isSuccessful() && response.body() != null && response.body().isKode()){
                     Toast.makeText(Beda_Nama.this, successMessage, Toast.LENGTH_SHORT).show();
                     finish();
@@ -253,6 +266,11 @@ public class Beda_Nama extends AppCompatActivity {
             }
             @Override public void onFailure(Call<ResponBedaNama> call, Throwable t){
                 progressDialog.dismiss();
+                // Opsional: Hapus file lokal jika terjadi kegagalan koneksi
+                if(fileNameSaved!=null && !fileNameSaved.isEmpty()) {
+                    new File(getFilesDir(), fileNameSaved).delete();
+                }
+                // Kemungkinan besar error dari IllegalStateException karena output bocor dari PHP/Koneksi.php
                 Toast.makeText(Beda_Nama.this, "Gagal Koneksi: "+t.getMessage(), Toast.LENGTH_LONG).show();
             }
         };

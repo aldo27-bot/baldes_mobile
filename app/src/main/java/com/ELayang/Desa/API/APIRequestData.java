@@ -266,6 +266,8 @@ public interface APIRequestData {
             @Part MultipartBody.Part file
     );
 
+    // APIRequestData.java
+
     @Multipart
     @POST("surat/surat_beda_nama.php")
     Call<ResponBedaNama> bedaNama(
@@ -275,11 +277,10 @@ public interface APIRequestData {
             @Part("nama_baru") RequestBody nama_baru,
             @Part("nik") RequestBody nik,
             @Part("alamat") RequestBody alamat,
-            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir, // KEY SELARAS
             @Part("pekerjaan") RequestBody pekerjaan,
             @Part("keterangan") RequestBody keterangan,
-            // Bagian file upload - HARUS menggunakan MultipartBody.Part
-            @Part MultipartBody.Part file
+            @Part MultipartBody.Part file // Key 'file' selaras dengan $_FILES['file']
     );
 
 
