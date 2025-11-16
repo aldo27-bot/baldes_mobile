@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Copyright © 2024. E-Lades . All Rights Reserved"
+        android:text="Copyright © 2025. Si-Kunir. All Rights Reserved"
         android:textAlignment="center"
         android:textColor="@color/biru_gelap"
         android:textSize="10sp"

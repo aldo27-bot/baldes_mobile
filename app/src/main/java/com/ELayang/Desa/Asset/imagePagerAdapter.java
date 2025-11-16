@@ -12,7 +12,7 @@ import com.ELayang.Desa.R;
 public class imagePagerAdapter extends PagerAdapter {
 
     private Context context;
-    private int[] images = {R.drawable.foto2, R.drawable.noimage};
+    private int[] images = {R.drawable.alun_alun_nganjuk, R.drawable.foto_bersama_kades};
     private final int MAX_VALUE = 1000;
 
     public imagePagerAdapter(Context context) {
