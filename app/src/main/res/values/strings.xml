@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">E-Lades</string>
+    <string name="app_name">Si-Kunir</string>
     <string name="title_activity_dashboard">dashboard</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
