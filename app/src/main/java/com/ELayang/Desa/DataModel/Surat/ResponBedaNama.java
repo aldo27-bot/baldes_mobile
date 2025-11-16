@@ -27,4 +27,8 @@ public class ResponBedaNama {
     public List<ModelBedaNama> getData() {
         return data;
     }
+
+    public boolean isKode() {
+        return kode == 1;
+    }
 }

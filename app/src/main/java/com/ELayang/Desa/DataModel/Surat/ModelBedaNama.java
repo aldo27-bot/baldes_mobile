@@ -1,19 +1,41 @@
 package com.ELayang.Desa.DataModel.Surat;
 
-public class ModelBedaNama {
-    private int no_pengajuan;
-    private String nama_lama;
-    private String nama_baru;
-    private String nik;
-    private String alamat;
-    private String tempat_tanggal_lahir;
-    private String pekerjaan;
-    private String keterangan;
-    private String file;
-    private String kode_surat;
-    private String username;
+import com.google.gson.annotations.SerializedName;
 
-    // --- GETTER dan SETTER ---
+public class ModelBedaNama {
+
+    @SerializedName("no_pengajuan")
+    private int no_pengajuan;
+
+    @SerializedName("nama_lama")
+    private String nama_lama;
+
+    @SerializedName("nama_baru")
+    private String nama_baru;
+
+    @SerializedName("nik")
+    private String nik;
+
+    @SerializedName("alamat")
+    private String alamat;
+
+    @SerializedName("tempat_tanggal_lahir")
+    private String tempat_tanggal_lahir;
+
+    @SerializedName("pekerjaan")
+    private String pekerjaan;
+
+    @SerializedName("keterangan")
+    private String keterangan;
+
+    @SerializedName("file")
+    private String file;
+
+    @SerializedName("kode_surat")
+    private String kode_surat;
+
+    @SerializedName("username")
+    private String username;
 
     public int getNo_pengajuan() { return no_pengajuan; }
     public void setNo_pengajuan(int no_pengajuan) { this.no_pengajuan = no_pengajuan; }

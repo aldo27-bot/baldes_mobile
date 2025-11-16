@@ -116,6 +116,15 @@
             android:exported="false" />
         <activity android:name=".aspirasi.TambahAspirasiActivity"
             android:exported="false" />
+<<<<<<< HEAD
+=======
+        <activity android:name=".Surat.FormSuratDomisiliActivity"
+            android:exported="false" />
+        <activity android:name=".Surat.SKM"
+            android:exported="false" />
+        <activity android:name=".Surat.SKB"
+            android:exported="false" />
+>>>>>>> ccfd11baa17de58dc3c74cc4df6e2e43533db669
         <activity
             android:name=".MainActivity"
             android:exported="true" >

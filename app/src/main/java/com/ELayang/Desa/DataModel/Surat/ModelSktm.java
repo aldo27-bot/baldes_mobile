@@ -1,139 +1,60 @@
 package com.ELayang.Desa.DataModel.Surat;
+
+import com.google.gson.annotations.SerializedName;
+
 public class ModelSktm {
 
-    private String nama_bapak;
-    private String tempat_lahir_bapak;
-    private String tanggal_lahir_bapak;
-    private String pekerjaan_bapak;
-    private String alamat_bapak;
-    private String nama_ibu;
-    private String tempat_lahir_ibu;
-    private String tanggal_lahir_ibu;
-    private String pekerjaan_ibu;
-    private String alamat_ibu;
-    private String nama_anak;
-    private String tempat_lahir_anak;
-    private String tanggal_lahir_anak;
-    private String jenis_kelamin_anak;
-    private String alamat_anak;
+    @SerializedName("nama")
+    private String nama;
 
-    public String getNama_bapak() {
-        return nama_bapak;
-    }
+    @SerializedName("tempat_tanggal_lahir")
+    private String tempat_tanggal_lahir;
 
-    public void setNama_bapak(String nama_bapak) {
-        this.nama_bapak = nama_bapak;
-    }
+    @SerializedName("asal_sekolah")
+    private String asal_sekolah;
 
-    public String getTempat_lahir_bapak() {
-        return tempat_lahir_bapak;
-    }
+    @SerializedName("keperluan")
+    private String keperluan;
 
-    public void setTempat_lahir_bapak(String tempat_lahir_bapak) {
-        this.tempat_lahir_bapak = tempat_lahir_bapak;
-    }
+    @SerializedName("nama_orangtua")
+    private String nama_orangtua;
 
-    public String getTanggal_lahir_bapak() {
-        return tanggal_lahir_bapak;
-    }
+    @SerializedName("nik_orangtua")
+    private String nik_orangtua;
 
-    public void setTanggal_lahir_bapak(String tanggal_lahir_bapak) {
-        this.tanggal_lahir_bapak = tanggal_lahir_bapak;
-    }
+    @SerializedName("alamat_orangtua")
+    private String alamat_orangtua;
 
-    public String getPekerjaan_bapak() {
-        return pekerjaan_bapak;
-    }
+    @SerializedName("tempat_tanggal_lahir_orangtua")
+    private String tempat_tanggal_lahir_orangtua;
 
-    public void setPekerjaan_bapak(String pekerjaan_bapak) {
-        this.pekerjaan_bapak = pekerjaan_bapak;
-    }
+    @SerializedName("pekerjaan_orangtua")
+    private String pekerjaan_orangtua;
 
-    public String getAlamat_bapak() {
-        return alamat_bapak;
-    }
+    @SerializedName("file")
+    private String file;
 
-    public void setAlamat_bapak(String alamat_bapak) {
-        this.alamat_bapak = alamat_bapak;
-    }
+    @SerializedName("kode_surat")
+    private String kode_surat;
 
-    public String getNama_ibu() {
-        return nama_ibu;
-    }
+    @SerializedName("id_pejabat_desa")
+    private String id_pejabat_desa;
 
-    public void setNama_ibu(String nama_ibu) {
-        this.nama_ibu = nama_ibu;
-    }
+    @SerializedName("username")
+    private String username;
 
-    public String getTempat_lahir_ibu() {
-        return tempat_lahir_ibu;
-    }
-
-    public void setTempat_lahir_ibu(String tempat_lahir_ibu) {
-        this.tempat_lahir_ibu = tempat_lahir_ibu;
-    }
-
-    public String getTanggal_lahir_ibu() {
-        return tanggal_lahir_ibu;
-    }
-
-    public void setTanggal_lahir_ibu(String tanggal_lahir_ibu) {
-        this.tanggal_lahir_ibu = tanggal_lahir_ibu;
-    }
-
-    public String getPekerjaan_ibu() {
-        return pekerjaan_ibu;
-    }
-
-    public void setPekerjaan_ibu(String pekerjaan_ibu) {
-        this.pekerjaan_ibu = pekerjaan_ibu;
-    }
-
-    public String getAlamat_ibu() {
-        return alamat_ibu;
-    }
-
-    public void setAlamat_ibu(String alamat_ibu) {
-        this.alamat_ibu = alamat_ibu;
-    }
-
-    public String getNama_anak() {
-        return nama_anak;
-    }
-
-    public void setNama_anak(String nama_anak) {
-        this.nama_anak = nama_anak;
-    }
-
-    public String getTempat_lahir_anak() {
-        return tempat_lahir_anak;
-    }
-
-    public void setTempat_lahir_anak(String tempat_lahir_anak) {
-        this.tempat_lahir_anak = tempat_lahir_anak;
-    }
-
-    public String getTanggal_lahir_anak() {
-        return tanggal_lahir_anak;
-    }
-
-    public void setTanggal_lahir_anak(String tanggal_lahir_anak) {
-        this.tanggal_lahir_anak = tanggal_lahir_anak;
-    }
-
-    public String getJenis_kelamin_anak() {
-        return jenis_kelamin_anak;
-    }
-
-    public void setJenis_kelamin_anak(String jenis_kelamin_anak) {
-        this.jenis_kelamin_anak = jenis_kelamin_anak;
-    }
-
-    public String getAlamat_anak() {
-        return alamat_anak;
-    }
-
-    public void setAlamat_anak(String alamat_anak) {
-        this.alamat_anak = alamat_anak;
-    }
+    // Getter tetap sama
+    public String getNama() { return nama; }
+    public String getTempat_tanggal_lahir() { return tempat_tanggal_lahir; }
+    public String getAsal_sekolah() { return asal_sekolah; }
+    public String getKeperluan() { return keperluan; }
+    public String getNama_orangtua() { return nama_orangtua; }
+    public String getNik_orangtua() { return nik_orangtua; }
+    public String getAlamat_orangtua() { return alamat_orangtua; }
+    public String getTempat_tanggal_lahir_orangtua() { return tempat_tanggal_lahir_orangtua; }
+    public String getPekerjaan_orangtua() { return pekerjaan_orangtua; }
+    public String getFile() { return file; }
+    public String getKode_surat() { return kode_surat; }
+    public String getId_pejabat_desa() { return id_pejabat_desa; }
+    public String getUsername() { return username; }
 }

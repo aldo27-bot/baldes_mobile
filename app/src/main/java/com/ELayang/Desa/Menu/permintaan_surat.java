@@ -10,12 +10,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.ELayang.Desa.R;
 import com.ELayang.Desa.Surat.FormSuratDomisiliActivity;
+import com.ELayang.Desa.Surat.SKM;
 import com.ELayang.Desa.Surat.SKTM;
 import com.ELayang.Desa.Surat.SKK;
 import com.ELayang.Desa.Surat.Beda_Nama;
 //import com.ELayang.Desa.Surat.SuratUsahaActivity;
-//import com.ELayang.Desa.Surat.SuratKematianActivity;
-//import com.ELayang.Desa.Surat.SuratKelakuanBaikActivity;
+import com.ELayang.Desa.Surat.SKB;
 import com.ELayang.Desa.aspirasi.TambahAspirasiActivity;
 
 public class permintaan_surat extends AppCompatActivity {
@@ -60,11 +60,11 @@ public class permintaan_surat extends AppCompatActivity {
 //        itemSuratUsaha.setOnClickListener(v ->
 //                startActivity(new Intent(this, SuratUsahaActivity.class)));
 //
-//        itemSuratKematian.setOnClickListener(v ->
-//                startActivity(new Intent(this, SuratKematianActivity.class)));
+        itemSuratKematian.setOnClickListener(v ->
+                startActivity(new Intent(this, SKM.class)));
 //
-//        itemSkbb.setOnClickListener(v ->
-//                startActivity(new Intent(this, SuratKelakuanBaikActivity.class)));
+        itemSkbb.setOnClickListener(v ->
+                startActivity(new Intent(this, SKB.class)));
 
         itemAspirasi.setOnClickListener(v ->
                 startActivity(new Intent(this, TambahAspirasiActivity.class)));
