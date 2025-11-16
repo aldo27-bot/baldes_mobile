@@ -267,7 +267,7 @@ public interface APIRequestData {
     );
 
     @Multipart
-    @POST("surat/beda_nama.php")
+    @POST("surat/surat_beda_nama.php")
     Call<ResponBedaNama> bedaNama(
             @Part("username") RequestBody username,
             @Part("kode_surat") RequestBody kode_surat,
