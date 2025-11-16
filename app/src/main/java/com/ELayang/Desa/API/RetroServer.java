@@ -1,6 +1,8 @@
 package com.ELayang.Desa.API;
 
 import android.util.Log;
+import com.google.gson.Gson; // Import tambahan
+import com.google.gson.GsonBuilder; // Import tambahan
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,13 +29,15 @@ public class RetroServer {
     public static Retrofit konekRetrofit() {
         if (retro == null) {
 
-            // 🔍 Logging HTTP body
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(message -> {
                 Log.d("Retrofit-HTTP", message);
             });
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            // 🔍 Tambahkan Interceptor Custom untuk Debug Header dan URL
             Interceptor debugInterceptor = new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
@@ -68,7 +72,7 @@ public class RetroServer {
 
             retro = new Retrofit.Builder()
                     .baseUrl(finalurl)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();
         }
