@@ -24,11 +24,8 @@ import com.ELayang.Desa.DataModel.Surat.ResponSktm;
 import com.ELayang.Desa.DataModel.Surat.ResponSuratijin;
 import com.ELayang.Desa.DataModel.Surat.ResponSkb;
 import com.ELayang.Desa.DataModel.AspirasiResponse;
-<<<<<<< HEAD
 import com.ELayang.Desa.DataModel.Surat.ResponBedaNama;
-=======
 import com.ELayang.Desa.DataModel.Surat.ResponSuratUsaha;
->>>>>>> ccfd11baa17de58dc3c74cc4df6e2e43533db669
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -270,7 +267,6 @@ public interface APIRequestData {
     );
 
     @Multipart
-<<<<<<< HEAD
     @POST("surat/beda_nama.php")
     Call<ResponBedaNama> bedaNama(
             @Part("username") RequestBody username,
@@ -288,8 +284,6 @@ public interface APIRequestData {
 
 
     @FormUrlEncoded
-=======
->>>>>>> ccfd11baa17de58dc3c74cc4df6e2e43533db669
     @POST("surat/surat_domisili.php")
     Call<ResponDomisili> kirimSuratDomisili(
             @Part("nama") RequestBody nama,
