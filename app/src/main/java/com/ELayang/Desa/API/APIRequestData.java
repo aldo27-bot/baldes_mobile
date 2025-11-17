@@ -361,28 +361,6 @@ public interface APIRequestData {
 
     );
 
-    @FormUrlEncoded
-    @POST("updatesurat/skk.php")
-    Call<ResponSkk> ambilSkk(
-            @Field("no_pengajuan") String no_pengajuan,
-            @Field("kode") String kode
-    );
-
-    @Multipart
-    @POST("updatesurat/skk.php")
-    Call<ResponSkk> updateSkk(
-            @Part("no_pengajuan") RequestBody no_pengajuan,
-            @Part("kode") RequestBody kode,
-            @Part("nama") RequestBody nama,
-            @Part("agama") RequestBody agama,
-            @Part("jenis_kelamin") RequestBody jenis_kelamin,
-            @Part("tempat_tanggal_lahir") RequestBody ttl,
-            @Part("alamat") RequestBody alamat,
-            @Part("kewarganegaraan") RequestBody kewarganegaraan,
-            @Part("keterangan") RequestBody keterangan,
-            @Part MultipartBody.Part file
-    );
-
 
     @FormUrlEncoded
     @POST("updatesurat/skck.php")

@@ -37,8 +37,9 @@ public class SKK extends AppCompatActivity {
 
     Spinner spJenisKelamin;
     EditText eNama, eAgama, eTTL, eAlamat, eKewarganegaraan, eKeterangan;
-    Button btnKirim, btnUpdate, btnChooseFile;
+    Button btnKirim, btnChooseFile;
 
+    ImageButton btnBack;
     String username, fileNameSaved = "";
     String currentNoPengajuan = null;
 
@@ -63,10 +64,9 @@ public class SKK extends AppCompatActivity {
         eKeterangan = findViewById(R.id.e_keterangan);
 
         btnKirim = findViewById(R.id.kirim);
-        btnUpdate = findViewById(R.id.update);
         btnChooseFile = findViewById(R.id.btn_choose_file);
+        btnBack = findViewById(R.id.btnBack);
 
-        eKewarganegaraan.setText("WNI");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -80,17 +80,7 @@ public class SKK extends AppCompatActivity {
         progressDialog.setMessage("Memproses...");
         progressDialog.setCancelable(false);
 
-        // Cek apakah mode edit
-        Intent intent = getIntent();
-        currentNoPengajuan = intent.getStringExtra("no_pengajuan");
-
-        if(currentNoPengajuan != null){
-            btnKirim.setVisibility(View.GONE);
-            loadData(currentNoPengajuan);
-        } else {
-            btnUpdate.setVisibility(View.GONE);
-        }
-
+        btnBack.setOnClickListener(view -> onBackPressed());
         btnChooseFile.setOnClickListener(v -> chooseFile());
         eTTL.setOnClickListener(v -> showDatePicker());
 
@@ -98,9 +88,6 @@ public class SKK extends AppCompatActivity {
             if(isValid()) konfirmasiKirim();
         });
 
-        btnUpdate.setOnClickListener(v -> {
-            if(isValid()) konfirmasiUpdate(currentNoPengajuan);
-        });
     }
 
     private boolean isValid(){
@@ -157,50 +144,7 @@ public class SKK extends AppCompatActivity {
         call.enqueue(DefaultCallback("Berhasil mengirim surat"));
     }
 
-    private void loadData(String no){
-        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        api.ambilSkk(no,"0").enqueue(new Callback<ResponSkk>() {
-            @Override public void onResponse(Call<ResponSkk> call, Response<ResponSkk> res){
-                if(res.body()!=null && res.body().isKode()){
-                    ModelSkk d = res.body().getData().get(0);
-                    eNama.setText(d.getNama());
-                    eAgama.setText(d.getAgama());
-                    spJenisKelamin.setSelection(d.getJenis_kelamin().equals("Laki-laki")?0:1);
-                    eTTL.setText(d.getTempat_tanggal_lahir());
-                    eAlamat.setText(d.getAlamat());
-                    eKewarganegaraan.setText(d.getKewarganegaraan());
-                    eKeterangan.setText(d.getKeterangan());
-                }
-            }
-            @Override public void onFailure(Call<ResponSkk> call, Throwable t){}
-        });
-    }
 
-    private void konfirmasiUpdate(String no){
-        new AlertDialog.Builder(this)
-                .setTitle("Konfirmasi")
-                .setMessage("Simpan perubahan?")
-                .setPositiveButton("Update",(d,w)->update(no))
-                .setNegativeButton("Batal",null)
-                .show();
-    }
-
-    private void update(String no){
-        progressDialog.show();
-        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-
-        api.updateSkk(
-                rb(no), rb("1"),
-                rb(eNama.getText().toString()),
-                rb(eAgama.getText().toString()),
-                rb(spJenisKelamin.getSelectedItem().toString()),
-                rb(eTTL.getText().toString()),
-                rb(eAlamat.getText().toString()),
-                rb(eKewarganegaraan.getText().toString()),
-                rb(eKeterangan.getText().toString()),
-                getFilePart()
-        ).enqueue(DefaultCallback("Berhasil update"));
-    }
 
     private void chooseFile(){
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
