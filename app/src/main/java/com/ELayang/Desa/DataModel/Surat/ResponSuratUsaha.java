@@ -4,37 +4,12 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class ResponSuratUsaha {
+    private boolean status;
+    private String message;
+    private String no_pengajuan;
 
-    @SerializedName("kode")
-    private boolean kode;
-
-    @SerializedName("pesan")
-    private String pesan;
-
-    @SerializedName("data")
-    private List<ModelSuratUsaha> data;
-
-    public boolean isKode() {
-        return kode;
-    }
-
-    public void setKode(boolean kode) {
-        this.kode = kode;
-    }
-
-    public String getPesan() {
-        return pesan;
-    }
-
-    public void setPesan(String pesan) {
-        this.pesan = pesan;
-    }
-
-    public List<ModelSuratUsaha> getData() {
-        return data;
-    }
-
-    public void setData(List<ModelSuratUsaha> data) {
-        this.data = data;
-    }
+    public boolean isStatus() { return status; }
+    public String getMessage() { return message; }
+    public String getNo_pengajuan() { return no_pengajuan; }
 }
+

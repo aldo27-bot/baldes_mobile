@@ -468,18 +468,16 @@ public interface APIRequestData {
 
     @Multipart
     @POST("surat/surat_usaha.php")
-    Call<ResponSuratUsaha> kirimSuratUsaha(
+    Call<ResponSuratUsaha> suratUsaha(
             @Part("username") RequestBody username,
-            @Part("kode_surat") RequestBody kode_surat,
             @Part("nama") RequestBody nama,
-            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
             @Part("alamat") RequestBody alamat,
-            @Part("lokasi_usaha") RequestBody lokasi_usaha,
-            @Part("nama_usaha") RequestBody nama_usaha,
-            @Part("jenis_usaha") RequestBody jenis_usaha,
-            @Part("tahun_berdiri") RequestBody tahun_berdiri,
-            @Part MultipartBody.Part file
+            @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("kode_surat") RequestBody kodeSurat,
+            @Part MultipartBody.Part file   // OPSIONAL
     );
+
+
 
 //    @Multipart
 //    @POST("updatesurat/skck.php")

@@ -122,6 +122,8 @@
             android:exported="false" />
         <activity android:name=".Surat.SKB"
             android:exported="false" />
+        <activity android:name=".Surat.SuratUsaha"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true" >

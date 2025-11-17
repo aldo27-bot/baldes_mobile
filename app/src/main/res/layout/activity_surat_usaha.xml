@@ -1,254 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:padding="20dp">
 
     <LinearLayout
-        android:id="@+id/containerCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="22dp">
+        android:orientation="vertical">
 
-        <!-- HEADER -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_back_black" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Surat Usaha"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:textColor="#000000"
-                android:paddingStart="12dp" />
-        </LinearLayout>
-
-        <!-- ===== FORM FIELD ===== -->
-
-        <!-- Nama Lengkap -->
-        <TextView
-            android:text="Nama Lengkap"
-            android:textColor="#374151"
-            android:layout_marginTop="22dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
+        <!-- Nama -->
         <EditText
             android:id="@+id/etNama"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="Masukkan Nama Lengkap"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
+            android:layout_height="wrap_content"
+            android:hint="Nama"
+            android:padding="12dp" />
 
-        <!-- Tempat / Tanggal Lahir -->
-        <TextView
-            android:text="Tempat / Tanggal Lahir"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etTTL"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="Tempat, DD/MM/YYYY"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-
-        <!-- Alamat Lengkap -->
-        <TextView
-            android:text="Alamat Lengkap"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
+        <!-- Alamat -->
         <EditText
             android:id="@+id/etAlamat"
             android:layout_width="match_parent"
-            android:layout_height="79dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="Masukkan Alamat Lengkap"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textCursorDrawable="@null"
-            android:textSize="14sp" />
+            android:layout_height="wrap_content"
+            android:hint="Alamat"
+            android:padding="12dp"
+            android:layout_marginTop="10dp" />
 
-        <!-- Lokasi Usaha -->
-        <TextView
-            android:text="Lokasi Usaha"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
+        <!-- Tempat Tanggal Lahir -->
         <EditText
-            android:id="@+id/etLokasi"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="Masukkan Lokasi Usaha"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-
-        <!-- Nama Usaha -->
-        <TextView
-            android:text="Nama Usaha"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etNamaUsaha"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="Masukkan Nama Usaha"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-
-        <!-- Jenis Usaha -->
-        <TextView
-            android:text="Jenis Usaha"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etJenis"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="Masukkan Jenis Usaha"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-
-        <!-- Tahun Berdiri -->
-        <TextView
-            android:text="Tahun Berdiri"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etTahun"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_input_white"
-            android:hint="DD/MM/YYYY"
-            android:inputType="number"
-            android:paddingHorizontal="14dp"
-            android:textColor="#000000"
-            android:textColorHint="#9CA3AF"
-            android:textSize="14sp"
-            android:textCursorDrawable="@null" />
-
-        <!-- UPLOAD FILE -->
-        <TextView
-            android:text="Upload Berkas"
-            android:textColor="#374151"
-            android:layout_marginTop="16dp"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:id="@+id/filePickerContainer"
+            android:id="@+id/etTTL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_input_white"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:hint="Tempat, Tanggal Lahir"
+            android:padding="12dp"
+            android:layout_marginTop="10dp" />
 
-            <TextView
-                android:id="@+id/btnChooseFile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="12dp"
-                android:text="Pilih File"
-                android:textStyle="normal"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                android:background="@drawable/btn_pilih_file"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:minHeight="48dp" />
+        <!-- Pilih File Pendukung -->
+        <Button
+            android:id="@+id/btnPilihFile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pilih File Pendukung (Opsional)"
+            android:layout_marginTop="20dp" />
 
-            <TextView
-                android:id="@+id/tvNamaFile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="12dp"
-                android:text="Tidak ada file yang dipilih"
-                android:textSize="16sp"
-                android:textColor="#555555"
-                android:singleLine="true"
-                android:ellipsize="start"/>
-        </LinearLayout>
-
-        <!-- Button Kirim -->
+        <!-- Kirim -->
         <Button
             android:id="@+id/btnKirim"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="26dp"
-            android:text="KIRIM"
-            android:textAllCaps="true"
-            android:textSize="14sp"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/bg_button_gradient" />
+            android:layout_height="wrap_content"
+            android:text="Kirim Pengajuan"
+            android:layout_marginTop="20dp" />
 
     </LinearLayout>
 
