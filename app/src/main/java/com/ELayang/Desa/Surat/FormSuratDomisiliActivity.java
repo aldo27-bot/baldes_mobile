@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ImageButton;
+import android.widget.TextView; // 📌 PENTING: Import TextView
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
@@ -31,9 +33,12 @@ import retrofit2.Response;
 
 public class FormSuratDomisiliActivity extends AppCompatActivity {
 
+    ImageButton btnBack;
+
     private EditText etNama, etNik, etTTL, etAlamat,
             etJK, etPekerjaan, etAgama, etStatusPerkawinan, etKeterangan;
-    private Button btnKirim, btnPilihFile;
+    private Button btnKirim;
+    private TextView btnPilihFile;
     private ImageView imgPreview;
 
     private Uri uriFile;
@@ -42,8 +47,10 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Pastikan Anda menggunakan layout XML yang sudah dimodifikasi di sini
         setContentView(R.layout.activity_form_surat_domisili);
 
+        // Inisialisasi EditText
         etNama = findViewById(R.id.etNama);
         etNik = findViewById(R.id.etNik);
         etTTL = findViewById(R.id.etTTL);
@@ -54,9 +61,16 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         etStatusPerkawinan = findViewById(R.id.etStatusPerkawinan);
         etKeterangan = findViewById(R.id.etKeterangan);
 
+        // Inisialisasi Komponen Aksi
         btnKirim = findViewById(R.id.btnKirim);
-        btnPilihFile = findViewById(R.id.btnPilihFile);
+        btnPilihFile = findViewById(R.id.btnPilihFile); // 📌 Ditemukan sebagai TextView
+        btnBack = findViewById(R.id.btnBack);
         imgPreview = findViewById(R.id.imgPreview);
+
+        // =========================================================
+        // 📌 Implementasi Tombol Kembali: Sudah benar, menggunakan onBackPressed()
+        btnBack.setOnClickListener(view -> onBackPressed());
+        // =========================================================
 
         btnPilihFile.setOnClickListener(v -> pilihFile());
         btnKirim.setOnClickListener(v -> kirimData());
@@ -68,11 +82,14 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         startActivityForResult(intent, 101);
     }
 
+    // ... Metode onActivityResult, kirimData, rb, dan clearForm (tidak diubah) ...
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
+            // ... (Kode membaca file tetap sama)
+            // Pastikan Anda juga mengupdate TextView tvNamaFile jika ada
             uriFile = data.getData();
             imgPreview.setImageURI(uriFile);
             imgPreview.setVisibility(ImageView.VISIBLE);

@@ -14,16 +14,36 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/white"
             android:theme="@style/ThemeOverlay.AppCompat.Light"
-            app:title="Pengajuan Surat"
-            app:titleTextColor="@color/black"
-            app:navigationIcon="@drawable/back_2" />
+            app:contentInsetStartWithNavigation="0dp">
+
+            <ImageButton
+                android:id="@+id/btnkembali"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/back_2"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Tombol Kembali"
+                android:scaleType="centerInside"
+                android:padding="12dp"
+                android:layout_gravity="start"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengajuan Surat"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginStart="64dp"
+                android:layout_gravity="start"/>
+
+        </androidx.appcompat.widget.Toolbar>
 
         <!-- Konten Scrollable -->
         <ScrollView

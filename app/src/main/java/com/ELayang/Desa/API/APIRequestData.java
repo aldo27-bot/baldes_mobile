@@ -289,7 +289,7 @@ public interface APIRequestData {
     );
 
 
-    @FormUrlEncoded
+    @Multipart
     @POST("surat/surat_domisili.php")
     Call<ResponDomisili> kirimSuratDomisili(
             @Part("nama") RequestBody nama,

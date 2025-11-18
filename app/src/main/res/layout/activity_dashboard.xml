@@ -11,7 +11,7 @@
         android:id="@+id/nav_atas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue_dark_200"
+        android:background="@color/biru_gelap"
         android:gravity="center"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,9 +19,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="50dp"
-            android:src="@drawable/logo_sikunir_2" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_kunir_fix" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
@@ -38,6 +39,23 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/rounded_viewpager" />
+
+        <TextView
+            android:id="@+id/warning_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rounder_warning_background"
+            android:padding="10dp"
+            android:text="PELAYANAN KANTOR DESA:\nSenin - Jumat: 08.00 - 15.00 WIB\nSabtu dan Minggu: Tutup"
+            android:textColor="@color/black"
+            android:textSize="14dp"
+            android:textStyle="normal"
+            android:drawableStart="@android:drawable/ic_dialog_info"
+            android:drawableTint="@color/red_alert"
+            android:drawablePadding="8dp"/>
 
         <TextView
             android:id="@+id/hello"
@@ -67,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/biru_aksen"
+                    android:backgroundTint="@color/biru_muda"
                     app:cardCornerRadius="10dp"
                     >
 
@@ -105,7 +123,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/green_300"
+                    android:backgroundTint="@color/green_100"
                     app:cardCornerRadius="10dp">
 
                     <LinearLayout
@@ -152,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/pink_tolak"
+                    android:backgroundTint="@color/red_100"
                     app:cardCornerRadius="10dp">
 
                     <LinearLayout

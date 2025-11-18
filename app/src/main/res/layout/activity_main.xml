@@ -23,7 +23,8 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/app_name"
             android:scaleType="fitCenter"
-            android:src="@drawable/logo_sikunir_administrasi_desa" />
+            android:src="@drawable/logo_kunir_fix"
+            android:tint="@color/biru_gelap"/>
 
     </LinearLayout>
 
@@ -31,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Copyright © 2025. Si-Kunir. All Rights Reserved"
+        android:text="Si-kunir versi 1.0"
         android:textAlignment="center"
         android:textColor="@color/biru_gelap"
         android:textSize="10sp"

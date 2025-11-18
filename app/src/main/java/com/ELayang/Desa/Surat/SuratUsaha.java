@@ -10,11 +10,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton; // Import ImageButton
+import android.widget.TextView;     // Import TextView
 import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Surat.ResponSuratUsaha;
+import com.ELayang.Desa.Menu.permintaan_surat; // Import activity tujuan
 import com.ELayang.Desa.R;
 
 import java.io.ByteArrayOutputStream;
@@ -30,12 +33,13 @@ import retrofit2.Response;
 
 public class SuratUsaha extends AppCompatActivity {
 
+    private ImageButton btnBack; // Deklarasi Tombol Kembali
     private EditText etNama, etAlamat, etTTL;
     private Button btnKirim, btnPilihFile;
+    private TextView tvNamaFile; // Deklarasi TextView untuk nama file
 
     private Uri uriFile;
     private MultipartBody.Part filePart;
-
     private static final int FILE_REQUEST_CODE = 77;
 
     @Override
@@ -43,21 +47,31 @@ public class SuratUsaha extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_surat_usaha);
 
+        // Inisialisasi Tombol Kembali
+        btnBack = findViewById(R.id.btnBack);
+
         etNama = findViewById(R.id.etNama);
         etAlamat = findViewById(R.id.etAlamat);
         etTTL = findViewById(R.id.etTTL);
 
         btnKirim = findViewById(R.id.btnKirim);
         btnPilihFile = findViewById(R.id.btnPilihFile);
+        tvNamaFile = findViewById(R.id.tvNamaFile); // Inisialisasi TextView nama file
 
+        // Listener
+        btnBack.setOnClickListener(v -> onBackPressed()); // 🟢 Logika Tombol Kembali
         btnPilihFile.setOnClickListener(v -> pilihFile());
         btnKirim.setOnClickListener(v -> kirimData());
+
+        // Atur status awal file
+        tvNamaFile.setText("Belum ada file dipilih (Opsional)");
     }
 
     private void pilihFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*"); // Bisa sesuaikan misal "application/pdf"
-        startActivityForResult(intent, FILE_REQUEST_CODE);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE); // Penting untuk Android modern
+        startActivityForResult(Intent.createChooser(intent, "Pilih Dokumen"), FILE_REQUEST_CODE);
     }
 
     @Override
@@ -66,45 +80,80 @@ public class SuratUsaha extends AppCompatActivity {
 
         if (requestCode == FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             uriFile = data.getData();
+            String fileName = uriFile.getLastPathSegment();
+
+            // Tampilkan nama file
+            tvNamaFile.setText(fileName);
+
             try {
                 InputStream is = getContentResolver().openInputStream(uriFile);
+                if (is == null) throw new IOException("Input stream is null");
+
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 int nRead;
                 byte[] temp = new byte[4096];
+
                 while ((nRead = is.read(temp)) != -1) buffer.write(temp, 0, nRead);
+
                 byte[] fileBytes = buffer.toByteArray();
                 is.close();
 
-                RequestBody reqFile = RequestBody.create(MediaType.parse("application/pdf"), fileBytes);
+                // Dapatkan mime type
+                String mimeType = getContentResolver().getType(uriFile);
+                if (mimeType == null) {
+                    mimeType = "application/octet-stream";
+                }
+
+                RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileBytes);
                 filePart = MultipartBody.Part.createFormData(
                         "file",
-                        "surat_usaha_" + System.currentTimeMillis() + ".pdf",
+                        fileName, // Kirim nama file asli
                         reqFile
                 );
 
-                Log.d("SuratUsaha", "File siap diupload");
+                Log.d("SuratUsaha", "File siap diupload: " + fileName);
+                Toast.makeText(this, "File dipilih: " + fileName, Toast.LENGTH_SHORT).show();
+
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Gagal membaca file", Toast.LENGTH_SHORT).show();
+                filePart = null; // Reset jika gagal
+                tvNamaFile.setText("Gagal membaca file");
+                Toast.makeText(this, "Gagal membaca file: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
+        } else if (requestCode == FILE_REQUEST_CODE) {
+            // Jika dibatalkan
+            uriFile = null;
+            filePart = null;
+            tvNamaFile.setText("Belum ada file dipilih (Opsional)");
         }
     }
 
     private void kirimData() {
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
-        String username = pref.getString("username", "");
+        String username = pref.getString("username", "").trim();
+
+        // Validasi
+        String namaText = etNama.getText().toString().trim();
+        String alamatText = etAlamat.getText().toString().trim();
+        String ttlText = etTTL.getText().toString().trim();
 
         if (username.isEmpty()) {
             Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (namaText.isEmpty() || alamatText.isEmpty() || ttlText.isEmpty()) {
+            Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        RequestBody nama = rb(etNama.getText().toString().trim());
-        RequestBody alamat = rb(etAlamat.getText().toString().trim());
-        RequestBody ttl = rb(etTTL.getText().toString().trim());
+
+        RequestBody nama = rb(namaText);
+        RequestBody alamat = rb(alamatText);
+        RequestBody ttl = rb(ttlText);
         RequestBody user = rb(username);
-        RequestBody kodeSurat = rb("SKU"); // sesuaikan kode surat
+        RequestBody kodeSurat = rb("SKU"); // Kode surat ini harus sesuai dengan API Anda
 
+        // Penanganan file opsional
         MultipartBody.Part fileFix = (filePart != null)
                 ? filePart
                 : MultipartBody.Part.createFormData("file", "");
@@ -116,17 +165,26 @@ public class SuratUsaha extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponSuratUsaha> call, Response<ResponSuratUsaha> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SuratUsaha.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    clearForm();
+                    String pesan = response.body().getMessage();
+                    if (pesan == null || pesan.isEmpty()) {
+                        pesan = "Pengajuan Surat Usaha berhasil dikirim.";
+                    }
+                    Toast.makeText(SuratUsaha.this, pesan, Toast.LENGTH_SHORT).show();
+
+                    // 🟢 Pindah activity
+                    Intent intent = new Intent(SuratUsaha.this, permintaan_surat.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(SuratUsaha.this, "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SuratUsaha.this, "Gagal mengirim data ke server. Kode: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponSuratUsaha> call, Throwable t) {
                 Toast.makeText(SuratUsaha.this, "Kesalahan koneksi: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("SuratUsaha", "Gagal koneksi: " + t.getMessage());
             }
         });
     }
@@ -141,5 +199,6 @@ public class SuratUsaha extends AppCompatActivity {
         etTTL.setText("");
         uriFile = null;
         filePart = null;
+        tvNamaFile.setText("Belum ada file dipilih (Opsional)");
     }
 }

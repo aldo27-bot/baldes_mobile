@@ -1,5 +1,6 @@
 package com.ELayang.Desa.Surat;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
@@ -31,10 +34,13 @@ import retrofit2.Response;
 
 public class SKTM extends AppCompatActivity {
 
+    ImageButton btnBack;
+
     EditText etNama, etTtl, etAsalSekolah, etKeperluan,
             etNamaOrtu, etNikOrtu, etAlamatOrtu, etTtlOrtu, etPekerjaanOrtu;
 
-    Button btnPilihFoto, btnKirim;
+    TextView btnPilihFoto, tvNamaFoto;
+    Button btnKirim;
     ImageView imgPreview;
 
     Uri uriFoto;
@@ -43,16 +49,19 @@ public class SKTM extends AppCompatActivity {
     String usernameUser;
     String kodeSurat = "SKTM";
 
+    private static final int PICK_IMAGE_REQUEST = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.surat_sktm);
+        setContentView(R.layout.surat_sktm); // Asumsi ini adalah layout yang benar
 
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
         usernameUser = pref.getString("username", "");
 
         Log.d("SKTM_PREF", "Username dari SharedPref: " + usernameUser);
 
+        // Inisialisasi EditText
         etNama = findViewById(R.id.etNama);
         etTtl = findViewById(R.id.etTtl);
         etAsalSekolah = findViewById(R.id.etAsalSekolah);
@@ -63,27 +72,47 @@ public class SKTM extends AppCompatActivity {
         etTtlOrtu = findViewById(R.id.etTtlOrtu);
         etPekerjaanOrtu = findViewById(R.id.etPekerjaanOrtu);
 
+        // Inisialisasi Komponen Aksi
+        btnBack = findViewById(R.id.btnBack);
         btnPilihFoto = findViewById(R.id.btnPilihFoto);
+        tvNamaFoto = findViewById(R.id.tvNamaFoto);
         btnKirim = findViewById(R.id.btnKirim);
         imgPreview = findViewById(R.id.imgPreview);
 
+        // Listener
+        btnBack.setOnClickListener(view -> onBackPressed());
         btnPilihFoto.setOnClickListener(v -> pilihFoto());
         btnKirim.setOnClickListener(v -> kirimData());
+
+        // Atur tampilan awal
+        tvNamaFoto.setText("Tidak ada foto yang dipilih (Opsional)");
+        imgPreview.setVisibility(ImageView.GONE);
     }
 
     private void pilihFoto() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             uriFoto = data.getData();
             imgPreview.setImageURI(uriFoto);
+            imgPreview.setVisibility(ImageView.VISIBLE);
+
+            // Tampilkan nama file
+            if (uriFoto != null) {
+                // Mendapatkan nama file sederhana dari URI
+                String path = uriFoto.getPath();
+                String fileName = (path != null && path.lastIndexOf('/') != -1) ?
+                        path.substring(path.lastIndexOf('/') + 1) :
+                        "Foto Terpilih";
+                tvNamaFoto.setText(fileName);
+            }
 
             try {
                 InputStream is = getContentResolver().openInputStream(uriFoto);
@@ -107,7 +136,15 @@ public class SKTM extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Gagal membaca file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                tvNamaFoto.setText("Gagal membaca file");
+                filePart = null; // Penting: reset filePart jika gagal dibaca
             }
+        } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_CANCELED) {
+            // Jika pengguna membatalkan pemilihan, reset file part
+            uriFoto = null;
+            filePart = null;
+            tvNamaFoto.setText("Tidak ada foto yang dipilih (Opsional)");
+            imgPreview.setVisibility(ImageView.GONE);
         }
     }
 
@@ -119,7 +156,7 @@ public class SKTM extends AppCompatActivity {
             return;
         }
 
-        // Cek field wajib
+        // Cek field wajib (Data Teks)
         if (etNama.getText().toString().isEmpty() ||
                 etTtl.getText().toString().isEmpty() ||
                 etAsalSekolah.getText().toString().isEmpty() ||
@@ -133,12 +170,22 @@ public class SKTM extends AppCompatActivity {
             return;
         }
 
+        // 🔴 Hapus validasi wajib file di sini
+        /*
+        if (filePart == null) {
+            Toast.makeText(this, "Mohon pilih file foto/dokumen pendukung", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        */
+
         Log.d("SKTM_DEBUG", "Mulai kirim data SKTM oleh user: " + usernameUser);
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
-        MultipartBody.Part fotoPartFix =
-                (filePart != null) ? filePart : MultipartBody.Part.createFormData("file", "");
+        // 🟢 Penyesuaian untuk file opsional
+        MultipartBody.Part fotoPartFix = (filePart != null)
+                ? filePart
+                : MultipartBody.Part.createFormData("file", ""); // Kirim Part kosong jika file tidak dipilih
 
         Call<ResponSktm> call = api.sktm(
                 rb(etNama.getText().toString()),
@@ -152,7 +199,7 @@ public class SKTM extends AppCompatActivity {
                 rb(etPekerjaanOrtu.getText().toString()),
                 rb(kodeSurat),
                 rb(usernameUser),
-                fotoPartFix
+                fotoPartFix // Menggunakan fotoPartFix yang bisa kosong
         );
 
         call.enqueue(new Callback<ResponSktm>() {
@@ -161,23 +208,26 @@ public class SKTM extends AppCompatActivity {
                 Log.d("SKTM_DEBUG", "Response code: " + response.code());
 
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SKTM.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    String pesan = response.body().getMessage();
+                    if (pesan == null || pesan.isEmpty()) {
+                        pesan = "Pengajuan SKTM berhasil dikirim.";
+                    }
+                    Toast.makeText(SKTM.this, pesan, Toast.LENGTH_SHORT).show();
                     Log.d("SKTM_DEBUG", "Pesan server: " + response.body().getMessage());
 
-                    // Kembali ke menu Pengajuan Surat
                     Intent intent = new Intent(SKTM.this, permintaan_surat.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    finish(); // Tutup activity SKTM
+                    finish();
                 } else {
-                    Toast.makeText(SKTM.this, "Response tidak lengkap", Toast.LENGTH_SHORT).show();
-                    Log.e("SKTM_DEBUG", "Response tidak lengkap");
+                    Toast.makeText(SKTM.this, "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
+                    Log.e("SKTM_DEBUG", "Response tidak sukses atau body null. Code: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<ResponSktm> call, Throwable t) {
-                Toast.makeText(SKTM.this, "Gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SKTM.this, "Kesalahan koneksi: " + t.getMessage(), Toast.LENGTH_LONG).show();
                 Log.e("SKTM_DEBUG", "Gagal kirim SKTM: " + t.getMessage());
             }
         });

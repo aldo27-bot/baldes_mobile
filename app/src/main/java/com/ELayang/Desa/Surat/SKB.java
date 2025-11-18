@@ -13,12 +13,14 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton; // Import ImageButton
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Surat.ResponSkb;
+import com.ELayang.Desa.Menu.permintaan_surat; // Import activity tujuan
 import com.ELayang.Desa.R;
 
 import java.io.ByteArrayOutputStream;
@@ -33,6 +35,7 @@ import retrofit2.Response;
 
 public class SKB extends AppCompatActivity {
 
+    private ImageButton btnBack; // Deklarasi Tombol Kembali
     private EditText etNama, etNik, etAgama, etTTL, etPendidikan, etAlamat;
     private Button btnPilihFile, btnKirim;
     private TextView tvNamaFile;
@@ -42,14 +45,25 @@ public class SKB extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     fileUri = result.getData().getData();
-                    tvNamaFile.setText(getFileName(fileUri));
+                    // Pastikan fileUri tidak null sebelum memanggil getFileName
+                    if (fileUri != null) {
+                        tvNamaFile.setText(getFileName(fileUri));
+                    }
+                } else if (result.getResultCode() == RESULT_CANCELED) {
+                    // Jika pemilihan dibatalkan
+                    fileUri = null;
+                    tvNamaFile.setText("Belum ada file dipilih");
                 }
             });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Menggunakan layout modern yang baru: activity_form_skbb
         setContentView(R.layout.activity_surat_berkelakuan_baik);
+
+        // Inisialisasi Tombol Kembali
+        btnBack = findViewById(R.id.btnBack);
 
         etNama = findViewById(R.id.etNama);
         etNik = findViewById(R.id.etNik);
@@ -61,6 +75,8 @@ public class SKB extends AppCompatActivity {
         btnKirim = findViewById(R.id.btnKirim);
         tvNamaFile = findViewById(R.id.tvNamaFile);
 
+        // Listener
+        btnBack.setOnClickListener(v -> onBackPressed()); // Implementasi Tombol Kembali
         btnPilihFile.setOnClickListener(v -> pilihFile());
         btnKirim.setOnClickListener(v -> kirimData());
     }
@@ -74,11 +90,14 @@ public class SKB extends AppCompatActivity {
     private String getFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
+            // Gunakan try-with-resources untuk memastikan Cursor tertutup
             try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     int idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                     if (idx >= 0) result = cursor.getString(idx);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         if (result == null) {
@@ -90,11 +109,21 @@ public class SKB extends AppCompatActivity {
     private MultipartBody.Part prepareFilePart(Uri uri) {
         try {
             ContentResolver resolver = getContentResolver();
+            // Fallback mimeType jika resolver.getType(uri) mengembalikan null
             String mimeType = resolver.getType(uri);
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+
             InputStream is = resolver.openInputStream(uri);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int bytesRead;
+
+            if (is == null) {
+                throw new Exception("Input stream is null");
+            }
+
             while ((bytesRead = is.read(buffer)) != -1) {
                 bos.write(buffer, 0, bytesRead);
             }
@@ -105,6 +134,7 @@ public class SKB extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(this, "Gagal memproses file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             return null;
         }
     }
@@ -120,8 +150,9 @@ public class SKB extends AppCompatActivity {
         String pendidikan = etPendidikan.getText().toString().trim();
         String alamat = etAlamat.getText().toString().trim();
 
-        if (nama.isEmpty() || nik.isEmpty()) {
-            Toast.makeText(this, "Nama dan NIK harus diisi", Toast.LENGTH_SHORT).show();
+        // Validasi field wajib
+        if (nama.isEmpty() || nik.isEmpty() || agama.isEmpty() || ttl.isEmpty() || pendidikan.isEmpty() || alamat.isEmpty()) {
+            Toast.makeText(this, "Semua field wajib diisi", Toast.LENGTH_LONG).show();
             return;
         }
         if (username.isEmpty()) {
@@ -129,6 +160,7 @@ public class SKB extends AppCompatActivity {
             return;
         }
 
+        // Siapkan RequestBody untuk data teks
         RequestBody rbNama = RequestBody.create(MediaType.parse("text/plain"), nama);
         RequestBody rbNik = RequestBody.create(MediaType.parse("text/plain"), nik);
         RequestBody rbAgama = RequestBody.create(MediaType.parse("text/plain"), agama);
@@ -139,15 +171,23 @@ public class SKB extends AppCompatActivity {
         RequestBody rbIdPejabat = RequestBody.create(MediaType.parse("text/plain"), "");
         RequestBody rbUsername = RequestBody.create(MediaType.parse("text/plain"), username);
 
+        // Siapkan file part (Wajib jika diminta, tapi di sini diasumsikan opsional seperti SKTM)
+        // Jika file wajib, tambahkan validasi: if (fileUri == null) { Toast...; return; }
+
         MultipartBody.Part filePart = null;
         if (fileUri != null) {
             filePart = prepareFilePart(fileUri);
         }
 
+        // Buat filePart placeholder jika opsional dan kosong
+        MultipartBody.Part fotoPartFix = (filePart != null)
+                ? filePart
+                : MultipartBody.Part.createFormData("file", ""); // Part kosong
+
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponSkb> kirim = api.kirimskb(
                 rbNama, rbNik, rbAgama, rbTTL, rbPendidikan, rbAlamat,
-                filePart,
+                fotoPartFix, // Menggunakan fotoPartFix
                 rbKodeSurat, rbIdPejabat, rbUsername
         );
 
@@ -155,8 +195,17 @@ public class SKB extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponSkb> call, Response<ResponSkb> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SKB.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    clearForm();
+                    String pesan = response.body().getMessage();
+                    if (pesan == null || pesan.isEmpty()) {
+                        pesan = "Pengajuan SKBB berhasil dikirim.";
+                    }
+                    Toast.makeText(SKB.this, pesan, Toast.LENGTH_SHORT).show();
+
+                    // 🟢 LOGIKA PINDAH ACTIVITY
+                    Intent intent = new Intent(SKB.this, permintaan_surat.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish(); // Tutup activity SKB
                 } else {
                     Toast.makeText(SKB.this, "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
                 }

@@ -10,8 +10,8 @@
         <item name="android:background">@color/white</item>
 
         <!-- Warna icon & teks akan diatur lewat selector -->
-        <item name="itemIconTint">@color/nav_item_color</item>
-        <item name="itemTextColor">@color/nav_item_color</item>
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemTextColor">@color/white</item>
 
         <!-- Warna ripple saat disentuh -->
         <item name="itemRippleColor">@color/biru_cerah</item>

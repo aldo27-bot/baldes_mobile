@@ -6,25 +6,23 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".menu">
+
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"/>
-
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:backgroundTint="@color/white"
-        app:elevation="8dp"
-        app:fabCradleMargin="10dp"
-        app:fabCradleRoundedCornerRadius="40dp"
-        app:fabCradleVerticalOffset="10dp"
-        app:hideOnScroll="false" >
-    </com.google.android.material.bottomappbar.BottomAppBar>
+        android:layout_height="match_parent" android:layout_gravity="top"
+        android:elevation="4dp"  android:paddingBottom="?attr/actionBarSize" /> <com.google.android.material.bottomappbar.BottomAppBar
+    android:id="@+id/bottomAppBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    app:backgroundTint="@color/white"
+    app:elevation="8dp"
+    app:fabCradleMargin="10dp"
+    app:fabCradleRoundedCornerRadius="40dp"
+    app:fabCradleVerticalOffset="10dp"
+    app:hideOnScroll="false">
+</com.google.android.material.bottomappbar.BottomAppBar>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -34,7 +32,7 @@
         android:src="@drawable/permintaan"
         app:layout_anchor="@id/bottomAppBar"
         app:layout_anchorGravity="center"
-        android:backgroundTint="@color/purple_primary"
+        android:backgroundTint="@color/biru_gelap"
         android:elevation="12dp"
         android:contentDescription="Tambah"
         app:maxImageSize="36dp"
@@ -46,10 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/purple_bro"
-        android:elevation="8dp"
-        app:itemIconTint="@color/nav_item_color"
-        app:itemTextColor="@color/nav_item_color"
-        style="@style/BottomNavStyle"
+
+        android:background="@android:color/transparent"  app:itemIconTint="@color/black"                 app:itemTextColor="@color/black"                 style="@style/BottomNavStyle"
         app:menu="@menu/menu" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
