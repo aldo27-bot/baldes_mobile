@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context=".Menu.riwayat_surat_suratDiajukan">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <!-- Judul / Header -->
+    <TextView
+        android:id="@+id/tvHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:id="@+id/D_view"/>
+        android:text="Riwayat Surat Diajukan"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="12dp" />
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/D_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
 
 </LinearLayout>

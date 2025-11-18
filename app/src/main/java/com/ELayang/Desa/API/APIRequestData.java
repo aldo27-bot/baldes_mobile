@@ -70,6 +70,11 @@ public interface APIRequestData {
             @Field("password") String password
     );
 
+    @FormUrlEncoded
+    @POST("suratproses.php")
+    Call<ResponDiajukan> getRiwayatSurat(@Field("username") String username);
+
+
     @GET("surat.php")
     Call<ResponSurat> surat();
 

@@ -1,148 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Menu.akun"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card"
-        android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:backgroundTint="@color/blue_dark_200"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/kode_surat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Profil"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="22dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.cardview.widget.CardView>
-
-
-    <!-- foto -->
-    <ImageView
-        android:id="@+id/foto_profil"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/akun_profil" />
+    android:background="@color/white"
+    android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/ikon">
-        <!--email-->
-        <TextView
-            android:id="@+id/email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="20dp"
-            android:text="Email"
-            android:textColor="@color/black"
-            android:textSize="16dp" />
-
-        <TextView
-            android:id="@+id/masukan_email"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/esurat"
-            android:hint="Masukan Email"
-            android:inputType="text"
-            android:lines="1"
-            android:textSize="20dp" />
-
-        <!--username-->
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="20dp"
-            android:text="Username"
-            android:textColor="@color/black"
-            android:textSize="16dp" />
-
-        <TextView
-            android:id="@+id/masukan_username"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/esurat"
-            android:hint="Masukan Username"
-            android:inputType="text"
-            android:lines="1"
-            android:textSize="20dp" />
-
-        <!--nama-->
-        <TextView
-            android:id="@+id/nama"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="20dp"
-            android:text="Nama"
-            android:textColor="@color/black"
-            android:textSize="16dp" />
-
-        <TextView
-            android:id="@+id/masukan_nama"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/esurat"
-            android:hint="Masukan Nama"
-            android:inputType="text"
-            android:lines="1"
-            android:textSize="20dp"
-            app:passwordToggleEnabled="true" />
-
-
-
-
-    </LinearLayout>
-
-    <!-- LinearLayout untuk Tombol Simpan dan Logout -->
-    <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal">
+        android:gravity="center_horizontal">
 
-        <!-- Tombol Simpan -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buka"
+        <!-- Header Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            android:layout_marginBottom="30dp"
+            android:backgroundTint="@color/blue_dark_200">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Profil"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Foto Profil -->
+        <ImageView
+            android:id="@+id/foto_profil"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:src="@drawable/akun_profil"
+            android:tint="@color/gray"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="30dp"
+            android:padding="4dp"
+            android:clipToOutline="true"/>
+
+        <!-- Form Profil -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Email -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Email">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/masukan_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="textEmailAddress"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/white"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Username -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Username">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/masukan_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/white"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Nama -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Nama">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/masukan_nama"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/white"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <!-- Tombol Edit & Logout -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="50dp"
-            android:text="Edit"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/biru_dingin"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp"
+            android:gravity="center">
 
-        <!-- Tombol Logout -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#A10000"
-            android:textColor="@color/white"
-            android:text="Keluar" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buka"
+                android:layout_width="140dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="20dp"
+                android:text="Edit"
+                android:textColor="@color/white"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/biru_dingin"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logout"
+                android:layout_width="140dp"
+                android:layout_height="48dp"
+                android:text="Keluar"
+                android:textColor="@color/white"
+                app:cornerRadius="12dp"
+                android:backgroundTint="#A10000"/>
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

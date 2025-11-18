@@ -96,6 +96,9 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("com.google.firebase:firebase-messaging:23.4.1")
     implementation("com.android.volley:volley:1.2.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+
 
 
 //mysql

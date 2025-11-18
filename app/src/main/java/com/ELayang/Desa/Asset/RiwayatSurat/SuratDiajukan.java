@@ -1,75 +1,82 @@
 package com.ELayang.Desa.Asset.RiwayatSurat;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
+import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.ELayang.Desa.DataModel.RiwayatSurat.ModelDiajukan;
-import com.ELayang.Desa.Menu.detail_permintaan_surat;
+import com.ELayang.Desa.Menu.DetailSuratFragment;
 import com.ELayang.Desa.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.RecycleViewHolder> {
+public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.ViewHolder> {
 
-    List<ModelDiajukan> data ;
+    private Context context;
+    private ArrayList<ModelDiajukan> listSurat;
 
-    public SuratDiajukan(ArrayList<ModelDiajukan> data) {
-        this.data = data;
+    public SuratDiajukan(Context context, ArrayList<ModelDiajukan> listSurat) {
+        this.context = context;
+        this.listSurat = listSurat;
     }
 
     @NonNull
     @Override
-    public SuratDiajukan.RecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_surat_diajukan, parent, false);
-        return new RecycleViewHolder(itemView);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_riwayat_surat, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SuratDiajukan.RecycleViewHolder holder, int position) {
-        ModelDiajukan item = data.get(position);
-        holder.nomor.setText(item.getId());
-        holder.nama.setText(item.getNama());
-        holder.kode.setText(item.getKode_surat());
-        holder.tanggal.setText(item.getTanggal());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Data dari item yang diklik
-                    String kode = item.getKode_surat();
-                    String no_pengajuan = item.getId();
-//                    String namaAdvis = item.getNama_advis();
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        ModelDiajukan item = listSurat.get(position);
 
-                    // Kirim data ke aktivitas selanjutnya
-                    Intent intent = new Intent(v.getContext(), detail_permintaan_surat.class);
-                    intent.putExtra("kode_surat", kode);
-                    intent.putExtra("no_pengajuan", no_pengajuan);
-//                    intent.putExtra("nama_advis", namaAdvis);
-                    v.getContext().startActivity(intent);
-                }
-            });
+        holder.nomor.setText(item.getIdPengajuanSurat());
+        holder.nama.setText(item.getNama());
+        holder.tanggal.setText(item.getTanggal());
+        holder.status.setText(item.getStatus());
+
+        holder.itemView.setOnClickListener(v -> {
+            DetailSuratFragment fragment = new DetailSuratFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("id_pengajuan_surat", item.getIdPengajuanSurat());
+            bundle.putString("no_pengajuan", item.getNoPengajuan());
+            bundle.putString("nama", item.getNama());
+            bundle.putString("nik", item.getNik());
+            bundle.putString("tanggal", item.getTanggal());
+            bundle.putString("kode_surat", item.getKodeSurat());
+            bundle.putString("status", item.getStatus());
+            fragment.setArguments(bundle);
+
+            ((AppCompatActivity) context).getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame_riwayat, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     @Override
     public int getItemCount() {
-        return (data != null) ? data.size() : 0;
+        return listSurat.size();
     }
 
-    public class RecycleViewHolder extends RecyclerView.ViewHolder {
-        private TextView nomor, nama, kode, tanggal;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView nomor, nama, tanggal, status;
 
-        public RecycleViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            nomor =itemView.findViewById(R.id.nomor);
-            nama = itemView.findViewById(R.id.nama);
-            kode = itemView.findViewById(R.id.kode_surat);
-            tanggal = itemView.findViewById(R.id.tanggal);
+            nomor = itemView.findViewById(R.id.tvNomor);
+            nama = itemView.findViewById(R.id.tvNama);
+            tanggal = itemView.findViewById(R.id.tvTanggal);
+            status = itemView.findViewById(R.id.tvStatus);
         }
     }
 }
