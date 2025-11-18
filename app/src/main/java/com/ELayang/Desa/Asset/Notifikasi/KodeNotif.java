@@ -14,8 +14,8 @@ public class KodeNotif extends Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Channel utama (default)
             NotificationChannel channel = new NotificationChannel(
-                    "prayoga",
-                    "E-lades",
+                    "Ferdian",
+                    "Si-kunir",
                     NotificationManager.IMPORTANCE_HIGH
             );
 
