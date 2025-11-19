@@ -35,7 +35,7 @@ public class ListAspirasiActivity extends AppCompatActivity {
 
         // Setup Retrofit
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2/si-kunir-web/DatabaseMobile/") // ganti sesuai IP atau domain server
+                .baseUrl("https://sikunir.pbltifnganjuk.com/DatabaseMobile/") // ganti sesuai IP atau domain server
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

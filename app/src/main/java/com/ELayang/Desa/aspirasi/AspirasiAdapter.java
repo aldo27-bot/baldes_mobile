@@ -39,7 +39,7 @@ public class AspirasiAdapter extends RecyclerView.Adapter<AspirasiAdapter.ViewHo
         holder.tvTanggal.setText(a.getTanggal());
 
         if (a.getFoto() != null && !a.getFoto().isEmpty()) {
-            String url = "http://110.0.2.2/si-kunir-web/uploads/upload_aspirasi/" + a.getFoto();
+            String url = "https://sikunir.pbltifnganjuk.com/uploads/upload_aspirasi/" + a.getFoto();
             Glide.with(holder.itemView.getContext())
                     .load(url)
                     .placeholder(R.drawable.placeholder)
