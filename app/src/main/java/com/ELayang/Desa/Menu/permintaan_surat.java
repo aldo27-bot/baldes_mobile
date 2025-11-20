@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton; // Pastikan ImageButton di-import
 import android.widget.LinearLayout;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 // import androidx.appcompat.widget.Toolbar; // Tidak perlu mengimpor Toolbar jika tidak digunakan
@@ -29,23 +30,34 @@ public class permintaan_surat extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_permintaan_surat);
 
-        // ============ Implementasi Tombol Kembali Kustom ============
-        // 1. Dapatkan referensi menggunakan ID yang benar dari XML: custom_back_button
+        // LANGKAH 1: PASTIKAN LAYOUT DIMUAT DULU
+        setContentView(R.layout.activity_permintaan_surat); // <<< GANTI dengan nama file layout XML yang benar
+
+        // LANGKAH 2: CARI VIEW (FIND VIEW)
         customBackButton = findViewById(R.id.btnkembali);
+        // Baris 34 dari error adalah di sekitar sini, sebelum setOnClickListener
 
-        // 2. Set OnClickListener untuk pindah ke DashboardActivity
-        customBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Membuat Intent untuk pindah ke DashboardActivity
-                // Ganti DashboardActivity.class dengan nama file Activity Dashboard Anda yang sebenarnya
-                Intent intent = new Intent(permintaan_surat.this, dashboard.class);
-                startActivity(intent);
-                finish(); // Menutup Activity saat ini
-            }
-        });
+        // LANGKAH 3: PASANG LISTENER
+        // Crash terjadi di sini jika customBackButton == null
+        if (customBackButton != null) {
+            customBackButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        } else {
+            // Log ini jika Anda ingin memastikan R.id.btnkembali tidak ditemukan
+            Log.e("PermintaanSurat", "Error: customBackButton (R.id.btnkembali) tidak ditemukan!");
+        }
+
+        // ... inisialisasi LinearLayout lainnya di bawah sini
+        itemSuratDomisili = findViewById(R.id.item_surat_domisili);
+        // ... dst
+
+
+
 
         // ============ Inisialisasi Toolbar (Cukup temukan, tidak perlu setSupportActionBar atau NavigationListener) ============
         // Karena kita menggunakan ImageButton kustom, kita tidak perlu setSupportActionBar
