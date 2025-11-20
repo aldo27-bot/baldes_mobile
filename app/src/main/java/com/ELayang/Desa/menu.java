@@ -59,7 +59,7 @@ public class menu extends AppCompatActivity {
         FrameLayout frameLayout = findViewById(R.id.frame);
 
         // 2. Tentukan margin bawah yang diinginkan (120dp). Ubah angka ini sesuai kebutuhan Anda!
-        final int desiredMarginDp = 200;
+        final int desiredMarginDp = 2;
 
         // 3. Konversi nilai DP ke Pixel
         final float scale = getResources().getDisplayMetrics().density;
