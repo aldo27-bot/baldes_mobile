@@ -102,7 +102,7 @@ public class Notifikasi extends Fragment {
             public void onFailure(Call<ResponNotifikasi> call, Throwable t) {
                 // Gagal koneksi/jaringan: Tampilkan TextView "Fitur Belum Tersedia"
                 recyclerView.setVisibility(View.GONE);
-                tvNotAvailable.setText("FITUR BELUM TERSEDIA"); // Pesan khusus
+                tvNotAvailable.setText("--FITUR AKAN SEGERA TERSEDIA--"); // Pesan khusus
                 tvNotAvailable.setVisibility(View.VISIBLE);
 
                 // Disarankan: Tambahkan logging error (seperti Log.e("NotifikasiFrag", "Error: ", t);)

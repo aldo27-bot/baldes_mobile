@@ -10,18 +10,23 @@
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:layout_gravity="top"
-        android:elevation="4dp"  android:paddingBottom="?attr/actionBarSize" /> <com.google.android.material.bottomappbar.BottomAppBar
-    android:id="@+id/bottomAppBar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    app:backgroundTint="@color/white"
-    app:elevation="8dp"
-    app:fabCradleMargin="10dp"
-    app:fabCradleRoundedCornerRadius="40dp"
-    app:fabCradleVerticalOffset="10dp"
-    app:hideOnScroll="false">
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:elevation="4dp"
+        android:paddingBottom="?attr/actionBarSize" />
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="0dp"
+        app:backgroundTint="@color/white"
+        app:elevation="8dp"
+        app:fabCradleMargin="10dp"
+        app:fabCradleRoundedCornerRadius="90dp"
+        app:fabCradleVerticalOffset="10dp"
+        app:hideOnScroll="false">
 </com.google.android.material.bottomappbar.BottomAppBar>
 
 
@@ -35,7 +40,7 @@
         android:backgroundTint="@color/biru_gelap"
         android:elevation="12dp"
         android:contentDescription="Tambah"
-        app:maxImageSize="36dp"
+        app:maxImageSize="45dp"
         app:borderWidth="0dp" />
 
 

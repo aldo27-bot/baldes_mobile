@@ -2,6 +2,7 @@ package com.ELayang.Desa;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
@@ -9,8 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,7 +54,22 @@ public class menu extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavView);
         bottomNavigationView.setElevation(0);
         bottomNavigationView.getMenu().findItem(R.id.permintaan).setEnabled(false);
-        bottomNavigationView = findViewById(R.id.bottomNavView);
+
+        // 1. Dapatkan referensi FrameLayout
+        FrameLayout frameLayout = findViewById(R.id.frame);
+
+        // 2. Tentukan margin bawah yang diinginkan (120dp). Ubah angka ini sesuai kebutuhan Anda!
+        final int desiredMarginDp = 200;
+
+        // 3. Konversi nilai DP ke Pixel
+        final float scale = getResources().getDisplayMetrics().density;
+        int marginInPixels = (int) (desiredMarginDp * scale + 0.5f);
+
+        // 4. Atur Margin Bawah pada FrameLayout
+        // Pastikan LayoutParams adalah CoordinatorLayout.LayoutParams karena FrameLayout di dalamnya
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) frameLayout.getLayoutParams();
+        params.bottomMargin = marginInPixels;
+        frameLayout.setLayoutParams(params);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -178,6 +196,7 @@ public class menu extends AppCompatActivity {
 //                });
 //    }
     public void onBackPressed(){
+        super.onBackPressed();
         Toast.makeText(this, "kembali", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(menu.this,login.class));
     }
