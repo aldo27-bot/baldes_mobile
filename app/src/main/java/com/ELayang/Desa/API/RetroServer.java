@@ -65,6 +65,13 @@ public class RetroServer {
             };
 
             OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(chain -> {
+                        Request newReq = chain.request().newBuilder()
+                                .header("User-Agent", "AndroidApp/1.0")   // 🔥 WAJIB
+                                .header("Accept", "*/*")
+                                .build();
+                        return chain.proceed(newReq);
+                    })
                     .addInterceptor(debugInterceptor)
                     .addInterceptor(loggingInterceptor)
                     .build();
