@@ -15,7 +15,7 @@ import java.io.IOException;
 public class RetroServer {
 //    public static String server = "http://10.0.2.2/si-kunir-web";
 
-    public static String server = "https://sikunir.pbltifnganjuk.com/";
+    public static String server = "https://sikunir.pbltifnganjuk.com";
     private static final String finalurl = server + "/DatabaseMobile/";
 
     public static final String API_IMAGE = server + "/surat/upload_surat/";
