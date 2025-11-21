@@ -14,11 +14,12 @@
     <!-- Card Container -->
     <com.google.android.material.imageview.ShapeableImageView
         android:layout_width="272dp"
-        android:layout_height="135dp"
+        android:layout_height="120dp"
         android:layout_gravity="center"
         android:layout_marginTop="60dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/logo_sikunir_administrasi_desa"
+        android:src="@drawable/logo_kunir_fix"
+        android:tint="@color/biru_gelap"
         app:strokeColor="@color/white"
         app:strokeWidth="2dp" />
 

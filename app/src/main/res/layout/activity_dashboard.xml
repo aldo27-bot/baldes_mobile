@@ -11,7 +11,7 @@
         android:id="@+id/nav_atas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/biru_gelap"
+        android:background="@color/blue_dark_200"
         android:gravity="center"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"

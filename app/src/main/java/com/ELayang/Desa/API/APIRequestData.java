@@ -323,8 +323,9 @@ public interface APIRequestData {
             @Part("email") RequestBody email,
             @Part("password") RequestBody password,
             @Part("nama") RequestBody nama,
-            @Part MultipartBody.Part profile_image // Menambahkan bagian gambar
+            @Part MultipartBody.Part profile_image
     );
+
 
     @Multipart
     @POST("update_akun.php")

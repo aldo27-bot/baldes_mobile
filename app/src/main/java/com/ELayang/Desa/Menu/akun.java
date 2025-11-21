@@ -70,11 +70,6 @@ public class akun extends Fragment implements GoogleApiClient.OnConnectionFailed
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        ModelLogin api_image1 = new ModelLogin();
-        api_image1.getAPI_IMAGE();
-        String api_image = API_IMAGE+api_image1;
-
-        RetroServer image = new RetroServer();
         String username = sharedPreferences.getString("username", "");
         String password = sharedPreferences.getString("password", "");
         String savedImagePath = sharedPreferences.getString("profile_image", "");

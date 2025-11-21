@@ -148,16 +148,16 @@ public class ganti_password extends AppCompatActivity {
                                 call.enqueue(new Callback<ResponUpdate>() {
                                     @Override
                                     public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
-                                        if (response.body().isKode() == true) {
-                                            // Update password di SharedPreferences
-                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                                            editor.apply();
-
-                                            Toast.makeText(ganti_password.this, "Password Berhasil Diupdate", Toast.LENGTH_SHORT).show();
-                                            finish();
+                                        if (response.body() != null) {
+                                            if (response.body().getKode() == 1) {
+                                                Toast.makeText(ganti_password.this, response.body().getPesan(), Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(ganti_password.this, "Gagal: " + response.body().getPesan(), Toast.LENGTH_SHORT).show();
+                                            }
                                         } else {
-                                            Toast.makeText(ganti_password.this, "Password Gagal Diupdate", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ganti_password.this, "Response kosong!", Toast.LENGTH_SHORT).show();
                                         }
+
                                     }
                                     @Override
                                     public void onFailure(Call<ResponUpdate> call, Throwable t) {

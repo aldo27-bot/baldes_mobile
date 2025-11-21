@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -54,9 +53,11 @@ public class edit_profil extends AppCompatActivity {
     Button simpan, gantipw;
     ImageView ikon;
     ProgressBar progressBar;
+
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
+
     private String KEY_PREF = "prefLogin";
 
     @Override
@@ -75,18 +76,17 @@ public class edit_profil extends AppCompatActivity {
 
         progressBar.setVisibility(View.GONE);
 
-        // Load data user dari SharedPreferences
+        // Load SharedPrefs
         SharedPreferences sp = getSharedPreferences(KEY_PREF, MODE_PRIVATE);
         String username = sp.getString("username", "");
         String password = sp.getString("password", "");
+
         nama.setText(sp.getString("nama", ""));
         email.setText(sp.getString("email", ""));
         usernamee.setText(username);
 
-        // Load foto profil
         loadProfileImage(sp.getString("profile_image", ""));
 
-        // Tombol edit foto
         btnEditImage.setOnClickListener(v -> new AlertDialog.Builder(edit_profil.this)
                 .setTitle("Pilih Aksi")
                 .setItems(new String[]{"Ambil Foto", "Pilih dari Galeri"}, (dialog, which) -> {
@@ -95,24 +95,17 @@ public class edit_profil extends AppCompatActivity {
                 })
                 .show());
 
-        // Tombol ganti password
-        gantipw.setOnClickListener(v -> startActivity(new Intent(edit_profil.this, ganti_password.class)));
-
-        // Tombol simpan profil
         simpan.setOnClickListener(v -> {
             if (nama.getText().toString().isEmpty()) {
                 nama.setError("Nama Harus Diisi");
-                nama.requestFocus();
                 return;
             }
             if (email.getText().toString().isEmpty()) {
                 email.setError("Email Harus Diisi");
-                email.requestFocus();
                 return;
             }
             if (usernamee.getText().toString().isEmpty()) {
                 usernamee.setError("Username Harus Diisi");
-                usernamee.requestFocus();
                 return;
             }
 
@@ -122,16 +115,21 @@ public class edit_profil extends AppCompatActivity {
                     .setNegativeButton("Tidak", null)
                     .show();
         });
+
+        gantipw.setOnClickListener(v -> startActivity(new Intent(edit_profil.this, ganti_password.class)));
     }
 
-    // ====================== FOTO PROFIL =========================
+
+    // ============================ FOTO PROFIL ========================================
+
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.CAMERA},
-                    CAMERA_PERMISSION_REQUEST_CODE);
-        } else openCamera();
+                    new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+        } else {
+            openCamera();
+        }
     }
 
     private void openCamera() {
@@ -148,18 +146,21 @@ public class edit_profil extends AppCompatActivity {
         Canvas canvas = new Canvas(output);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        canvas.drawCircle(bitmap.getWidth()/2f, bitmap.getHeight()/2f,
-                Math.min(bitmap.getWidth()/2f, bitmap.getHeight()/2f), paint);
+
+        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f,
+                Math.min(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f), paint);
+
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, 0, 0, paint);
+
         return output;
     }
 
     private File saveImageToInternalStorage(Bitmap bitmap) throws IOException {
         File file = new File(getCacheDir(), "profile_image.jpg");
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-        }
+        FileOutputStream fos = new FileOutputStream(file);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        fos.close();
         return file;
     }
 
@@ -170,28 +171,26 @@ public class edit_profil extends AppCompatActivity {
         }
 
         File file = new File(path);
-        Log.d("DEBUG_FILE", "Profile file exists? " + file.exists() + ", path: " + path);
-
         if (file.exists()) {
-            progressBar.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(file)
-                    .placeholder(R.drawable.loading_spinner) // pastikan drawable ada
                     .circleCrop()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(ikon);
-            progressBar.setVisibility(View.GONE);
         } else {
             ikon.setImageResource(R.drawable.akun_profil);
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == RESULT_OK && data != null) {
             Bitmap bitmap = null;
+
             if (requestCode == CAMERA_REQUEST_CODE) {
                 bitmap = (Bitmap) data.getExtras().get("data");
             } else if (requestCode == GALLERY_REQUEST_CODE) {
@@ -202,13 +201,15 @@ public class edit_profil extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+
             if (bitmap != null) {
                 Bitmap circularBitmap = getCircularBitmap(bitmap);
+
                 try {
-                    File savedFile = saveImageToInternalStorage(circularBitmap);
+                    File saved = saveImageToInternalStorage(circularBitmap);
                     SharedPreferences sp = getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-                    sp.edit().putString("profile_image", savedFile.getAbsolutePath()).apply();
-                    loadProfileImage(savedFile.getAbsolutePath());
+                    sp.edit().putString("profile_image", saved.getAbsolutePath()).apply();
+                    loadProfileImage(saved.getAbsolutePath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -216,21 +217,12 @@ public class edit_profil extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE &&
-                grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            openCamera();
-        } else {
-            Toast.makeText(this, "Izin Kamera diperlukan", Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    // ====================== UPDATE PROFIL =========================
+    // ============================= UPDATE PROFIL ======================================
+
     private void updateProfil(String username, String password) {
         SharedPreferences sp = getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-        String profilePath = sp.getString("profile_image", "");
+        String path = sp.getString("profile_image", "");
 
         RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
         RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), email.getText().toString());
@@ -239,20 +231,25 @@ public class edit_profil extends AppCompatActivity {
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
-        if (!profilePath.isEmpty()) {
-            File imageFile = new File(profilePath);
-            RequestBody imageBody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile);
-            MultipartBody.Part imagePart = MultipartBody.Part.createFormData("profile_image", imageFile.getName(), imageBody);
+        if (!path.isEmpty()) {
 
-            api.updateAkunWithImage(usernameBody, emailBody, passwordBody, namaBody, imagePart)
+            File img = new File(path);
+            RequestBody imgBody = RequestBody.create(MediaType.parse("image/jpeg"), img);
+            MultipartBody.Part imgPart =
+                    MultipartBody.Part.createFormData("profile_image", img.getName(), imgBody);
+
+            api.updateAkunWithImage(usernameBody, emailBody, passwordBody, namaBody, imgPart)
                     .enqueue(new Callback<ResponUpdate>() {
                         @Override
                         public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
-                            if (response.body() != null && response.body().isKode()) {
+
+                            if (response.body() != null && response.body().getKode() == 1) {
+
                                 sp.edit()
                                         .putString("nama", nama.getText().toString())
                                         .putString("email", email.getText().toString())
                                         .apply();
+
                                 Toast.makeText(edit_profil.this, "Akun Berhasil Diupdate", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(edit_profil.this, "Gagal update akun", Toast.LENGTH_SHORT).show();
@@ -264,16 +261,20 @@ public class edit_profil extends AppCompatActivity {
                             Toast.makeText(edit_profil.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
+
         } else {
             api.updateAkunWithoutImage(usernameBody, emailBody, passwordBody, namaBody)
                     .enqueue(new Callback<ResponUpdate>() {
                         @Override
                         public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
-                            if (response.body() != null && response.body().isKode()) {
+
+                            if (response.body() != null && response.body().getKode() == 1) {
+
                                 sp.edit()
                                         .putString("nama", nama.getText().toString())
                                         .putString("email", email.getText().toString())
                                         .apply();
+
                                 Toast.makeText(edit_profil.this, "Akun Berhasil Diupdate", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(edit_profil.this, "Gagal update akun", Toast.LENGTH_SHORT).show();
@@ -288,10 +289,13 @@ public class edit_profil extends AppCompatActivity {
         }
     }
 
+
+    // ============================= BACK BUTTON ========================================
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Toast.makeText(this, "Gunakan tombol kembali yang ada di atas", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Gunakan tombol kembali di atas", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onKeyDown(keyCode, event);
