@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.ELayang.Desa.Login.login;
 import com.ELayang.Desa.menu;
@@ -21,40 +24,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 🔹 Ambil ImageView logo dari layout
+        ImageView logo = findViewById(R.id.logoImage);
+
+        // 🔹 Panggil animasi (fade + zoom)
+        Animation animLogo = AnimationUtils.loadAnimation(this, R.anim.logo_animation);
+        logo.startAnimation(animLogo);
+
+        // 🔹 Cek shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username","");
-        String nama = sharedPreferences.getString("nama","");
-        String password = sharedPreferences.getString("password","");
         Map<String, ?> allEntries = sharedPreferences.getAll();
 
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             Log.d("SharedPreferencesData", entry.getKey() + ": " + entry.getValue().toString());
         }
 
+        // 🔹 Delay untuk memberi waktu animasi tampil
+        int delay = 4000;
+
         if(username.equals("")){
-            // User belum login, buka activity login
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent buka = new Intent(MainActivity.this, login.class);
-                    startActivity(buka);
-                    finish();
-                }
-            }, 500);
+            // User belum login → buka login setelah animasi
+            new Handler().postDelayed(() -> {
+                Intent buka = new Intent(MainActivity.this, login.class);
+                startActivity(buka);
+                finish();
+            }, delay);
+
         } else {
-            // User sudah login, jalankan service notifikasi dulu
+            // User sudah login → jalankan notifikasi dulu
             Intent notifIntent = new Intent(MainActivity.this, NotificationServiceAspirasi.class);
             NotificationServiceAspirasi.enqueueWork(MainActivity.this, notifIntent);
 
-            // Lanjut ke menu utama
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(MainActivity.this, menu.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }, 500);
+            // Lanjut ke menu
+            new Handler().postDelayed(() -> {
+                Intent intent = new Intent(MainActivity.this, menu.class);
+                startActivity(intent);
+                finish();
+            }, delay);
         }
     }
 }

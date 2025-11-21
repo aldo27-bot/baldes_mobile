@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Layer 1: warna background -->
+    <item>
+        <color android:color="@color/biru_gelap"/> <!-- hijau terang supaya terlihat jelas -->
+    </item>
+
+    <!-- Layer 2: batik semi-transparan -->
+    <item>
+        <bitmap
+            android:src="@drawable/background_sikunir"
+            android:gravity="center"
+            android:tileMode="repeat"
+            android:alpha="20" /> <!-- sangat samar -->
+    </item>
+
+</layer-list>
