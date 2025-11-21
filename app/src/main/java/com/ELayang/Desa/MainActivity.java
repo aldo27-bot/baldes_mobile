@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 🔹 Delay untuk memberi waktu animasi tampil
-        int delay = 4000;
+        int delay = 3000;
 
         if(username.equals("")){
             // User belum login → buka login setelah animasi

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,15 +26,14 @@ public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.ViewHolder
         this.listSurat = listSurat;
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_riwayat_surat, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         ModelDiajukan item = listSurat.get(position);
 
         holder.nomor.setText(item.getIdPengajuanSurat());
@@ -71,7 +69,7 @@ public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView nomor, nama, tanggal, status;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
             nomor = itemView.findViewById(R.id.tvNomor);
             nama = itemView.findViewById(R.id.tvNama);

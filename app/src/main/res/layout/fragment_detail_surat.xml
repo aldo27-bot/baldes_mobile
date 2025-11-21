@@ -13,13 +13,12 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-        <!-- Tombol Back -->
+        <!-- Tombol Kembali -->
         <ImageButton
             android:id="@+id/btnkembali"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
             android:src="@drawable/back_2"
             android:contentDescription="Back"/>
 
@@ -28,7 +27,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
             android:padding="16dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp">
@@ -38,94 +36,76 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <!-- Nama -->
                 <TextView
-                    android:text="Nama"
-                    android:textColor="#8A8A8A"
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="Nama"
+                    android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNama"
-                    android:textColor="#212121"
-                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#212121"
                     android:paddingBottom="8dp"/>
 
-                <!-- NIK -->
                 <TextView
-                    android:text="NIK"
-                    android:textColor="#8A8A8A"
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="NIK"
+                    android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNik"
-                    android:textColor="#212121"
-                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#212121"
                     android:paddingBottom="8dp"/>
 
-                <!-- No Pengajuan -->
                 <TextView
-                    android:text="No Pengajuan"
-                    android:textColor="#8A8A8A"
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="No Pengajuan"
+                    android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNoPengajuan"
-                    android:textColor="#212121"
-                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#212121"
                     android:paddingBottom="8dp"/>
 
-                <!-- Tanggal -->
                 <TextView
-                    android:text="Tanggal"
-                    android:textColor="#8A8A8A"
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="Tanggal"
+                    android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvTanggal"
-                    android:textColor="#212121"
-                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#212121"
                     android:paddingBottom="8dp"/>
 
-                <!-- Kode Surat -->
                 <TextView
-                    android:text="Kode Surat"
-                    android:textColor="#8A8A8A"
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="Kode Surat"
+                    android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvKodeSurat"
-                    android:textColor="#212121"
-                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#212121"
                     android:paddingBottom="8dp"/>
 
-                <!-- Status -->
                 <TextView
-                    android:text="Status"
-                    android:textColor="#8A8A8A"
-                    android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="Status"
+                    android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvStatus"
-                    android:textColor="#212121"
-                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#212121"
                     android:paddingBottom="8dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

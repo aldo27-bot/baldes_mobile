@@ -1,307 +1,210 @@
 package com.ELayang.Desa.Menu;
 
-import static com.ELayang.Desa.R.id.btn_edit_image;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
-import com.ELayang.Desa.DataModel.Akun.ResponUpdate;
 import com.ELayang.Desa.R;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.ELayang.Desa.DataModel.Akun.ResponUpdate;
+import com.ELayang.Desa.utils.RealPathUtil;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.File;
+
 public class edit_profil extends AppCompatActivity {
 
-    EditText nama, email, usernamee;
-    Button simpan, gantipw;
-    ImageView ikon;
-    ProgressBar progressBar;
+    EditText eEmail, eUsername, eNama;
+    ImageView pp;
+    ImageButton btnEditImage;
+    Button simpanBtn;
+    Uri imageUri = null;
 
-    private static final int CAMERA_REQUEST_CODE = 1;
-    private static final int GALLERY_REQUEST_CODE = 2;
-    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
-
-    private String KEY_PREF = "prefLogin";
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profil);
 
-        nama = findViewById(R.id.e_nama);
-        email = findViewById(R.id.e_email);
-        usernamee = findViewById(R.id.e_username);
-        ikon = findViewById(R.id.pp);
-        simpan = findViewById(R.id.simpan);
-        gantipw = findViewById(R.id.gantipw);
-        progressBar = findViewById(R.id.progressBar);
-        ImageButton btnEditImage = findViewById(btn_edit_image);
+        // Bind UI
+        eEmail = findViewById(R.id.e_email);
+        eUsername = findViewById(R.id.e_username);
+        eNama = findViewById(R.id.e_nama);
 
-        progressBar.setVisibility(View.GONE);
+        pp = findViewById(R.id.pp);
+        btnEditImage = findViewById(R.id.btn_edit_image);
+        simpanBtn = findViewById(R.id.simpan);
 
-        // Load SharedPrefs
-        SharedPreferences sp = getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-        String username = sp.getString("username", "");
-        String password = sp.getString("password", "");
+        // Load dari SharedPreferences
+        sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
-        nama.setText(sp.getString("nama", ""));
-        email.setText(sp.getString("email", ""));
-        usernamee.setText(username);
+        eEmail.setText(sharedPreferences.getString("email", ""));
+        eUsername.setText(sharedPreferences.getString("username", ""));
+        eNama.setText(sharedPreferences.getString("nama", ""));
 
-        loadProfileImage(sp.getString("profile_image", ""));
-
-        btnEditImage.setOnClickListener(v -> new AlertDialog.Builder(edit_profil.this)
-                .setTitle("Pilih Aksi")
-                .setItems(new String[]{"Ambil Foto", "Pilih dari Galeri"}, (dialog, which) -> {
-                    if (which == 0) checkCameraPermission();
-                    else openGallery();
-                })
-                .show());
-
-        simpan.setOnClickListener(v -> {
-            if (nama.getText().toString().isEmpty()) {
-                nama.setError("Nama Harus Diisi");
-                return;
-            }
-            if (email.getText().toString().isEmpty()) {
-                email.setError("Email Harus Diisi");
-                return;
-            }
-            if (usernamee.getText().toString().isEmpty()) {
-                usernamee.setError("Username Harus Diisi");
-                return;
-            }
-
-            new AlertDialog.Builder(this)
-                    .setMessage("Apakah kamu yakin ingin melanjutkan?")
-                    .setPositiveButton("Ya", (dialog, which) -> updateProfil(username, password))
-                    .setNegativeButton("Tidak", null)
-                    .show();
-        });
-
-        gantipw.setOnClickListener(v -> startActivity(new Intent(edit_profil.this, ganti_password.class)));
-    }
-
-
-    // ============================ FOTO PROFIL ========================================
-
-    private void checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
-        } else {
-            openCamera();
-        }
-    }
-
-    private void openCamera() {
-        startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE);
-    }
-
-    private void openGallery() {
-        startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
-                GALLERY_REQUEST_CODE);
-    }
-
-    private Bitmap getCircularBitmap(Bitmap bitmap) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-
-        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f,
-                Math.min(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f), paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-
-        return output;
-    }
-
-    private File saveImageToInternalStorage(Bitmap bitmap) throws IOException {
-        File file = new File(getCacheDir(), "profile_image.jpg");
-        FileOutputStream fos = new FileOutputStream(file);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-        fos.close();
-        return file;
-    }
-
-    private void loadProfileImage(String path) {
-        if (path == null || path.isEmpty()) {
-            ikon.setImageResource(R.drawable.akun_profil);
-            return;
+        String imageUrl = sharedPreferences.getString("profile_image", "");
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this).load(imageUrl).into(pp);
         }
 
-        File file = new File(path);
-        if (file.exists()) {
-            Glide.with(this)
-                    .load(file)
-                    .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(ikon);
-        } else {
-            ikon.setImageResource(R.drawable.akun_profil);
-        }
+        btnEditImage.setOnClickListener(v -> pilihFoto());
+        simpanBtn.setOnClickListener(v -> updateData());
     }
 
+    private void pilihFoto() {
+        Intent intentGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intentGallery, 100);
+    }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && data != null) {
-            Bitmap bitmap = null;
-
-            if (requestCode == CAMERA_REQUEST_CODE) {
-                bitmap = (Bitmap) data.getExtras().get("data");
-            } else if (requestCode == GALLERY_REQUEST_CODE) {
-                try {
-                    Uri uri = data.getData();
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (bitmap != null) {
-                Bitmap circularBitmap = getCircularBitmap(bitmap);
-
-                try {
-                    File saved = saveImageToInternalStorage(circularBitmap);
-                    SharedPreferences sp = getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-                    sp.edit().putString("profile_image", saved.getAbsolutePath()).apply();
-                    loadProfileImage(saved.getAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            imageUri = data.getData();
+            pp.setImageURI(imageUri);
         }
     }
 
-
-    // ============================= UPDATE PROFIL ======================================
-
-    private void updateProfil(String username, String password) {
-        SharedPreferences sp = getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-        String path = sp.getString("profile_image", "");
-
-        RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
-        RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), email.getText().toString());
-        RequestBody passwordBody = RequestBody.create(MediaType.parse("text/plain"), password);
-        RequestBody namaBody = RequestBody.create(MediaType.parse("text/plain"), nama.getText().toString());
+    private void updateData() {
+        ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("Mengupdate...");
+        pd.setCancelable(false);
+        pd.show();
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
-        if (!path.isEmpty()) {
+        // Ambil nilai sekarang dari EditText / SharedPreferences
+        String username = eUsername.getText().toString().trim();
+        String email = eEmail.getText().toString().trim();
+        String nama = eNama.getText().toString().trim();
+        // ambil password lama dari sharedPreferences (jika backend butuh password)
+        String password = sharedPreferences.getString("password", "");
 
-            File img = new File(path);
-            RequestBody imgBody = RequestBody.create(MediaType.parse("image/jpeg"), img);
-            MultipartBody.Part imgPart =
-                    MultipartBody.Part.createFormData("profile_image", img.getName(), imgBody);
+        // buat RequestBody untuk field teks
+        RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
+        RequestBody emailBody = RequestBody.create(MediaType.parse("text/plain"), email);
+        RequestBody namaBody = RequestBody.create(MediaType.parse("text/plain"), nama);
+        RequestBody passwordBody = RequestBody.create(MediaType.parse("text/plain"), password);
 
-            api.updateAkunWithImage(usernameBody, emailBody, passwordBody, namaBody, imgPart)
-                    .enqueue(new Callback<ResponUpdate>() {
-                        @Override
-                        public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
+        MultipartBody.Part imagePart = null;
 
-                            if (response.body() != null && response.body().getKode() == 1) {
+        if (imageUri != null) {
+            try {
+                String realPath = RealPathUtil.getRealPath(this, imageUri);
+                if (realPath != null && !realPath.isEmpty()) {
+                    File file = new File(realPath);
+                    RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), file);
+                    imagePart = MultipartBody.Part.createFormData("profile_image", file.getName(), fileBody);
+                } else {
+                    // fallback: coba gunakan uri last path segment sebagai file name (tidak ideal, tapi aman)
+                    File file = new File(getCacheDir(), "upload_temp.jpg");
+                    imagePart = MultipartBody.Part.createFormData("profile_image", file.getName(),
+                            RequestBody.create(MediaType.parse("image/*"), file));
+                }
+            } catch (Exception ex) {
+                Log.e("RealPathErr", "RealPathUtil error: " + ex.getMessage());
+                // biarkan imagePart null sehingga akan menggunakan branch tanpa gambar
+                imagePart = null;
+            }
+        }
 
-                                sp.edit()
-                                        .putString("nama", nama.getText().toString())
-                                        .putString("email", email.getText().toString())
-                                        .apply();
+        // Jika ada gambar -> panggil multipart updateAkunWithImage (interface: username,email,password,nama,profile_image)
+        if (imagePart != null) {
+            Call<ResponUpdate> call = api.updateAkunWithImage(usernameBody, emailBody, passwordBody, namaBody, imagePart);
 
-                                Toast.makeText(edit_profil.this, "Akun Berhasil Diupdate", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(edit_profil.this, "Gagal update akun", Toast.LENGTH_SHORT).show();
+            call.enqueue(new Callback<ResponUpdate>() {
+                @Override
+                public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
+                    pd.dismiss();
+                    if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
+
+                        // simpan ke SharedPreferences: gunakan url lengkap jika tersedia
+                        if (response.body().getData() != null) {
+                            String urlFull = response.body().getData().getUrl_gambar_profil();
+                            if (urlFull == null || urlFull.isEmpty()) {
+                                urlFull = response.body().getData().getProfile_image();
                             }
+                            editor.putString("email", response.body().getData().getEmail());
+                            editor.putString("nama", response.body().getData().getNama());
+                            if (urlFull != null) editor.putString("profile_image", urlFull);
+                            editor.apply();
                         }
 
-                        @Override
-                        public void onFailure(Call<ResponUpdate> call, Throwable t) {
-                            Toast.makeText(edit_profil.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                        Toast.makeText(edit_profil.this, "Berhasil Update", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(edit_profil.this, "Gagal Update (response)", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponUpdate> call, Throwable t) {
+                    pd.dismiss();
+                    Toast.makeText(edit_profil.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("Retrofit", t.toString());
+                }
+            });
 
         } else {
-            api.updateAkunWithoutImage(usernameBody, emailBody, passwordBody, namaBody)
-                    .enqueue(new Callback<ResponUpdate>() {
-                        @Override
-                        public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
+            // tanpa gambar -> gunakan FormUrlEncoded update_akun(username,email,password,nama)
+            Call<ResponUpdate> call = api.update_akun(username, email, password, nama);
 
-                            if (response.body() != null && response.body().getKode() == 1) {
+            call.enqueue(new Callback<ResponUpdate>() {
+                @Override
+                public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
+                    pd.dismiss();
+                    if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
 
-                                sp.edit()
-                                        .putString("nama", nama.getText().toString())
-                                        .putString("email", email.getText().toString())
-                                        .apply();
-
-                                Toast.makeText(edit_profil.this, "Akun Berhasil Diupdate", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(edit_profil.this, "Gagal update akun", Toast.LENGTH_SHORT).show();
+                        if (response.body().getData() != null) {
+                            editor.putString("email", response.body().getData().getEmail());
+                            editor.putString("nama", response.body().getData().getNama());
+                            // jika API kirim url_gambar_profil meskipun tanpa upload, simpan juga
+                            String urlFull = response.body().getData().getUrl_gambar_profil();
+                            if (urlFull != null && !urlFull.isEmpty()) {
+                                editor.putString("profile_image", urlFull);
                             }
+                            editor.apply();
                         }
 
-                        @Override
-                        public void onFailure(Call<ResponUpdate> call, Throwable t) {
-                            Toast.makeText(edit_profil.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                        Toast.makeText(edit_profil.this, "Berhasil Update", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(edit_profil.this, "Gagal Update (response)", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponUpdate> call, Throwable t) {
+                    pd.dismiss();
+                    Toast.makeText(edit_profil.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("Retrofit", t.toString());
+                }
+            });
         }
-    }
-
-
-    // ============================= BACK BUTTON ========================================
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Toast.makeText(this, "Gunakan tombol kembali di atas", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    public void kembali(View view) {
-        finish();
     }
 }
