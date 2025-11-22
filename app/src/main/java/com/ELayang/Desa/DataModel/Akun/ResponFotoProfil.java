@@ -1,28 +1,20 @@
 package com.ELayang.Desa.DataModel.Akun;
 
-public class ResponFotoProfil {
-    // Field sesuai dengan respons JSON dari API
-    private boolean kode;       // Menyimpan nilai 'kode' (true/false)
-    private String pesan;       // Menyimpan pesan kesalahan atau informasi
-    private String image_url;   // Menyimpan URL gambar profil (jika ada)
+import com.google.gson.annotations.SerializedName;
 
-    // Getter dan Setter
-    public boolean isKode() {
-        return kode;
-    }
-    public void setKode(boolean kode) {
-        this.kode = kode;
-    }
-    public String getPesan() {
-        return pesan;
-    }
-    public void setPesan(String pesan) {
-        this.pesan = pesan;
-    }
-    public String getImageUrl() {
-        return image_url;
-    }
-    public void setImageUrl(String image_url) {
-        this.image_url = image_url;
-    }
+public class ResponFotoProfil {
+    private int kode;
+    private String username;
+    private String nama;
+    private String email;
+    private String profile_image;
+    private String url_gambar_profil; // tambahkan ini
+
+    // getter
+    public int getKode() { return kode; }
+    public String getUsername() { return username; }
+    public String getNama() { return nama; }
+    public String getEmail() { return email; }
+    public String getProfile_image() { return profile_image; }
+    public String getUrl_gambar_profil() { return url_gambar_profil; } // tambahkan getter ini
 }

@@ -309,37 +309,16 @@ public interface APIRequestData {
 
     @FormUrlEncoded
     @POST("update_akun.php")
-    Call<ResponUpdate> update_akun(
+    Call<ResponUpdate> updateAkun(
             @Field("username") String username,
+            @Field("nama") String nama,
             @Field("email") String email,
-            @Field("password") String password,
-            @Field("nama") String nama
-    );
-
-    @Multipart
-    @POST("update_akun.php")
-    Call<ResponUpdate> updateAkunWithImage(
-            @Part("username") RequestBody username,
-            @Part("email") RequestBody email,
-            @Part("password") RequestBody password,
-            @Part("nama") RequestBody nama,
-            @Part MultipartBody.Part profile_image
+            @Field("profile_image_base64") String base64Image
     );
 
 
-    @Multipart
-    @POST("update_akun.php")
-    Call<ResponUpdate> updateAkunWithoutImage(
-            @Part("username") RequestBody username,
-            @Part("email") RequestBody email,
-            @Part("password") RequestBody password,
-            @Part("nama") RequestBody nama
-    );
-
-    @GET("ambil_foto_profil.php") // Sesuaikan dengan URL API Anda
-    Call<ResponFotoProfil> getFotoProfil(
-            @Query("username") String username)
-    ;
+    @GET("ambil_foto_profil.php")
+    Call<ResponFotoProfil> getProfile(@Query("username") String username);
 
     @FormUrlEncoded
     @POST("dashboard.php")
@@ -490,7 +469,7 @@ public interface APIRequestData {
             @Part("agama") RequestBody agama,
             @Part("tempat_tanggal_lahir") RequestBody ttl,
             @Part("pendidikan") RequestBody pendidikan,
-            @Part("alamat_lengkap") RequestBody alamat,
+            @Part("alamat") RequestBody alamat,
 
             @Part MultipartBody.Part file,  // jika tidak pakai file → kirim null
 

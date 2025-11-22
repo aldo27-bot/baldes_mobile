@@ -81,9 +81,7 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
 
-
-
-
+    
 // Library Retrofit
     implementation ("com.squareup.okhttp3:okhttp:3.4.1")
     implementation ("com.squareup.okhttp3:logging-interceptor:3.4.1")

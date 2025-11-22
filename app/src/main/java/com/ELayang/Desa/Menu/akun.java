@@ -2,10 +2,7 @@ package com.ELayang.Desa.Menu;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
-import static com.ELayang.Desa.API.RetroServer.API_FotoProfil;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -17,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,7 +29,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.gms.common.ConnectionResult;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,67 +63,90 @@ public class akun extends Fragment {
         email.setText(sp.getString("email", ""));
         usernamee.setText(username);
 
-        loadFoto(username);
+        loadProfileImage(username);
 
-        buka.setOnClickListener(v -> startActivityForResult(new Intent(getContext(), edit_profil.class), 100));
+        // buka edit profil
+        buka.setOnClickListener(v -> startActivityForResult(
+                new Intent(getContext(), edit_profil.class), 100));
 
+        // logout
         keluar.setOnClickListener(v -> logout());
 
         return view;
     }
 
-    private void loadFoto(String username) {
-
+    private void loadProfileImage(String username) {
         SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
         String savedUrl = sp.getString("photo_url", "");
 
         if (!savedUrl.isEmpty()) {
-            Glide.with(this)
-                    .load(API_FotoProfil + savedUrl)
-                    .circleCrop()
-                    .placeholder(R.drawable.akun_profil)
-                    .error(R.drawable.akun_profil)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(foto);
+            // gunakan savedUrl jika ada
+            loadWithGlide(savedUrl);
             return;
         }
 
-        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        api.getFotoProfil(username).enqueue(new Callback<ResponFotoProfil>() {
+        // ambil dari API jika belum ada
+        APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<ResponFotoProfil> call = apiRequestData.getProfile(username);
+        call.enqueue(new Callback<ResponFotoProfil>() {
             @Override
             public void onResponse(Call<ResponFotoProfil> call, Response<ResponFotoProfil> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isKode()) {
-
-                    String url = response.body().getImageUrl();
-                    sp.edit().putString("photo_url", url).apply();
-
-                    Glide.with(akun.this)
-                            .load(API_FotoProfil + url)
-                            .circleCrop()
-                            .placeholder(R.drawable.akun_profil)
-                            .error(R.drawable.akun_profil)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
-                            .into(foto);
-
+                if (response.isSuccessful() && response.body() != null) {
+                    ResponFotoProfil data = response.body();
+                    if (data.getKode() == 1) {
+                        String url = data.getUrl_gambar_profil();
+                        if (url != null && !url.isEmpty()) {
+                            url = url.replace(" ", "%20");
+                            sp.edit().putString("photo_url", url).apply();
+                            loadWithGlide(url);
+                        } else {
+                            foto.setImageResource(R.drawable.akun_profil);
+                        }
+                    } else {
+                        foto.setImageResource(R.drawable.akun_profil);
+                    }
                 } else {
-                    Log.e("API", "Gagal memuat foto");
+                    foto.setImageResource(R.drawable.akun_profil);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponFotoProfil> call, Throwable t) {
-                Log.e("API", "Error: " + t.getMessage());
+                Log.e("API", "Error load profile: " + t.getMessage());
+                foto.setImageResource(R.drawable.akun_profil);
             }
         });
     }
 
+    private void loadWithGlide(String url) {
+        Glide.with(this)
+                .load(url)
+                .placeholder(R.drawable.akun_profil)
+                .error(R.drawable.akun_profil)
+                .circleCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .transition(DrawableTransitionOptions.withCrossFade(300))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.e("Glide", "Gagal memuat foto profil: " + e.getMessage());
+                        Toast.makeText(getContext(), "Gagal memuat foto profil!", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        Log.d("Glide", "Foto profil berhasil dimuat.");
+                        return false;
+                    }
+                })
+                .into(foto);
+    }
+
     private void logout() {
         SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.clear();
-        editor.apply();
+        sp.edit().clear().apply();
         getActivity().finish();
     }
 
@@ -133,7 +154,7 @@ public class akun extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100 && resultCode == RESULT_OK) {
             SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-            loadFoto(sp.getString("username", ""));
+            loadProfileImage(sp.getString("username", ""));
         }
     }
 }

@@ -62,9 +62,10 @@
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:src="@drawable/akun_profil"
-                android:tint="@color/gray"
                 android:scaleType="centerCrop"
-                android:clipToOutline="true"/>
+                android:clipToOutline="true"
+                android:clickable="false"
+                android:focusable="false"/>
 
             <ProgressBar
                 android:id="@+id/progressBar"

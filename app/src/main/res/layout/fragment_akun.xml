@@ -38,7 +38,6 @@
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:src="@drawable/akun_profil"
-            android:tint="@color/gray"
             android:scaleType="centerCrop"
             android:layout_marginBottom="30dp"
             android:padding="4dp"
