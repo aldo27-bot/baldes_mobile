@@ -130,6 +130,7 @@ public interface APIRequestData {
             @Part("alamat") RequestBody alamat,
             @Part("jenis_kelamin") RequestBody jk,
             @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("pekerjaan") RequestBody pekerjaan,
             @Part("agama") RequestBody agama,
             @Part("kewarganegaraan") RequestBody kewarganegaraan,
             @Part("keterangan") RequestBody keterangan,
@@ -281,7 +282,7 @@ public interface APIRequestData {
     Call<ResponBedaNama> bedaNama(
             @Part("username") RequestBody username,
             @Part("kode_surat") RequestBody kode_surat,
-            @Part("nama_lama") RequestBody nama_lama,
+            @Part("nama") RequestBody nama,
             @Part("nama_baru") RequestBody nama_baru,
             @Part("nik") RequestBody nik,
             @Part("alamat") RequestBody alamat,
@@ -438,6 +439,7 @@ public interface APIRequestData {
             @Part("username") RequestBody username,
             @Part("nama") RequestBody nama,
             @Part("alamat") RequestBody alamat,
+            @Part("keterangan_usaha") RequestBody keterangan_usaha,
             @Part("tempat_tanggal_lahir") RequestBody ttl,
             @Part("kode_surat") RequestBody kodeSurat,
             @Part MultipartBody.Part file   // OPSIONAL

@@ -13,11 +13,22 @@ public class ModelSuratUsaha {
     @SerializedName("nama")
     private String nama;
 
+    // 🛠️ TAMBAHAN: Field Alamat Pemohon, sesuai input di Activity
+    @SerializedName("alamat")
+    private String alamat;
+
+    // 🛠️ TAMBAHAN: Field Tempat/Tanggal Lahir (TTL), sesuai input di Activity
+    @SerializedName("tempat_tanggal_lahir")
+    private String tempatTanggalLahir;
+
     @SerializedName("nik")
     private String nik;
 
     @SerializedName("lokasi_usaha")
     private String lokasiUsaha;
+
+    @SerializedName("keterangan_usaha")
+    private String keterangan_usaha;
 
     @SerializedName("nama_usaha")
     private String namaUsaha;
@@ -27,6 +38,8 @@ public class ModelSuratUsaha {
 
     @SerializedName("tahun_berdiri")
     private String tahunBerdiri;
+
+    // --- Getter dan Setter ---
 
     public String getIdSurat() {
         return idSurat;
@@ -52,6 +65,24 @@ public class ModelSuratUsaha {
         this.nama = nama;
     }
 
+    // Getter dan Setter untuk Alamat
+    public String getAlamat() {
+        return alamat;
+    }
+
+    public void setAlamat(String alamat) {
+        this.alamat = alamat;
+    }
+
+    // Getter dan Setter untuk Tempat/Tanggal Lahir
+    public String getTempatTanggalLahir() {
+        return tempatTanggalLahir;
+    }
+
+    public void setTempatTanggalLahir(String tempatTanggalLahir) {
+        this.tempatTanggalLahir = tempatTanggalLahir;
+    }
+
     public String getNik() {
         return nik;
     }
@@ -67,6 +98,12 @@ public class ModelSuratUsaha {
     public void setLokasiUsaha(String lokasiUsaha) {
         this.lokasiUsaha = lokasiUsaha;
     }
+
+    public String getKeteranganUsaha() {
+        return keterangan_usaha;
+    }
+
+    public void setKeteranganUsaha(String keterangan_usaha) { this.keterangan_usaha = keterangan_usaha; }
 
     public String getNamaUsaha() {
         return namaUsaha;

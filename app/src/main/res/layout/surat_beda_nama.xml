@@ -58,7 +58,7 @@
                 android:textColor="@color/color_label_text" />
 
             <EditText
-                android:id="@+id/etNamaLama"
+                android:id="@+id/etNama"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

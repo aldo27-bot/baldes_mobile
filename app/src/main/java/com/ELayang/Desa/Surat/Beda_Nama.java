@@ -42,7 +42,7 @@ public class Beda_Nama extends AppCompatActivity {
     private static final int PICK_FILE_REQUEST = 1;
 
     // Komponen UI
-    EditText etNamaLama, etNamaBaru, etNIK, etTTL, etPekerjaan, etAlamat, etKeterangan;
+    EditText etNama, etNamaBaru, etNIK, etTTL, etPekerjaan, etAlamat, etKeterangan;
     Button btnKirim;
     ImageButton btnBack;
     TextView btnChooseFile, tvNamaFile;
@@ -69,7 +69,7 @@ public class Beda_Nama extends AppCompatActivity {
         username = sp.getString("username", "").trim();
 
         // Inisialisasi UI
-        etNamaLama = findViewById(R.id.etNamaLama);
+        etNama = findViewById(R.id.etNama);
         etNamaBaru = findViewById(R.id.etNamaBaru);
         etNIK = findViewById(R.id.etNIK);
         etTTL = findViewById(R.id.etTTL);
@@ -105,8 +105,8 @@ public class Beda_Nama extends AppCompatActivity {
         }
 
         // Validasi Semua Field Text Wajib
-        if(etNamaLama.getText().toString().trim().isEmpty()){
-            etNamaLama.setError("Nama Lama wajib diisi");
+        if(etNama.getText().toString().trim().isEmpty()){
+            etNama.setError("Nama Lama wajib diisi");
             return false;
         }
         if(etNamaBaru.getText().toString().trim().isEmpty()){
@@ -151,7 +151,7 @@ public class Beda_Nama extends AppCompatActivity {
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
         // Ambil data teks
-        String namaLama = etNamaLama.getText().toString().trim();
+        String nama = etNama.getText().toString().trim();
         String namaBaru = etNamaBaru.getText().toString().trim();
         String nik = etNIK.getText().toString().trim();
         // Ganti nama variabel lokal 'ttl' menjadi 'tempat_tanggal_lahir' agar konsisten
@@ -164,7 +164,7 @@ public class Beda_Nama extends AppCompatActivity {
         Call<ResponBedaNama> call = api.bedaNama(
                 rb(username),
                 rb(kodeSurat),
-                rb(namaLama),
+                rb(nama),
                 rb(namaBaru),
                 rb(nik),
                 rb(alamat),

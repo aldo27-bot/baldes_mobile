@@ -6,6 +6,7 @@ public class ModelSKM {
     private String ttl; // Tempat, Tanggal Lahir
     private String jenis_kelamin;
     private String agama;
+    private String pekerjaan;
     private String alamat;
     private String kewarganegaraan;
     private String keterangan;
@@ -44,6 +45,9 @@ public class ModelSKM {
     public void setAgama(String agama) {
         this.agama = agama;
     }
+
+    public String getPekerjaan() { return pekerjaan; }
+    public void setPekerjaan(String pekerjaan) { this.pekerjaan = pekerjaan; }
 
     public String getAlamat() {
         return alamat;

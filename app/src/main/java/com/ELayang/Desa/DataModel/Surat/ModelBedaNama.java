@@ -7,8 +7,8 @@ public class ModelBedaNama {
     @SerializedName("no_pengajuan")
     private int no_pengajuan;
 
-    @SerializedName("nama_lama")
-    private String nama_lama;
+    @SerializedName("nama")
+    private String nama;
 
     @SerializedName("nama_baru")
     private String nama_baru;
@@ -40,8 +40,8 @@ public class ModelBedaNama {
     public int getNo_pengajuan() { return no_pengajuan; }
     public void setNo_pengajuan(int no_pengajuan) { this.no_pengajuan = no_pengajuan; }
 
-    public String getNama_lama() { return nama_lama; }
-    public void setNama_lama(String nama_lama) { this.nama_lama = nama_lama; }
+    public String getNama() { return nama; }
+    public void setNama(String nama) { this.nama = nama; }
 
     public String getNama_baru() { return nama_baru; }
     public void setNama_baru(String nama_baru) { this.nama_baru = nama_baru; }

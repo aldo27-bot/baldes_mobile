@@ -123,6 +123,27 @@
                 android:minHeight="48dp" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Keterangan Usaha"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etKeterangan"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bedanama"
+                android:gravity="top"
+                android:hint="Masukkan Keterangan Usaha Secara Detail"
+                android:inputType="textMultiLine"
+                android:minLines="5"
+                android:padding="12dp"
+                android:textSize="16sp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Dokumen Pendukung"

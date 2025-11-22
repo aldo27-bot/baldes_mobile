@@ -34,7 +34,7 @@ import retrofit2.Response;
 public class SuratUsaha extends AppCompatActivity {
 
     private ImageButton btnBack; // Deklarasi Tombol Kembali
-    private EditText etNama, etAlamat, etTTL;
+    private EditText etNama, etAlamat, etKeterangan, etTTL;
     private Button btnKirim, btnPilihFile;
     private TextView tvNamaFile; // Deklarasi TextView untuk nama file
 
@@ -52,8 +52,8 @@ public class SuratUsaha extends AppCompatActivity {
 
         etNama = findViewById(R.id.etNama);
         etAlamat = findViewById(R.id.etAlamat);
+        etKeterangan = findViewById(R.id.etKeterangan);
         etTTL = findViewById(R.id.etTTL);
-
         btnKirim = findViewById(R.id.btnKirim);
         btnPilihFile = findViewById(R.id.btnPilihFile);
         tvNamaFile = findViewById(R.id.tvNamaFile); // Inisialisasi TextView nama file
@@ -135,13 +135,14 @@ public class SuratUsaha extends AppCompatActivity {
         // Validasi
         String namaText = etNama.getText().toString().trim();
         String alamatText = etAlamat.getText().toString().trim();
+        String keteranganUsaha = etKeterangan.getText().toString().trim();
         String ttlText = etTTL.getText().toString().trim();
 
         if (username.isEmpty()) {
             Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (namaText.isEmpty() || alamatText.isEmpty() || ttlText.isEmpty()) {
+        if (namaText.isEmpty() || alamatText.isEmpty() || keteranganUsaha.isEmpty() || ttlText.isEmpty()) {
             Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -149,6 +150,7 @@ public class SuratUsaha extends AppCompatActivity {
 
         RequestBody nama = rb(namaText);
         RequestBody alamat = rb(alamatText);
+        RequestBody keterangan_usaha = rb(keteranganUsaha);
         RequestBody ttl = rb(ttlText);
         RequestBody user = rb(username);
         RequestBody kodeSurat = rb("SKU"); // Kode surat ini harus sesuai dengan API Anda
@@ -159,7 +161,7 @@ public class SuratUsaha extends AppCompatActivity {
                 : MultipartBody.Part.createFormData("file", "");
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponSuratUsaha> call = api.suratUsaha(user, nama, alamat, ttl, kodeSurat, fileFix);
+        Call<ResponSuratUsaha> call = api.suratUsaha(user, nama, alamat, keterangan_usaha, ttl, kodeSurat, fileFix);
 
         call.enqueue(new Callback<ResponSuratUsaha>() {
             @Override
@@ -196,6 +198,7 @@ public class SuratUsaha extends AppCompatActivity {
     private void clearForm() {
         etNama.setText("");
         etAlamat.setText("");
+        etKeterangan.setText("");
         etTTL.setText("");
         uriFile = null;
         filePart = null;

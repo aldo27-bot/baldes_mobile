@@ -41,7 +41,7 @@ public class SKM extends AppCompatActivity {
     private static final String TAG = "SKM_ACTIVITY";
 
     private ImageButton btnBack; // Deklarasi Tombol Kembali
-    private EditText etNama, etTTL, etJenisKelamin, etAgama, etAlamat, etKewarganegaraan, etKeterangan;
+    private EditText etNama, etTTL, etJenisKelamin, etPekerjaan, etAgama, etAlamat, etKewarganegaraan, etKeterangan;
     private Button btnKirim, btnChooseFile;
     private TextView tFileName;
     private Uri fileUri;
@@ -70,6 +70,7 @@ public class SKM extends AppCompatActivity {
         etNama = findViewById(R.id.etNama);
         etTTL = findViewById(R.id.etTTL);
         etJenisKelamin = findViewById(R.id.etJenisKelamin);
+        etPekerjaan = findViewById(R.id.etPekerjaan);
         etAgama = findViewById(R.id.etAgama);
         etAlamat = findViewById(R.id.etAlamat);
         etKewarganegaraan = findViewById(R.id.etkewarganegaraan); // ID ini dari layout lama/sebelumnya
@@ -138,6 +139,7 @@ public class SKM extends AppCompatActivity {
         String ttl = etTTL.getText().toString().trim();
         String jk = etJenisKelamin.getText().toString().trim();
         String agama = etAgama.getText().toString().trim();
+        String pekerjaan = etPekerjaan.getText().toString().trim();
         String alamat = etAlamat.getText().toString().trim();
         String kewarganegaraan = etKewarganegaraan.getText().toString().trim();
         String keterangan = etKeterangan.getText().toString().trim();
@@ -167,6 +169,7 @@ public class SKM extends AppCompatActivity {
         RequestBody rAlamat = RequestBody.create(MediaType.parse("text/plain"), alamat);
         RequestBody rJK = RequestBody.create(MediaType.parse("text/plain"), jk);
         RequestBody rTTL = RequestBody.create(MediaType.parse("text/plain"), ttl);
+        RequestBody rPekerjaan = RequestBody.create(MediaType.parse("text/plain"), pekerjaan);
         RequestBody rAgama = RequestBody.create(MediaType.parse("text/plain"), agama);
         RequestBody rKewarganegaraan = RequestBody.create(MediaType.parse("text/plain"), kewarganegaraan);
         RequestBody rKeterangan = RequestBody.create(MediaType.parse("text/plain"), keterangan);
@@ -235,7 +238,7 @@ public class SKM extends AppCompatActivity {
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponSkm> call = api.uploadSKM(
-                rNama, rAlamat, rJK, rTTL, rAgama,
+                rNama, rAlamat, rJK, rTTL, rAgama, rPekerjaan,
                 rKewarganegaraan, rKeterangan, rUsername, fotoPartFix // Menggunakan fotoPartFix
         );
 
