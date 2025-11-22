@@ -1,38 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="12dp"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_item">
+    android:layout_marginBottom="10dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    android:foreground="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/tvJudul"
-        android:text="Judul Aspirasi"
-        android:textStyle="bold"
-        android:textSize="16sp"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:padding="12dp">
 
-    <TextView
-        android:id="@+id/tvPesan"
-        android:text="Pesan notifikasi"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <!-- garis status kiri -->
+        <View
+            android:id="@+id/view_status_bar"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp" />
 
-    <TextView
-        android:id="@+id/tvTanggapan"
-        android:text="Tanggapan admin"
-        android:textSize="14sp"
-        android:textColor="#444"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <!-- Icon kecil -->
+        <ImageView
+            android:id="@+id/img_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toEndOf="@id/view_status_bar"
+            android:layout_toRightOf="@id/view_status_bar"
+            android:layout_alignParentTop="true"
+            android:contentDescription="icon"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher_round" />
 
-    <TextView
-        android:id="@+id/tvTanggal"
-        android:text="Tanggal"
-        android:textSize="12sp"
-        android:textColor="#888"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        <!-- Status & judul -->
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/img_icon"
+            android:layout_toRightOf="@id/img_icon"
+            android:layout_alignTop="@id/img_icon"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:text="Selesai"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <!-- No pengajuan -->
+        <TextView
+            android:id="@+id/tv_nopengajuan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_status"
+            android:layout_alignStart="@id/tv_status"
+            android:layout_marginTop="4dp"
+            android:text="No: 123456"
+            android:textSize="14sp"/>
+
+        <!-- Kode surat di sebelah kanan atas -->
+        <TextView
+            android:id="@+id/tv_kode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="SKTM"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <!-- Tanggal & alasan -->
+        <TextView
+            android:id="@+id/tv_tanggal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_nopengajuan"
+            android:layout_alignStart="@id/tv_nopengajuan"
+            android:layout_marginTop="6dp"
+            android:text="22 Nov 2025 - 10:12"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_alasan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_tanggal"
+            android:layout_marginTop="6dp"
+            android:layout_toEndOf="@id/view_status_bar"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Alasan: -"
+            android:textSize="13sp"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

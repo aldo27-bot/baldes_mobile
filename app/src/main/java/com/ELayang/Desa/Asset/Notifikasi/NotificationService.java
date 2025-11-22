@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat;
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
+import com.ELayang.Desa.DataModel.Notifikasi.ResponPopup;
 import com.ELayang.Desa.MainActivity;
 import com.ELayang.Desa.R;
 
@@ -73,14 +74,16 @@ public class NotificationService extends JobIntentService {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager manager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
         }
     }
 
     private boolean isNotificationPermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+            return checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED;
         }
         return true;
     }
@@ -111,8 +114,7 @@ public class NotificationService extends JobIntentService {
         editor.apply();
     }
 
-    // --- Metode Persisten untuk SharedPreferences (Penting) ---
-
+    // --- Metode Persisten ---
     private void saveLastStatus(String status, String alasan) {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -131,49 +133,57 @@ public class NotificationService extends JobIntentService {
         return prefs.getString(KEY_LAST_ALASAN, "");
     }
 
-    // --- Akhir Metode Persisten ---
-
     // 🔔 Cek update surat
     private void checkForUpdatesSurat() {
         SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "");
 
-        // Ambil status terakhir yang tersimpan secara persisten
         final String storedLastStatus = getLastStatus();
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponNotifikasi> call = api.notifikasi_popup(username);
+        Call<ResponPopup> call = api.getPopupNotifikasi(username);
 
-        call.enqueue(new Callback<ResponNotifikasi>() {
+        call.enqueue(new Callback<ResponPopup>() {
             @Override
-            public void onResponse(Call<ResponNotifikasi> call, Response<ResponNotifikasi> response) {
-                // Periksa jika API sukses dan mengembalikan data valid (kode = 1)
-                if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
-                    String currentStatus = response.body().getStatus();
-                    String currentAlasan = response.body().getAlasan();
+            public void onResponse(Call<ResponPopup> call, Response<ResponPopup> response) {
 
-                    // Cek apakah status saat ini berbeda dengan status terakhir yang disimpan
-                    if (currentStatus != null && !currentStatus.equals(storedLastStatus)) {
+                if (response.isSuccessful() &&
+                        response.body() != null &&
+                        response.body().getKode() == 1) {
 
-                        // Status berubah, kirim notifikasi
+                    ResponPopup data = response.body();
+
+                    String currentStatus = data.getStatus();
+                    String currentAlasan = data.getAlasan();
+
+                    if (currentStatus != null &&
+                            !currentStatus.equals(storedLastStatus)) {
+
                         if ("Tolak".equals(currentStatus)) {
-                            String pesan = currentAlasan != null ? "Alasan: " + currentAlasan : "Surat Ditolak";
+                            String pesan = currentAlasan != null ?
+                                    "Alasan: " + currentAlasan :
+                                    "Surat Ditolak";
+
                             showNotification("Surat Ditolak", pesan);
+
                         } else if ("Selesai".equals(currentStatus)) {
-                            String pesan = currentAlasan != null ? currentAlasan : "Surat Selesai Diproses";
+                            String pesan = currentAlasan != null ?
+                                    currentAlasan :
+                                    "Surat Selesai Diproses";
+
                             showNotification("Surat Selesai Diproses", pesan);
                         }
 
-                        // Simpan status dan alasan baru ke memori persisten
-                        saveLastStatus(currentStatus, currentAlasan != null ? currentAlasan : "");
+                        saveLastStatus(currentStatus,
+                                currentAlasan != null ? currentAlasan : "");
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponNotifikasi> call, Throwable t) {
-                Log.e("NotifSurat", "Gagal koneksi atau error Retrofit: " + t.getMessage());
-                // Penting: Pastikan masalah koneksi PHP (koneksi.php not found) sudah teratasi
+            public void onFailure(Call<ResponPopup> call, Throwable t) {
+                Log.e("NotifSurat",
+                        "Gagal koneksi: " + t.getMessage());
             }
         });
     }
@@ -185,17 +195,21 @@ public class NotificationService extends JobIntentService {
         }
 
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.logo)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.logo)
+                        .setContentTitle(title)
+                        .setContentText(message)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent);
 
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         manager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }

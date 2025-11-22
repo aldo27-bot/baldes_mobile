@@ -6,7 +6,8 @@ import com.ELayang.Desa.DataModel.Lupa_Password.ResponPassword1;
 import com.ELayang.Desa.DataModel.Lupa_Password.ResponPassword2;
 import com.ELayang.Desa.DataModel.Akun.ResponLogin;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
-import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasiAspirasi;
+//import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasiAspirasi;
+import com.ELayang.Desa.DataModel.Notifikasi.ResponPopup;
 import com.ELayang.Desa.DataModel.Register.ResponDelete;
 import com.ELayang.Desa.DataModel.Register.ResponOTP;
 import com.ELayang.Desa.DataModel.Register.ResponRegister1;
@@ -46,9 +47,9 @@ public interface APIRequestData {
     @GET("Retrieve.php")
     Call<ResponLogin> ardRetrieveData();
 
-    @POST("ambil_notifikasi_aspirasi.php")
-    @FormUrlEncoded
-    Call<ResponNotifikasi> getNotifikasi(@Field("username") String username);
+//    @POST("ambil_notifikasi_aspirasi.php")
+//    @FormUrlEncoded
+//    Call<ResponNotifikasi> getNotifikasi(@Field("username") String username);
 
     @POST("notifikasi_popup_aspirasi.php")
     @FormUrlEncoded
@@ -92,19 +93,19 @@ public interface APIRequestData {
             @Part MultipartBody.Part foto // foto boleh null
     );
 
-    @FormUrlEncoded
-    @POST("ambil_notifikasi_aspirasi.php")
-    Call<ResponNotifikasiAspirasi> getNotifikasiAspirasi(
-            @Field("username") String username
-    );
-
-    @FormUrlEncoded
-    @POST("DatabaseMobile/kirim_notifikasi_user.php")
-    Call<ResponNotifikasiAspirasi> kirimNotifikasiUser(
-            @Field("id") int id,
-            @Field("status") String status,
-            @Field("tanggapan") String tanggapan
-    );
+//    @FormUrlEncoded
+//    @POST("ambil_notifikasi_aspirasi.php")
+//    Call<ResponNotifikasiAspirasi> getNotifikasiAspirasi(
+//            @Field("username") String username
+//    );
+//
+//    @FormUrlEncoded
+//    @POST("DatabaseMobile/kirim_notifikasi_user.php")
+//    Call<ResponNotifikasiAspirasi> kirimNotifikasiUser(
+//            @Field("id") int id,
+//            @Field("status") String status,
+//            @Field("tanggapan") String tanggapan
+//    );
 
     @Multipart
     @POST("surat/skck.php")
@@ -479,12 +480,13 @@ public interface APIRequestData {
     );
     @FormUrlEncoded
     @POST("notifikasi.php")
-    Call<ResponNotifikasi> notif(
+    Call<ResponNotifikasi> getNotifikasi(
             @Field("username") String username
     );
+
     @FormUrlEncoded
     @POST("notifikasi_popup.php")
-    Call<ResponNotifikasi> notifikasi_popup(
+    Call<ResponPopup> getPopupNotifikasi(
             @Field("username") String username
     );
-};
+}

@@ -1,111 +1,178 @@
 package com.ELayang.Desa.Menu;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView; // Import TextView
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.Asset.Adapter.AdapterNotifikasi;
 import com.ELayang.Desa.DataModel.Notifikasi.ModelNotifikasi;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
+import com.ELayang.Desa.DataModel.Notifikasi.ResponPopup;
 import com.ELayang.Desa.R;
 
 import java.util.ArrayList;
-import java.util.List; // Menggunakan List untuk type-safety
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Notifikasi extends Fragment {
-    private ArrayList<ModelNotifikasi> data = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private TextView tvNotAvailable; // Deklarasi TextView
 
+    private RecyclerView rv;
+    private SwipeRefreshLayout swipe;
+    private TextView tvNotAvail;
+
+    private AdapterNotifikasi adapter;
+    private List<ModelNotifikasi> list = new ArrayList<>();
+
+    private SharedPreferences prefLogin;
+    private SharedPreferences prefNotif;
+
+    private static final String PREF_LOGIN = "prefLogin";
+    private static final String PREF_NOTIF = "NotifPrefs";
+    private static final String KEY_LAST_STATUS = "last_surat_status";
+
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
-        // Asumsi layout file untuk Fragment ini bernama R.layout.fragment_notifikasi
-        // (atau mungkin R.layout.notifikasi, sesuai yang ada di XML sebelumnya)
-        View view = inflater.inflate(R.layout.fragment_notifikasi, container, false);
+        View v = inflater.inflate(R.layout.fragment_notifikasi, container, false);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", "");
+        rv = v.findViewById(R.id.view);
+        swipe = v.findViewById(R.id.swipeRefresh);
+        tvNotAvail = v.findViewById(R.id.tv_not_available);
 
-        recyclerView = view.findViewById(R.id.view);
-        tvNotAvailable = view.findViewById(R.id.tv_not_available); // 1. Dapatkan Referensi TextView
+        rv.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Set the layout manager
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+        adapter = new AdapterNotifikasi(getContext(), list);
+        rv.setAdapter(adapter);
 
-        // Awalnya, sembunyikan RecyclerView (opsional, tapi disarankan saat memuat data)
-        recyclerView.setVisibility(View.GONE);
-        tvNotAvailable.setVisibility(View.GONE);
+        // Shared Pref
+        prefLogin = requireActivity().getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
+        prefNotif = requireActivity().getSharedPreferences(PREF_NOTIF, Context.MODE_PRIVATE);
 
-        // Panggil API untuk memuat data
-        loadNotifikasi(username);
+        adapter.setOnItemClickListener(item -> {
+            Toast.makeText(getContext(), "Klik No. Pengajuan: " + item.getNopengajuan(), Toast.LENGTH_SHORT).show();
+        });
 
-        return view;
+        swipe.setOnRefreshListener(this::fetchNotifikasi);
+
+        // Mulai ambil data
+        swipe.setRefreshing(true);
+        fetchNotifikasi();
+        checkPopup();
+
+        return v;
     }
 
-    // Metode untuk memuat notifikasi
-    private void loadNotifikasi(String username) {
-        APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponNotifikasi> call = apiRequestData.notif(username);
+    // ========================================================================================
+    // AMBIL LIST NOTIFIKASI
+    // ========================================================================================
+    private void fetchNotifikasi() {
+
+        String username = prefLogin.getString("username", "");
+        if (username.isEmpty()) {
+            swipe.setRefreshing(false);
+            tvNotAvail.setVisibility(View.VISIBLE);
+            tvNotAvail.setText("Harap login terlebih dahulu.");
+            return;
+        }
+
+        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<ResponNotifikasi> call = api.getNotifikasi(username);
 
         call.enqueue(new Callback<ResponNotifikasi>() {
             @Override
             public void onResponse(Call<ResponNotifikasi> call, Response<ResponNotifikasi> response) {
-                // 2. Logika Penanganan Respons API
-                if (response.body() != null && response.body().getKode() == 1) {
-                    List<ModelNotifikasi> list = response.body().getData(); // Gunakan List
-                    data.clear();
+                swipe.setRefreshing(false);
 
-                    if (list != null && !list.isEmpty()) {
-                        data.addAll(list);
+                if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
 
-                        // Data ada: Tampilkan RecyclerView, Sembunyikan TextView
-                        AdapterNotifikasi recyclerViewAdapter = new AdapterNotifikasi(data);
-                        recyclerView.setAdapter(recyclerViewAdapter);
-                        recyclerViewAdapter.notifyDataSetChanged();
+                    list.clear();
+                    list.addAll(response.body().getData());
+                    adapter.notifyDataSetChanged();
 
-                        recyclerView.setVisibility(View.VISIBLE);
-                        tvNotAvailable.setVisibility(View.GONE);
-
-                    } else {
-                        // Data kosong: Sembunyikan RecyclerView, Tampilkan TextView
-                        recyclerView.setVisibility(View.GONE);
-                        tvNotAvailable.setText("BELUM ADA NOTIFIKASI"); // Pesan khusus jika list kosong
-                        tvNotAvailable.setVisibility(View.VISIBLE);
-                    }
+                    tvNotAvail.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
 
                 } else {
-                    // API mengembalikan kode error (bukan 1): Tampilkan TextView "Fitur Belum Tersedia"
-                    recyclerView.setVisibility(View.GONE);
-                    tvNotAvailable.setText(R.string.text_fitur_belum_tersedia); // Asumsi Anda punya string di values
-                    tvNotAvailable.setVisibility(View.VISIBLE);
+                    list.clear();
+                    adapter.notifyDataSetChanged();
+                    tvNotAvail.setVisibility(View.VISIBLE);
+                    tvNotAvail.setText("Tidak ada notifikasi.");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponNotifikasi> call, Throwable t) {
-                // Gagal koneksi/jaringan: Tampilkan TextView "Fitur Belum Tersedia"
-                recyclerView.setVisibility(View.GONE);
-                tvNotAvailable.setText("--FITUR AKAN SEGERA TERSEDIA--"); // Pesan khusus
-                tvNotAvailable.setVisibility(View.VISIBLE);
+                swipe.setRefreshing(false);
+                tvNotAvail.setVisibility(View.VISIBLE);
+                tvNotAvail.setText("Kesalahan: " + t.getMessage());
+                Log.e("NOTIFIKASI", "ERROR => " + t.getMessage());
+            }
+        });
+    }
 
-                // Disarankan: Tambahkan logging error (seperti Log.e("NotifikasiFrag", "Error: ", t);)
+    // ========================================================================================
+    // POPUP NOTIFIKASI (STATUS BARU)
+    // ========================================================================================
+    private void checkPopup() {
+
+        String username = prefLogin.getString("username", "");
+        if (username.isEmpty()) return;
+
+        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<ResponPopup> call = api.getPopupNotifikasi(username);
+
+        call.enqueue(new Callback<ResponPopup>() {
+            @Override
+            public void onResponse(Call<ResponPopup> call, Response<ResponPopup> response) {
+
+                if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
+
+                    String currentStatus = response.body().getStatus();
+                    String currentAlasan = response.body().getAlasan();
+
+                    String last = prefNotif.getString(KEY_LAST_STATUS, "");
+
+                    if (currentStatus != null && !currentStatus.equals(last)) {
+
+                        String title = "Status Pengajuan: " + response.body().getNopengajuan();
+                        String msg = currentStatus +
+                                (currentAlasan != null && !currentAlasan.isEmpty()
+                                        ? "\nAlasan: " + currentAlasan : "");
+
+                        new AlertDialog.Builder(requireContext())
+                                .setTitle(title)
+                                .setMessage(msg)
+                                .setPositiveButton("OK", (d, i) -> d.dismiss())
+                                .show();
+
+                        prefNotif.edit().putString(KEY_LAST_STATUS, currentStatus).apply();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponPopup> call, Throwable t) {
+                Log.e("POPUP", "ERROR => " + t.getMessage());
             }
         });
     }

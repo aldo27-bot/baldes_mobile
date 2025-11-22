@@ -1,78 +1,99 @@
 package com.ELayang.Desa.Asset.Adapter;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
+import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ELayang.Desa.DataModel.Notifikasi.ModelNotifikasi;
-import com.ELayang.Desa.Menu.detail_permintaan_surat;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.ELayang.Desa.R;
+import com.ELayang.Desa.DataModel.Notifikasi.ModelNotifikasi;
+import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class AdapterNotifikasi extends RecyclerView.Adapter<AdapterNotifikasi.recycleViewHolder> {
+public class AdapterNotifikasi extends RecyclerView.Adapter<AdapterNotifikasi.VH> {
 
-private ArrayList<ModelNotifikasi> data;
+    private final Context ctx;
+    private final List<ModelNotifikasi> items;
 
-    public AdapterNotifikasi(ArrayList<ModelNotifikasi> data) {
-        this.data = data;
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(ModelNotifikasi item);
     }
 
+    public AdapterNotifikasi(Context ctx, List<ModelNotifikasi> items) {
+        this.ctx = ctx;
+        this.items = items;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener l) {
+        this.listener = l;
+    }
 
     @NonNull
     @Override
-    public recycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_recycle_view, parent, false);
-        return new recycleViewHolder(itemView);
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(ctx).inflate(R.layout.item_notifikasi, parent, false);
+        return new VH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull recycleViewHolder holder, int position) {
-        holder.nopengajuan.setText(data.get(position).getNopengajuan());
-        holder.keterangan.setText(data.get(position).getAlasan());
-        holder.kodesurat.setText(data.get(position).getKode());
-        holder.tanggal.setText(data.get(position).getTanggal());
-        holder.status.setText(data.get(position).getStatus());
+    public void onBindViewHolder(@NonNull VH holder, int position) {
+        ModelNotifikasi d = items.get(position);
 
-        holder.itemView.setOnClickListener(v->{
-            if (data.get(position).getStatus().equals("Tolak")){
-                String kode = data.get(position).getKode();
-                String no_pengajuan = data.get(position).getNopengajuan();
-//                    String namaAdvis = item.getNama_advis();
+        holder.tvStatus.setText(d.getStatus() != null ? d.getStatus() : "-");
+        holder.tvNo.setText("No: " + (d.getNopengajuan() != null ? d.getNopengajuan() : "-"));
+        holder.tvKode.setText(d.getKode() != null ? d.getKode() : "-");
+        holder.tvTanggal.setText(d.getTanggal() != null ? d.getTanggal() : "-");
+        holder.tvAlasan.setText(d.getAlasan() != null && !d.getAlasan().isEmpty()
+                ? "Alasan: " + d.getAlasan()
+                : "");
 
-                // Kirim data ke aktivitas selanjutnya
-                Intent intent = new Intent(v.getContext(), detail_permintaan_surat.class);
-                intent.putExtra("kode_surat", kode);
-                intent.putExtra("no_pengajuan", no_pengajuan);
-//                    intent.putExtra("nama_advis", namaAdvis);
-                v.getContext().startActivity(intent);
-            }
+        // warna status
+        String status = d.getStatus() != null ? d.getStatus().toLowerCase() : "";
+        int color;
+        if (status.contains("selesai")) color = Color.parseColor("#2e7d32");
+        else if (status.contains("tolak")) color = Color.parseColor("#c62828");
+        else if (status.contains("proses") || status.contains("menunggu")) color = Color.parseColor("#fb8c00");
+        else color = Color.parseColor("#9e9e9e");
+
+        holder.viewStatusBar.setBackgroundColor(color);
+
+        Glide.with(ctx)
+                .load(R.drawable.bg_card)
+                .into(holder.imgIcon);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onItemClick(d);
         });
-
     }
 
     @Override
     public int getItemCount() {
-
-        return (data != null) ? data.size():0;
+        return items.size();
     }
-    public class recycleViewHolder extends  RecyclerView.ViewHolder{
-        private TextView nopengajuan, keterangan, kodesurat, tanggal, status;
-//        private ImageView icon;
 
-        public recycleViewHolder(View view){
-            super(view);
-            kodesurat = (TextView) view.findViewById(R.id.kode_surat);
-            keterangan = (TextView)  view.findViewById(R.id.keterangan);
-            nopengajuan = (TextView)  view.findViewById(R.id.no_pengajuan);
-            tanggal = view.findViewById(R.id.tanggal);
-            status = view.findViewById(R.id.status);
-//            icon = view.findViewById(R.id.ikon);
+    static class VH extends RecyclerView.ViewHolder {
+        View viewStatusBar;
+        ImageView imgIcon;
+        TextView tvStatus, tvNo, tvKode, tvTanggal, tvAlasan;
+
+        VH(@NonNull View v) {
+            super(v);
+            viewStatusBar = v.findViewById(R.id.view_status_bar);
+            imgIcon = v.findViewById(R.id.img_icon);
+            tvStatus = v.findViewById(R.id.tv_status);
+            tvNo = v.findViewById(R.id.tv_nopengajuan);
+            tvKode = v.findViewById(R.id.tv_kode);
+            tvTanggal = v.findViewById(R.id.tv_tanggal);
+            tvAlasan = v.findViewById(R.id.tv_alasan);
         }
     }
 }
