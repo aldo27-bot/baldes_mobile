@@ -36,7 +36,7 @@ import retrofit2.Response;
 public class SKB extends AppCompatActivity {
 
     private ImageButton btnBack; // Deklarasi Tombol Kembali
-    private EditText etNama, etNik, etAgama, etTTL, etPendidikan, etAlamat;
+    private EditText etNama, etNik, etAgama, etTTL, etPendidikan, etAlamat, etKeperluan;
     private Button btnPilihFile, btnKirim;
     private TextView tvNamaFile;
     private Uri fileUri = null;
@@ -71,6 +71,7 @@ public class SKB extends AppCompatActivity {
         etTTL = findViewById(R.id.etTTL);
         etPendidikan = findViewById(R.id.etPendidikan);
         etAlamat = findViewById(R.id.etAlamat);
+        etKeperluan = findViewById(R.id.etKeperluan);
         btnPilihFile = findViewById(R.id.btnPilihFile);
         btnKirim = findViewById(R.id.btnKirim);
         tvNamaFile = findViewById(R.id.tvNamaFile);
@@ -149,9 +150,11 @@ public class SKB extends AppCompatActivity {
         String ttl = etTTL.getText().toString().trim();
         String pendidikan = etPendidikan.getText().toString().trim();
         String alamat = etAlamat.getText().toString().trim();
+        String keperluan = etKeperluan.getText().toString().trim();
 
         // Validasi field wajib
-        if (nama.isEmpty() || nik.isEmpty() || agama.isEmpty() || ttl.isEmpty() || pendidikan.isEmpty() || alamat.isEmpty()) {
+        if (nama.isEmpty() || nik.isEmpty() || agama.isEmpty() || ttl.isEmpty()
+                || pendidikan.isEmpty() || alamat.isEmpty() || keperluan.isEmpty()) {
             Toast.makeText(this, "Semua field wajib diisi", Toast.LENGTH_LONG).show();
             return;
         }
@@ -167,6 +170,7 @@ public class SKB extends AppCompatActivity {
         RequestBody rbTTL = RequestBody.create(MediaType.parse("text/plain"), ttl);
         RequestBody rbPendidikan = RequestBody.create(MediaType.parse("text/plain"), pendidikan);
         RequestBody rbAlamat = RequestBody.create(MediaType.parse("text/plain"), alamat);
+        RequestBody rbKeperluan = RequestBody.create(MediaType.parse("text/plain"), keperluan);
         RequestBody rbKodeSurat = RequestBody.create(MediaType.parse("text/plain"), "SKBB");
         RequestBody rbIdPejabat = RequestBody.create(MediaType.parse("text/plain"), "");
         RequestBody rbUsername = RequestBody.create(MediaType.parse("text/plain"), username);
@@ -187,7 +191,8 @@ public class SKB extends AppCompatActivity {
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponSkb> kirim = api.kirimskb(
                 rbNama, rbNik, rbAgama, rbTTL, rbPendidikan, rbAlamat,
-                fotoPartFix, // Menggunakan fotoPartFix
+                fotoPartFix,
+                rbKeperluan,// Menggunakan fotoPartFix
                 rbKodeSurat, rbIdPejabat, rbUsername
         );
 
@@ -225,6 +230,7 @@ public class SKB extends AppCompatActivity {
         etTTL.setText("");
         etPendidikan.setText("");
         etAlamat.setText("");
+        etKeperluan.setText("");
         tvNamaFile.setText("Belum ada file dipilih");
         fileUri = null;
     }

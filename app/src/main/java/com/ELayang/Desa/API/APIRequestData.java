@@ -469,13 +469,13 @@ public interface APIRequestData {
             @Part("tempat_tanggal_lahir") RequestBody ttl,
             @Part("pendidikan") RequestBody pendidikan,
             @Part("alamat") RequestBody alamat,
-
-            @Part MultipartBody.Part file,  // jika tidak pakai file → kirim null
-
+            @Part MultipartBody.Part file,          // opsional
+            @Part("keperluan") RequestBody keperluan, // baru ditambahkan
             @Part("kode_surat") RequestBody kode_surat,
             @Part("id_pejabat_desa") RequestBody id_pejabat_desa,
             @Part("username") RequestBody username
     );
+
     @FormUrlEncoded
     @POST("notifikasi.php")
     Call<ResponNotifikasi> getNotifikasi(
