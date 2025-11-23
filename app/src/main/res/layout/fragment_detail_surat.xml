@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="@color/white">
+    android:padding="16dp">
 
     <LinearLayout
         android:orientation="vertical"
@@ -39,7 +38,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nama"
+                    android:text="=>Nama"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNama"
@@ -51,7 +50,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="NIK"
+                    android:text="=>NIK"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNik"
@@ -63,7 +62,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No Pengajuan"
+                    android:text="=>No Pengajuan"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNoPengajuan"
@@ -75,7 +74,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tanggal"
+                    android:text="=>Tanggal"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvTanggal"
@@ -87,7 +86,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Kode Surat"
+                    android:text="=>Kode Surat"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvKodeSurat"
@@ -99,7 +98,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Status"
+                    android:text="=>Status"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvStatus"

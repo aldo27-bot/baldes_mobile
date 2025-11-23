@@ -262,16 +262,12 @@ public interface APIRequestData {
             @Part("tempat_tanggal_lahir") RequestBody ttl,
             @Part("asal_sekolah") RequestBody asalSekolah,
             @Part("keperluan") RequestBody keperluan,
-
             @Part("nama_orangtua") RequestBody namaOrtu,
             @Part("nik_orangtua") RequestBody nikOrtu,
             @Part("alamat_orangtua") RequestBody alamatOrtu,
             @Part("tempat_tanggal_lahir_orangtua") RequestBody ttlOrtu,
-            @Part("pekerjaan_orangtua") RequestBody kerjaOrtu,
-
-            @Part("kode_surat") RequestBody kodeSurat,
+            @Part("pekerjaan_orangtua") RequestBody pekerjaanOrtu,
             @Part("username") RequestBody username,
-
             @Part MultipartBody.Part file
     );
 

@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    tools:context=".Surat.SKTM">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="32dp">
 
+        <!-- Tombol Kembali -->
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
@@ -27,11 +29,13 @@
             app:tint="@color/black"
             android:contentDescription="@string/desc_back_button"/>
 
+        <!-- Judul Form -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SKTM" android:textColor="@color/color_title_text"
+            android:text="Surat Keterangan Tidak Mampu"
+            android:textColor="@color/color_title_text"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginStart="8dp"
@@ -39,6 +43,7 @@
             app:layout_constraintStart_toEndOf="@+id/btnBack"
             app:layout_constraintTop_toTopOf="@+id/btnBack" />
 
+        <!-- Container Input -->
         <LinearLayout
             android:id="@+id/inputContainer"
             android:layout_width="match_parent"
@@ -48,22 +53,13 @@
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Data Siswa"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="16dp"/>
-
+            <!-- DATA ANAK -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nama Siswa"
+                android:text="Nama Anak"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
                 android:id="@+id/etNama"
                 android:layout_width="match_parent"
@@ -73,19 +69,18 @@
                 android:inputType="textPersonName"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="Nama lengkap siswa"
+                android:hint="Nama lengkap anak"
                 android:minHeight="48dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Tempat, Tanggal Lahir Siswa"
+                android:text="Tempat/Tanggal Lahir Anak"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
-                android:id="@+id/etTtl"
+                android:id="@+id/etTTL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -93,7 +88,7 @@
                 android:inputType="text"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="Contoh: Jakarta, 17-08-2005"
+                android:hint="Contoh: Jakarta, 17-08-2010"
                 android:minHeight="48dp" />
 
             <TextView
@@ -103,7 +98,6 @@
                 android:text="Asal Sekolah"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
                 android:id="@+id/etAsalSekolah"
                 android:layout_width="match_parent"
@@ -113,17 +107,16 @@
                 android:inputType="text"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="Nama sekolah saat ini"
+                android:hint="Nama sekolah anak"
                 android:minHeight="48dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Keperluan Surat"
+                android:text="Keperluan"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
                 android:id="@+id/etKeperluan"
                 android:layout_width="match_parent"
@@ -131,30 +124,21 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_rounded_bedanama"
                 android:inputType="textMultiLine"
-                android:minLines="3"
+                android:minLines="2"
                 android:gravity="top"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="Keperluan pengajuan surat keterangan ini"
+                android:hint="Keperluan SKTM"
                 android:minHeight="48dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Data Orang Tua/Wali"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"/>
-
+            <!-- DATA ORANG TUA -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:text="Nama Orang Tua"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
                 android:id="@+id/etNamaOrtu"
                 android:layout_width="match_parent"
@@ -164,7 +148,7 @@
                 android:inputType="textPersonName"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="Nama lengkap Orang Tua/Wali"
+                android:hint="Nama lengkap orang tua"
                 android:minHeight="48dp" />
 
             <TextView
@@ -174,9 +158,8 @@
                 android:text="NIK Orang Tua"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
-                android:id="@+id/etNikOrtu"
+                android:id="@+id/etNIKOrtu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -185,47 +168,7 @@
                 android:maxLength="16"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="NIK Orang Tua/Wali"
-                android:minHeight="48dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Tempat, Tanggal Lahir Orang Tua"
-                android:textSize="14sp"
-                android:textColor="@color/color_label_text" />
-
-            <EditText
-                android:id="@+id/etTtlOrtu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Contoh: Jakarta, 17-08-1980"
-                android:minHeight="48dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Pekerjaan Orang Tua"
-                android:textSize="14sp"
-                android:textColor="@color/color_label_text" />
-
-            <EditText
-                android:id="@+id/etPekerjaanOrtu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Pekerjaan Orang Tua/Wali saat ini"
+                android:hint="Nomor Induk Kependudukan"
                 android:minHeight="48dp" />
 
             <TextView
@@ -235,7 +178,6 @@
                 android:text="Alamat Orang Tua"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
-
             <EditText
                 android:id="@+id/etAlamatOrtu"
                 android:layout_width="match_parent"
@@ -247,14 +189,53 @@
                 android:gravity="top"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:hint="Alamat lengkap Orang Tua (RT/RW)"
+                android:hint="Alamat lengkap (RT/RW)"
                 android:minHeight="48dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Upload Foto"
+                android:text="Tempat/Tanggal Lahir Orang Tua"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+            <EditText
+                android:id="@+id/etTTLOrtu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bedanama"
+                android:inputType="text"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Contoh: Jakarta, 17-08-1970"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Pekerjaan Orang Tua"
+                android:textSize="14sp"
+                android:textColor="@color/color_label_text" />
+            <EditText
+                android:id="@+id/etPekerjaanOrtu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bedanama"
+                android:inputType="text"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Pekerjaan saat ini"
+                android:minHeight="48dp" />
+
+            <!-- FILE UPLOAD -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Upload File"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
 
@@ -267,12 +248,12 @@
                 android:layout_marginTop="8dp">
 
                 <TextView
-                    android:id="@+id/btnPilihFoto"
+                    android:id="@+id/btnPilihFile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="25dp"
                     android:paddingVertical="12dp"
-                    android:text="Pilih Foto"
+                    android:text="Pilih File"
                     android:textStyle="normal"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -283,36 +264,27 @@
                     android:minHeight="48dp" />
 
                 <TextView
-                    android:id="@+id/tvNamaFoto"
+                    android:id="@+id/tvNamaFile"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="12dp"
-                    android:text="Tidak ada foto yang dipilih"
+                    android:text="Tidak ada file yang dipilih"
                     android:textSize="16sp"
                     android:textColor="#555555"
                     android:singleLine="true"
                     android:ellipsize="start"/>
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/imgPreview"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="16dp"
-                android:scaleType="centerCrop"
-                android:background="#F5F5F5"
-                android:contentDescription="Preview Foto"
-                android:adjustViewBounds="true"
-                android:elevation="2dp"
-                android:visibility="gone"/> </LinearLayout>
+        </LinearLayout>
 
+        <!-- Tombol Kirim -->
         <Button
             android:id="@+id/btnKirim"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/button_kirim"
+            android:text="Kirim"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:background="@drawable/btn_gradient_bedanama"

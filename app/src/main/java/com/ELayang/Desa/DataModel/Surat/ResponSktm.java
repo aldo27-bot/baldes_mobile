@@ -3,16 +3,16 @@ package com.ELayang.Desa.DataModel.Surat;
 import com.google.gson.annotations.SerializedName;
 
 public class ResponSktm {
-    @SerializedName("status")
-    private String status;
+    @SerializedName("kode")
+    private int kode;
 
-    @SerializedName("message")
-    private String message;
+    @SerializedName("pesan")
+    private String pesan;
 
     @SerializedName("file")
     private String file;
 
-    public String getStatus() { return status; }
-    public String getMessage() { return message; }
+    public int getKode() { return kode; }
+    public String getPesan() { return pesan; }
     public String getFile() { return file; }
 }

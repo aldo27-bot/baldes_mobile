@@ -1,28 +1,32 @@
 package com.ELayang.Desa.Surat;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import static android.app.Activity.RESULT_OK;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageButton;
-import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Surat.ResponSktm;
-import com.ELayang.Desa.Menu.permintaan_surat;
 import com.ELayang.Desa.R;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import okhttp3.MediaType;
@@ -34,194 +38,172 @@ import retrofit2.Response;
 
 public class SKTM extends AppCompatActivity {
 
+    EditText eNama, eTTL, eAsalSekolah, eKeperluan, eNamaOrtu, eNikOrtu,
+            eAlamatOrtu, eTtlOrtu, ePekerjaanOrtu;
+
+    Button btnKirim;
+    TextView btnPilihFile, tvNamaFile;
     ImageButton btnBack;
 
-    EditText etNama, etTtl, etAsalSekolah, etKeperluan,
-            etNamaOrtu, etNikOrtu, etAlamatOrtu, etTtlOrtu, etPekerjaanOrtu;
+    Uri fileUri = null;
+    File fileFix = null;
 
-    TextView btnPilihFoto, tvNamaFoto;
-    Button btnKirim;
-    ImageView imgPreview;
+    SharedPreferences sharedPreferences;
+    String username;
 
-    Uri uriFoto;
-    MultipartBody.Part filePart;
-
-    String usernameUser;
-    String kodeSurat = "SKTM";
-
-    private static final int PICK_IMAGE_REQUEST = 100;
+    private static final int FILE_REQUEST = 22;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.surat_sktm);
 
-        // Ambil username
-        SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
-        usernameUser = pref.getString("username", "");
+        sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
 
-        // Inisialisasi EditText
-        etNama = findViewById(R.id.etNama);
-        etTtl = findViewById(R.id.etTtl);
-        etAsalSekolah = findViewById(R.id.etAsalSekolah);
-        etKeperluan = findViewById(R.id.etKeperluan);
-        etNamaOrtu = findViewById(R.id.etNamaOrtu);
-        etNikOrtu = findViewById(R.id.etNikOrtu);
-        etAlamatOrtu = findViewById(R.id.etAlamatOrtu);
-        etTtlOrtu = findViewById(R.id.etTtlOrtu);
-        etPekerjaanOrtu = findViewById(R.id.etPekerjaanOrtu);
+        if (username.isEmpty()) {
+            Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
+        }
 
-        // Inisialisasi komponen aksi
-        btnBack = findViewById(R.id.btnBack);
-        btnPilihFoto = findViewById(R.id.btnPilihFoto);
-        tvNamaFoto = findViewById(R.id.tvNamaFoto);
+        // Bind view
+        eNama = findViewById(R.id.etNama);
+        eTTL = findViewById(R.id.etTTL);
+        eAsalSekolah = findViewById(R.id.etAsalSekolah);
+        eKeperluan = findViewById(R.id.etKeperluan);
+        eNamaOrtu = findViewById(R.id.etNamaOrtu);
+        eNikOrtu = findViewById(R.id.etNIKOrtu);
+        eAlamatOrtu = findViewById(R.id.etAlamatOrtu);
+        eTtlOrtu = findViewById(R.id.etTTLOrtu);
+        ePekerjaanOrtu = findViewById(R.id.etPekerjaanOrtu);
+
+        btnPilihFile = findViewById(R.id.btnPilihFile);
+        tvNamaFile = findViewById(R.id.tvNamaFile);
         btnKirim = findViewById(R.id.btnKirim);
-        imgPreview = findViewById(R.id.imgPreview);
+        btnBack = findViewById(R.id.btnBack);
 
-        // Tombol aksi
-        btnBack.setOnClickListener(v -> onBackPressed());
-        btnPilihFoto.setOnClickListener(v -> pilihFoto());
-        btnKirim.setOnClickListener(v -> kirimData());
+        // Tombol kembali
+        btnBack.setOnClickListener(v -> finish());
 
-        // Default tampilan
-        tvNamaFoto.setText("Tidak ada foto (opsional)");
-        imgPreview.setVisibility(ImageView.GONE);
+        // Tombol pilih file
+        btnPilihFile.setOnClickListener(v -> pilihFile());
+
+        // Tombol kirim
+        btnKirim.setOnClickListener(v -> kirimForm());
     }
 
-    private void pilihFoto() {
-        Intent i = new Intent(Intent.ACTION_PICK);
-        i.setType("image/*");
-        startActivityForResult(i, PICK_IMAGE_REQUEST);
+    private void pilihFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        startActivityForResult(Intent.createChooser(intent, "Pilih File"), FILE_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            uriFoto = data.getData();
-            imgPreview.setImageURI(uriFoto);
-            imgPreview.setVisibility(ImageView.VISIBLE);
+        if (requestCode == FILE_REQUEST && resultCode == RESULT_OK && data != null) {
+            fileUri = data.getData();
+            if (fileUri != null) {
+                String fileName = getFileName(fileUri);
+                tvNamaFile.setText(fileName);
 
-            // Coba baca file
-            try {
-                InputStream is = getContentResolver().openInputStream(uriFoto);
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                int n;
-                byte[] temp = new byte[4096];
-                while ((n = is.read(temp)) != -1) buffer.write(temp, 0, n);
-                byte[] fileBytes = buffer.toByteArray();
-                is.close();
-
-                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), fileBytes);
-
-                filePart = MultipartBody.Part.createFormData(
-                        "file",
-                        "sktm_" + System.currentTimeMillis() + ".jpg",
-                        reqFile
-                );
-
-                tvNamaFoto.setText("Foto dipilih");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Gagal membaca foto", Toast.LENGTH_SHORT).show();
-                filePart = null;
+                fileFix = createTempFile(fileUri);
             }
-
-        } else {
-            // Reset jika batal
-            uriFoto = null;
-            filePart = null;
-            tvNamaFoto.setText("Tidak ada foto (opsional)");
-            imgPreview.setVisibility(ImageView.GONE);
         }
     }
 
-    private void kirimData() {
-        if (usernameUser.isEmpty()) {
-            Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
+    private File createTempFile(Uri uri) {
+        File tempFile = null;
+        try {
+            String fileName = getFileName(uri);
+            tempFile = new File(getCacheDir(), fileName);
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            inputStream.close();
+            outputStream.close();
+        } catch (Exception e) {
+            Log.e("FILE_ERROR", e.getMessage());
+        }
+        return tempFile;
+    }
+
+    private String getFileName(Uri uri) {
+        String result = "file_upload";
+        try {
+            var cursor = getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                cursor.moveToFirst();
+                result = cursor.getString(nameIndex);
+                cursor.close();
+            }
+        } catch (Exception ignored) {}
+        return result;
+    }
+
+    private void kirimForm() {
+        if (fileFix == null) {
+            Toast.makeText(this, "Pilih file terlebih dahulu!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Validasi field wajib
-        if (etNama.getText().toString().isEmpty() ||
-                etTtl.getText().toString().isEmpty() ||
-                etAsalSekolah.getText().toString().isEmpty() ||
-                etKeperluan.getText().toString().isEmpty() ||
-                etNamaOrtu.getText().toString().isEmpty() ||
-                etNikOrtu.getText().toString().isEmpty() ||
-                etAlamatOrtu.getText().toString().isEmpty() ||
-                etTtlOrtu.getText().toString().isEmpty() ||
-                etPekerjaanOrtu.getText().toString().isEmpty()) {
+        ProgressDialog pd = new ProgressDialog(SKTM.this);
+        pd.setMessage("Mengirim...");
+        pd.show();
 
-            Toast.makeText(this, "Lengkapi semua data!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        RequestBody reqNama = RequestBody.create(MediaType.parse("text/plain"), eNama.getText().toString());
+        RequestBody reqTTL = RequestBody.create(MediaType.parse("text/plain"), eTTL.getText().toString());
+        RequestBody reqAsal = RequestBody.create(MediaType.parse("text/plain"), eAsalSekolah.getText().toString());
+        RequestBody reqKeperluan = RequestBody.create(MediaType.parse("text/plain"), eKeperluan.getText().toString());
+        RequestBody reqNamaOrtu = RequestBody.create(MediaType.parse("text/plain"), eNamaOrtu.getText().toString());
+        RequestBody reqNikOrtu = RequestBody.create(MediaType.parse("text/plain"), eNikOrtu.getText().toString());
+        RequestBody reqAlamatOrtu = RequestBody.create(MediaType.parse("text/plain"), eAlamatOrtu.getText().toString());
+        RequestBody reqTTLOrtu = RequestBody.create(MediaType.parse("text/plain"), eTtlOrtu.getText().toString());
+        RequestBody reqPekerjaanOrtu = RequestBody.create(MediaType.parse("text/plain"), ePekerjaanOrtu.getText().toString());
+        RequestBody reqUsername = RequestBody.create(MediaType.parse("text/plain"), username);
 
-        // RequestBody
-        RequestBody nama = rb(etNama.getText().toString());
-        RequestBody ttl = rb(etTtl.getText().toString());
-        RequestBody sekolah = rb(etAsalSekolah.getText().toString());
-        RequestBody keperluan = rb(etKeperluan.getText().toString());
-        RequestBody ortu = rb(etNamaOrtu.getText().toString());
-        RequestBody nikOrtu = rb(etNikOrtu.getText().toString());
-        RequestBody alamatOrtu = rb(etAlamatOrtu.getText().toString());
-        RequestBody ttlOrtu = rb(etTtlOrtu.getText().toString());
-        RequestBody kerjaOrtu = rb(etPekerjaanOrtu.getText().toString());
-        RequestBody kode = rb(kodeSurat);
-        RequestBody user = rb(usernameUser);
-
-        MultipartBody.Part fotoFix = filePart; // biarkan null jika tidak ada file
-
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), fileFix);
+        MultipartBody.Part uploadFile = MultipartBody.Part.createFormData("file", fileFix.getName(), requestFile);
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-
         Call<ResponSktm> call = api.sktm(
-                nama, ttl, sekolah, keperluan,
-                ortu, nikOrtu, alamatOrtu, ttlOrtu, kerjaOrtu,
-                kode, user, fotoFix
+                reqNama,
+                reqTTL,
+                reqAsal,
+                reqKeperluan,
+                reqNamaOrtu,
+                reqNikOrtu,
+                reqAlamatOrtu,
+                reqTTLOrtu,
+                reqPekerjaanOrtu,
+                reqUsername,
+                uploadFile
         );
 
         call.enqueue(new Callback<ResponSktm>() {
             @Override
             public void onResponse(Call<ResponSktm> call, Response<ResponSktm> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SKTM.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    clearForm();
-
-                    Intent intent = new Intent(SKTM.this, permintaan_surat.class);
-                    startActivity(intent);
+                pd.dismiss();
+                if (response.body() != null && response.body().getKode() == 1) {
+                    Toast.makeText(SKTM.this, "Berhasil dikirim!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(SKTM.this, "Gagal mengirim data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SKTM.this, "Gagal mengirim!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponSktm> call, Throwable t) {
-                Toast.makeText(SKTM.this, "Kesalahan koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                pd.dismiss();
+                Toast.makeText(SKTM.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private RequestBody rb(String value) {
-        return RequestBody.create(MediaType.parse("text/plain"), value);
-    }
-
-    private void clearForm() {
-        etNama.setText("");
-        etTtl.setText("");
-        etAsalSekolah.setText("");
-        etKeperluan.setText("");
-        etNamaOrtu.setText("");
-        etNikOrtu.setText("");
-        etAlamatOrtu.setText("");
-        etTtlOrtu.setText("");
-        etPekerjaanOrtu.setText("");
-
-        imgPreview.setImageURI(null);
-        imgPreview.setVisibility(ImageView.GONE);
-        filePart = null;
     }
 }
