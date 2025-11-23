@@ -435,11 +435,14 @@ public interface APIRequestData {
             @Part("username") RequestBody username,
             @Part("nama") RequestBody nama,
             @Part("alamat") RequestBody alamat,
-            @Part("keterangan_usaha") RequestBody keterangan_usaha,
             @Part("tempat_tanggal_lahir") RequestBody ttl,
+            @Part("kapan_usaha") RequestBody kapanUsaha,         // Tambahan
+            @Part("lokasi_usaha") RequestBody lokasiUsaha,       // Tambahan
+            @Part("keterangan_usaha") RequestBody keterangan_usaha,
             @Part("kode_surat") RequestBody kodeSurat,
             @Part MultipartBody.Part file   // OPSIONAL
     );
+
 
 
 

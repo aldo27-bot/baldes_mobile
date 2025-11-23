@@ -122,6 +122,47 @@
                 android:hint="Alamat lengkap (Jalan, RT/RW)"
                 android:minHeight="48dp" />
 
+            <!-- Kapan Usaha -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text=" Sejak Kapan Usaha"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etKapanUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bedanama"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Contoh: 20 Januari 2025"
+                android:inputType="text" />
+
+            <!-- Lokasi Usaha -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Lokasi Usaha"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etLokasiUsaha"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_rounded_bedanama"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:hint="Contoh: Desa Kuncir"
+                android:inputType="text" />
+
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
