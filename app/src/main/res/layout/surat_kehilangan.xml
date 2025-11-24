@@ -203,8 +203,11 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/btn_upload_file_bedanama"
                     android:text="Pilih File"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/black"
                     android:onClick="chooseFile"
+                    android:backgroundTint="@null"
+                    app:backgroundTint="@null"
+                    android:foregroundTint="@null"
                     android:minHeight="50dp"
                     android:paddingHorizontal="24dp"/>
 

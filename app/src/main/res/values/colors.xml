@@ -12,6 +12,10 @@
     <color name="edittext">#D9D9D9</color>
     <color name="outline">#6A6A6A</color>
     <color name="backappbar">#4F5C80</color>
+    <color name="warnaUngu">#B184F1</color>
+    <color name="colorPrimary">#B184F1</color>
+    <color name="colorPrimaryDark">#9C6EE6</color>
+    <color name="colorAccent">#B184F1</color>
 
     <!-- 🌊 Palet Biru Cerah -->
     <color name="biru_muda">#64B5F6</color>        <!-- Bright Blue -->

@@ -258,6 +258,9 @@
                     android:textColor="#000000"
                     android:textSize="16sp"
                     android:background="@drawable/btn_upload_file_bedanama"
+                    android:backgroundTint="@null"
+                    app:backgroundTint="@null"
+                    android:foregroundTint="@null"
                     android:clickable="true"
                     android:focusable="true"
                     android:onClick="chooseFile"/>
