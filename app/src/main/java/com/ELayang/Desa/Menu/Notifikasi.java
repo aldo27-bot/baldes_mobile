@@ -69,9 +69,9 @@ public class Notifikasi extends Fragment {
         prefLogin = requireActivity().getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
         prefNotif = requireActivity().getSharedPreferences(PREF_NOTIF, Context.MODE_PRIVATE);
 
-        adapter.setOnItemClickListener(item -> {
-            Toast.makeText(getContext(), "Klik No. Pengajuan: " + item.getNopengajuan(), Toast.LENGTH_SHORT).show();
-        });
+//        adapter.setOnItemClickListener(item -> {
+//            Toast.makeText(getContext(), "Klik No. Pengajuan: " + item.getNopengajuan(), Toast.LENGTH_SHORT).show();
+//        });
 
         swipe.setOnRefreshListener(this::fetchNotifikasi);
 

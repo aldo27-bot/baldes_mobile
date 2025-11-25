@@ -19,7 +19,7 @@
         android:layout_marginTop="60dp"
         android:scaleType="centerCrop"
         android:src="@drawable/logo_kunir_fix"
-        android:tint="@color/biru_gelap"
+        android:tint="@color/purple_dark"
         app:strokeColor="@color/white"
         app:strokeWidth="2dp" />
 
@@ -49,7 +49,7 @@
                     android:letterSpacing="0.03"
                     android:text="Selamat Datang"
                     android:textAlignment="center"
-                    android:textColor="@color/blue_dark_300"
+                    android:textColor="@color/purple_dark"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
@@ -105,7 +105,7 @@
                     android:layout_marginTop="35dp"
                     android:layout_marginBottom="10dp"
                     app:cornerRadius="12dp"
-                    android:backgroundTint="@color/biru_dingin"
+                    android:backgroundTint="@color/purple_dark"
                     android:textColor="@color/white"/>
 
                 <!-- Google Login -->
@@ -137,7 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Buat Akun"
-                        android:textColor="@color/blue_dark_300"
+                        android:textColor="@color/purple_dark"
                         android:textStyle="bold"
                         android:textSize="14sp"
                         android:layout_marginStart="6dp"
@@ -150,7 +150,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Lupa Password?"
-                    android:textColor="@color/blue_dark_200"
+                    android:textColor="@color/purple_dark"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:layout_gravity="center"

@@ -150,7 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Pilih Foto Bukti"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:background="@drawable/btn_upload_file_bedanama"
                 android:layout_marginTop="12dp"
                 android:paddingVertical="12dp"

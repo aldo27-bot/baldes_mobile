@@ -17,7 +17,7 @@
         android:backgroundTint="@android:color/transparent"
         android:cropToPadding="true"
         android:scaleType="fitXY"
-        android:src="@drawable/kembali"
+        android:src="@drawable/back_2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="USERNAME"
-            />
+            android:backgroundTint="@color/white"/>
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layemail"
@@ -65,7 +65,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="EMAIL"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:backgroundTint="@color/white"/>
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layno"
@@ -82,7 +83,8 @@
             android:layout_height="match_parent"
             android:hint="NAMA"
             android:textColor="@color/black"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:backgroundTint="@color/white"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -96,6 +98,6 @@
         android:textColor="@color/white"
         android:text="Lanjut"
         android:textAllCaps="true"
-        android:backgroundTint="@color/biru_dingin"/>
+        android:backgroundTint="@color/purple_dark"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

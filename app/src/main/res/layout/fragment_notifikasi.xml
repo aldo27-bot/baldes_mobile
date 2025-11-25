@@ -10,7 +10,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/blue_dark_200"
+        android:backgroundTint="@color/purple_dark"
         app:cardCornerRadius="0dp">
 
         <com.google.android.material.textview.MaterialTextView

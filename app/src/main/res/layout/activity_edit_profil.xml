@@ -16,28 +16,28 @@
         <!-- Header Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            android:layout_marginBottom="30dp"
-            android:backgroundTint="@color/blue_dark_200">
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue_dark_200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="56dp">
 
                 <ImageButton
                     android:id="@+id/kembali"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
                     android:background="@android:color/transparent"
                     android:onClick="kembali"
                     android:rotation="180"
                     android:scaleType="fitXY"
                     android:src="@drawable/kembali_panah"
-                    app:tint="@color/white"/>
+                    app:tint="@color/white" />
 
                 <TextView
                     android:id="@+id/kode_surat"
@@ -47,7 +47,7 @@
                     android:text="Edit Profil"
                     android:textColor="@color/white"
                     android:textSize="22sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 

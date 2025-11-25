@@ -14,7 +14,7 @@
         <item name="itemTextColor">@color/white</item>
 
         <!-- Warna ripple saat disentuh -->
-        <item name="itemRippleColor">@color/biru_cerah</item>
+        <item name="itemRippleColor">@color/purple_primary</item>
     </style>
 
 

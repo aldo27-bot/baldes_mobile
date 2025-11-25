@@ -16,7 +16,7 @@
         android:backgroundTint="@android:color/transparent"
         android:cropToPadding="true"
         android:scaleType="fitXY"
-        android:src="@drawable/kembali"
+        android:src="@drawable/back_2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
@@ -56,7 +56,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="KODE OTP"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:backgroundTint="@color/white"/>
     </com.google.android.material.textfield.TextInputLayout>
     <LinearLayout
         android:id="@+id/reqotp"
@@ -90,7 +91,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="3dp"
         android:text="KIRIM lAGI"
-        android:backgroundTint="@color/biru_dingin"/>
+        android:backgroundTint="@color/purple_dark"/>
     </LinearLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/lanjut"
@@ -103,5 +104,5 @@
         android:textColor="@color/white"
         android:text="Lanjut"
         android:textAllCaps="true"
-        android:backgroundTint="@color/biru_dingin"/>
+        android:backgroundTint="@color/purple_dark"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

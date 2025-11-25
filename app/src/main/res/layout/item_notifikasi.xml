@@ -35,7 +35,7 @@
             android:layout_alignParentTop="true"
             android:contentDescription="icon"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@mipmap/logo_sikunir_round" />
 
         <!-- Status & judul -->
         <TextView

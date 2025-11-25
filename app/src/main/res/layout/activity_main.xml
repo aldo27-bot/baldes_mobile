@@ -25,7 +25,7 @@
             android:contentDescription="@string/app_name"
             android:scaleType="fitCenter"
             android:src="@drawable/logo_kunir_fix"
-            android:tint="@color/biru_gelap"/>
+            android:tint="@color/purple_dark"/>
 
     </LinearLayout>
 
@@ -35,7 +35,7 @@
         android:layout_marginBottom="20dp"
         android:text="Si-kunir versi 1.0"
         android:textAlignment="center"
-        android:textColor="@color/biru_gelap"
+        android:textColor="@color/purple_dark"
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent" />
