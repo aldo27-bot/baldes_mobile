@@ -19,7 +19,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
-import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponPopup;
 import com.ELayang.Desa.MainActivity;
 import com.ELayang.Desa.R;
@@ -30,15 +29,18 @@ import retrofit2.Response;
 
 public class NotificationService extends JobIntentService {
 
-    private static final String CHANNEL_ID = "SuratChannel";
+    private static final String CHANNEL_ID = "SuratAspirasiChannel";
     private static final int DELAY_INTERVAL = 60000; // 60 detik
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    // --- Variabel untuk Penyimpanan Status Persisten ---
+    // --- Shared Preferences Keys ---
     private static final String PREF_NAME = "NotifPrefs";
-    private static final String KEY_LAST_STATUS = "last_surat_status";
-    private static final String KEY_LAST_ALASAN = "last_surat_alasan";
-    // --- Akhir Variabel Persisten ---
+
+    private static final String KEY_LAST_STATUS_SURAT = "last_surat_status";
+    private static final String KEY_LAST_ALASAN_SURAT = "last_surat_alasan";
+
+    private static final String KEY_LAST_STATUS_ASPIRASI = "last_aspirasi_status";
+    // --------------------------------
 
     public static void enqueueWork(Context context, Intent work) {
         enqueueWork(context, NotificationService.class, 333, work);
@@ -46,36 +48,37 @@ public class NotificationService extends JobIntentService {
 
     @Override
     protected void onHandleWork(Intent intent) {
-        monitorSurat();
+        monitorData();
         createNotificationChannel();
         requestNotificationPermission();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        monitorSurat();
+        monitorData();
         return START_STICKY;
     }
 
-    private void monitorSurat() {
+    private void monitorData() {
         checkForUpdatesSurat();
+        checkForUpdatesAspirasi();     // <-- Tambahan aspirasi
         scheduleNextRun();
     }
 
     private void scheduleNextRun() {
-        handler.postDelayed(this::monitorSurat, DELAY_INTERVAL);
+        handler.postDelayed(this::monitorData, DELAY_INTERVAL);
     }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "SuratChannelName";
-            String description = "Notifikasi Surat";
+            CharSequence name = "Notifikasi Channel";
+            String description = "Notifikasi Surat & Aspirasi";
             int importance = NotificationManager.IMPORTANCE_HIGH;
+
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 
-            NotificationManager manager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
         }
     }
@@ -89,56 +92,79 @@ public class NotificationService extends JobIntentService {
     }
 
     private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!isNotificationPermissionGranted()) {
-                if (!hasNotifiedUserForPermission()) {
-                    Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                            .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    setUserNotifiedForPermission(true);
-                }
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isNotificationPermissionGranted()) {
+            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 
-    private boolean hasNotifiedUserForPermission() {
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        return prefs.getBoolean("has_notified_for_permission_surat", false);
-    }
-
-    private void setUserNotifiedForPermission(boolean notified) {
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("has_notified_for_permission_surat", notified);
-        editor.apply();
-    }
-
-    // --- Metode Persisten ---
-    private void saveLastStatus(String status, String alasan) {
+    // --- Save & Get Status Local ---
+    private void saveLastStatusSurat(String status) {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(KEY_LAST_STATUS, status);
-        editor.putString(KEY_LAST_ALASAN, alasan);
-        editor.apply();
+        prefs.edit().putString(KEY_LAST_STATUS_SURAT, status).apply();
     }
 
-    private String getLastStatus() {
+    private String getLastStatusSurat() {
+        return getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+                .getString(KEY_LAST_STATUS_SURAT, "");
+    }
+
+    private void saveLastStatusAspirasi(String status) {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        return prefs.getString(KEY_LAST_STATUS, "");
+        prefs.edit().putString(KEY_LAST_STATUS_ASPIRASI, status).apply();
     }
 
-    private String getLastAlasan() {
-        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        return prefs.getString(KEY_LAST_ALASAN, "");
+    private String getLastStatusAspirasi() {
+        return getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+                .getString(KEY_LAST_STATUS_ASPIRASI, "");
     }
 
-    // 🔔 Cek update surat
+    // --- Surat Notifikasi ---
     private void checkForUpdatesSurat() {
-        SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "");
 
-        final String storedLastStatus = getLastStatus();
+        final String storedStatus = getLastStatusSurat();
+
+        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<ResponPopup> call = api.getPopupNotifikasi(username);
+
+        call.enqueue(new Callback<ResponPopup>() {
+            @Override
+            public void onResponse(Call<ResponPopup> call, Response<ResponPopup> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
+
+                    String currentStatus = response.body().getStatus();
+
+                    if (!currentStatus.equalsIgnoreCase(storedStatus)) {
+
+                        if ("Tolak".equalsIgnoreCase(currentStatus)) {
+                            showNotification("Surat Ditolak", "Pengajuan surat Anda ditolak.");
+                        } else if ("Selesai".equalsIgnoreCase(currentStatus)) {
+                            showNotification("Surat Selesai Diproses",
+                                    "Pengajuan surat Anda telah selesai diproses.");
+                        }
+
+                        saveLastStatusSurat(currentStatus);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponPopup> call, Throwable t) {
+                Log.e("NotifSurat", "Error: " + t.getMessage());
+            }
+        });
+    }
+
+    // --- Aspirasi Notifikasi ---
+    private void checkForUpdatesAspirasi() {
+        SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
+
+        final String storedStatus = getLastStatusAspirasi();
 
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponPopup> call = api.getPopupNotifikasi(username);
@@ -147,56 +173,38 @@ public class NotificationService extends JobIntentService {
             @Override
             public void onResponse(Call<ResponPopup> call, Response<ResponPopup> response) {
 
-                if (response.isSuccessful() &&
-                        response.body() != null &&
-                        response.body().getKode() == 1) {
+                if (response.isSuccessful() && response.body() != null && response.body().getKode() == 1) {
 
-                    ResponPopup data = response.body();
+                    String currentStatus = response.body().getStatus();
 
-                    String currentStatus = data.getStatus();
-                    String currentAlasan = data.getAlasan();
+                    if (!currentStatus.equalsIgnoreCase(storedStatus)) {
 
-                    if (currentStatus != null &&
-                            !currentStatus.equals(storedLastStatus)) {
-
-                        if ("Tolak".equals(currentStatus)) {
-                            String pesan = currentAlasan != null ?
-                                    "Alasan: " + currentAlasan :
-                                    "Surat Ditolak";
-
-                            showNotification("Surat Ditolak", pesan);
-
-                        } else if ("Selesai".equals(currentStatus)) {
-                            String pesan = currentAlasan != null ?
-                                    currentAlasan :
-                                    "Surat Selesai Diproses";
-
-                            showNotification("Surat Selesai Diproses", pesan);
+                        if ("Tolak".equalsIgnoreCase(currentStatus)) {
+                            showNotification("Aspirasi Ditolak", "Aspirasi Anda telah ditolak.");
+                        } else if ("Selesai".equalsIgnoreCase(currentStatus)) {
+                            showNotification("Aspirasi Selesai", "Aspirasi Anda telah selesai diproses.");
                         }
 
-                        saveLastStatus(currentStatus,
-                                currentAlasan != null ? currentAlasan : "");
+                        saveLastStatusAspirasi(currentStatus);
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ResponPopup> call, Throwable t) {
-                Log.e("NotifSurat",
-                        "Gagal koneksi: " + t.getMessage());
+                Log.e("NotifAspirasi", "Error: " + t.getMessage());
             }
         });
     }
 
+    // --- Display Notification ---
     private void showNotification(String title, String message) {
-        if (!isNotificationPermissionGranted()) {
-            Log.w("NotificationSurat", "Izin notifikasi belum diberikan.");
-            return;
-        }
+
+        if (!isNotificationPermissionGranted()) return;
 
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -209,7 +217,6 @@ public class NotificationService extends JobIntentService {
 
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         manager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }

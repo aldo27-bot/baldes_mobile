@@ -50,14 +50,14 @@ public interface APIRequestData {
 //    @POST("ambil_notifikasi_aspirasi.php")
 //    @FormUrlEncoded
 //    Call<ResponNotifikasi> getNotifikasi(@Field("username") String username);
-
-    @POST("notifikasi_popup_aspirasi.php")
-    @FormUrlEncoded
-    Call<ResponNotifikasi> notifikasi_popup_aspirasi(@Field("username") String username);
-
-    @POST("notifikasi_aspirasi.php")
-    @FormUrlEncoded
-    Call<ResponNotifikasi> notifikasi_aspirasi(@Field("username") String username);
+//
+//    @POST("notifikasi_popup_aspirasi.php")
+//    @FormUrlEncoded
+//    Call<ResponNotifikasi> notifikasi_popup_aspirasi(@Field("username") String username);
+//
+//    @POST("notifikasi_aspirasi.php")
+//    @FormUrlEncoded
+//    Call<ResponNotifikasi> notifikasi_aspirasi(@Field("username") String username);
 
     @FormUrlEncoded
     @POST("login.php")

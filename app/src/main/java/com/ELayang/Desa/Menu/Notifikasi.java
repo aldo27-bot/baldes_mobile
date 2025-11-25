@@ -1,6 +1,5 @@
 package com.ELayang.Desa.Menu;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -65,17 +63,16 @@ public class Notifikasi extends Fragment {
         adapter = new AdapterNotifikasi(getContext(), list);
         rv.setAdapter(adapter);
 
-        // Shared Pref
+        // Listener Klik item dinonaktifkan
+        adapter.setOnItemClickListener(item -> {
+            // Tidak ada aksi klik
+        });
+
         prefLogin = requireActivity().getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
         prefNotif = requireActivity().getSharedPreferences(PREF_NOTIF, Context.MODE_PRIVATE);
 
-//        adapter.setOnItemClickListener(item -> {
-//            Toast.makeText(getContext(), "Klik No. Pengajuan: " + item.getNopengajuan(), Toast.LENGTH_SHORT).show();
-//        });
-
         swipe.setOnRefreshListener(this::fetchNotifikasi);
 
-        // Mulai ambil data
         swipe.setRefreshing(true);
         fetchNotifikasi();
         checkPopup();
@@ -131,7 +128,7 @@ public class Notifikasi extends Fragment {
     }
 
     // ========================================================================================
-    // POPUP NOTIFIKASI (STATUS BARU)
+    // POPUP NOTIFIKASI BARU
     // ========================================================================================
     private void checkPopup() {
 
@@ -154,12 +151,13 @@ public class Notifikasi extends Fragment {
 
                     if (currentStatus != null && !currentStatus.equals(last)) {
 
-                        String title = "Status Pengajuan: " + response.body().getNopengajuan();
+                        // Hanya menampilkan status dan alasan
+                        String title = "Status Notifikasi";
                         String msg = currentStatus +
                                 (currentAlasan != null && !currentAlasan.isEmpty()
                                         ? "\nAlasan: " + currentAlasan : "");
 
-                        new AlertDialog.Builder(requireContext())
+                        new android.app.AlertDialog.Builder(requireContext())
                                 .setTitle(title)
                                 .setMessage(msg)
                                 .setPositiveButton("OK", (d, i) -> d.dismiss())

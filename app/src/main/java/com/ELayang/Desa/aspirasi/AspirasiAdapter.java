@@ -5,18 +5,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.ELayang.Desa.R;
 import com.ELayang.Desa.DataModel.Aspirasi;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.ELayang.Desa.DataModel.Aspirasi;
 
 public class AspirasiAdapter extends RecyclerView.Adapter<AspirasiAdapter.ViewHolder> {
 
     private List<Aspirasi> list;
+    private OnItemClickListener listener;
+
+    // INTERFACE CLICK LISTENER
+    public interface OnItemClickListener {
+        void onItemClick(Aspirasi item);
+    }
+
+    // SETTER UNTUK LISTENER
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public AspirasiAdapter(List<Aspirasi> list) {
         this.list = (list != null) ? list : new ArrayList<>();
@@ -32,14 +45,15 @@ public class AspirasiAdapter extends RecyclerView.Adapter<AspirasiAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Aspirasi a = list.get(position);
-        holder.tvJudul.setText(a.getJudul());
-        holder.tvKategori.setText(a.getKategori());
-        holder.tvStatus.setText(a.getStatus());
-        holder.tvTanggal.setText(a.getTanggal());
+        Aspirasi item = list.get(position);
 
-        if (a.getFoto() != null && !a.getFoto().isEmpty()) {
-            String url = "https://sikunir.pbltifnganjuk.com/uploads/upload_aspirasi/" + a.getFoto();
+        holder.tvJudul.setText(item.getJudul());
+        holder.tvKategori.setText(item.getKategori());
+        holder.tvStatus.setText(item.getStatus());
+        holder.tvTanggal.setText(item.getTanggal());
+
+        if (item.getFoto() != null && !item.getFoto().isEmpty()) {
+            String url = "https://sikunir.pbltifnganjuk.com/uploads/upload_aspirasi/" + item.getFoto();
             Glide.with(holder.itemView.getContext())
                     .load(url)
                     .placeholder(R.drawable.placeholder)
@@ -47,6 +61,11 @@ public class AspirasiAdapter extends RecyclerView.Adapter<AspirasiAdapter.ViewHo
         } else {
             holder.ivFoto.setImageResource(R.drawable.placeholder);
         }
+
+        // EVENT KLIK ITEM
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onItemClick(item);
+        });
     }
 
     @Override

@@ -8,6 +8,7 @@ public class ResponPopup {
     private String tanggal;
     private String jam;
     private String pesan;
+    private String jenis;
 
     public int getKode() { return kode; }
     public String getNopengajuan() { return nopengajuan; }
@@ -16,5 +17,8 @@ public class ResponPopup {
     public String getTanggal() { return tanggal; }
     public String getJam() { return jam; }
     public String getPesan() { return pesan; }
+
+    public String getJenis() { return jenis; }
+    public void setJenis(String jenis) { this.jenis = jenis; }
 }
 
