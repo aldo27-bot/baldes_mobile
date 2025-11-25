@@ -49,19 +49,32 @@ Button lanjut;
             call.enqueue(new Callback<ResponDelete>() {
                 @Override
                 public void onResponse(Call<ResponDelete> call, Response<ResponDelete> response) {
-                    if (response.body().kode == 0) {
 
-                    } else if (response.body().kode == 1) {
-                        Toast.makeText(register3.this, "Gagal ", Toast.LENGTH_SHORT).show();
+                    if (response.isSuccessful() && response.body() != null) {
+                        if (response.body().kode == 0) {
+                            // sukses hapus → kembali ke register1
+                            Intent intent = new Intent(register3.this, register1.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(register3.this, "Gagal menghapus data", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(register3.this, "Response kosong", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(register3.this, register1.class));
+                        finish();
                     }
                 }
+
                 @Override
                 public void onFailure(Call<ResponDelete> call, Throwable t) {
-
+                    Toast.makeText(register3.this, "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(register3.this, register1.class));
+                    finish();
                 }
             });
-            finish();
         });
+
         lanjut = findViewById(R.id.lanjut);
         lanjut.setOnClickListener(v ->{
             String password = pass1.getText().toString();

@@ -50,19 +50,35 @@ ImageButton kembali;
             call.enqueue(new Callback<ResponDelete>() {
                 @Override
                 public void onResponse(Call<ResponDelete> call, Response<ResponDelete> response) {
-                    if (response.body().kode == 0) {
 
-                    } else if (response.body().kode == 1) {
-                        Toast.makeText(register2.this, "Gagal ", Toast.LENGTH_SHORT).show();
+                    if (response.isSuccessful() && response.body() != null) {
+
+                        if (response.body().kode == 0) {
+                            // berhasil hapus → kembali ke register1
+                            Intent intent = new Intent(register2.this, register1.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(register2.this, "Gagal menghapus data", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else {
+                        Toast.makeText(register2.this, "Response kosong", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(register2.this, register1.class));
+                        finish();
                     }
                 }
+
                 @Override
                 public void onFailure(Call<ResponDelete> call, Throwable t) {
-
+                    Toast.makeText(register2.this, "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(register2.this, register1.class));
+                    finish();
                 }
             });
-            finish();
         });
+
+
         lanjut = findViewById(R.id.lanjut);
         lanjut.setOnClickListener(v ->{
             String otp = kode_otp.getText().toString();
