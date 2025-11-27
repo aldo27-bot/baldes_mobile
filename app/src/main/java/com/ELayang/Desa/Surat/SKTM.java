@@ -9,10 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageButton;
@@ -81,13 +79,8 @@ public class SKTM extends AppCompatActivity {
         btnKirim = findViewById(R.id.btnKirim);
         btnBack = findViewById(R.id.btnBack);
 
-        // Tombol kembali
         btnBack.setOnClickListener(v -> finish());
-
-        // Tombol pilih file
         btnPilihFile.setOnClickListener(v -> pilihFile());
-
-        // Tombol kirim
         btnKirim.setOnClickListener(v -> kirimForm());
     }
 
@@ -148,11 +141,54 @@ public class SKTM extends AppCompatActivity {
         return result;
     }
 
+    private boolean cekField(EditText et, String pesan) {
+        if (et.getText().toString().trim().isEmpty()) {
+            et.setError(pesan);
+            et.requestFocus();
+            return true;
+        }
+        return false;
+    }
+
     private void kirimForm() {
-        if (fileFix == null) {
-            Toast.makeText(this, "Pilih file terlebih dahulu!", Toast.LENGTH_SHORT).show();
+
+        // VALIDASI FIELD WAJIB
+        if (cekField(eNama, "Nama tidak boleh kosong")) return;
+        if (cekField(eTTL, "TTL tidak boleh kosong")) return;
+        if (cekField(eAsalSekolah, "Asal sekolah tidak boleh kosong")) return;
+        if (cekField(eKeperluan, "Keperluan tidak boleh kosong")) return;
+        if (cekField(eNamaOrtu, "Nama orang tua tidak boleh kosong")) return;
+        if (cekField(eNikOrtu, "NIK orang tua tidak boleh kosong")) return;
+        if (cekField(eAlamatOrtu, "Alamat orang tua tidak boleh kosong")) return;
+        if (cekField(eTtlOrtu, "TTL orang tua tidak boleh kosong")) return;
+        if (cekField(ePekerjaanOrtu, "Pekerjaan orang tua tidak boleh kosong")) return;
+
+        // VALIDASI NIK 16 DIGIT
+        if (eNikOrtu.getText().toString().trim().length() != 16) {
+            eNikOrtu.setError("NIK harus 16 digit");
+            eNikOrtu.requestFocus();
             return;
         }
+
+        // VALIDASI FILE WAJIB
+        if (fileFix == null) {
+            Toast.makeText(this, "File wajib di-upload!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // === VALIDASI TOMBOL KIRIM (POPUP KONFIRMASI) ===
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Konfirmasi")
+                .setMessage("Kirim Surat Keterangan Tidak Mampu?")
+                .setPositiveButton("Ya", (dialog, which) -> kirimKeServer())
+                .setNegativeButton("Tidak", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    // ==============================
+    //     FUNGSI KIRIM KE SERVER
+    // ==============================
+    private void kirimKeServer() {
 
         ProgressDialog pd = new ProgressDialog(SKTM.this);
         pd.setMessage("Mengirim...");
@@ -191,6 +227,7 @@ public class SKTM extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponSktm> call, Response<ResponSktm> response) {
                 pd.dismiss();
+
                 if (response.body() != null && response.body().getKode() == 1) {
                     Toast.makeText(SKTM.this, "Berhasil dikirim!", Toast.LENGTH_SHORT).show();
                     finish();

@@ -33,11 +33,11 @@ public class riwayat_surat_suratDiajukan extends Fragment {
     private ArrayList<ModelDiajukan> data = new ArrayList<>();
     private RecyclerView recyclerView;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_riwayat_surat_surat_diajukan, container, false);
-
         recyclerView = view.findViewById(R.id.D_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 

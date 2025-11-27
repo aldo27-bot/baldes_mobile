@@ -15,11 +15,8 @@ import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
-import com.ELayang.Desa.Asset.RiwayatSurat.SuratDiajukan;
 import com.ELayang.Desa.Asset.RiwayatSurat.SuratSelesai;
-import com.ELayang.Desa.DataModel.RiwayatSurat.ModelDiajukan;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ModelSelesai;
-import com.ELayang.Desa.DataModel.RiwayatSurat.ResponDiajukan;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponSelesai;
 import com.ELayang.Desa.R;
 
@@ -29,17 +26,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class riwayat_surat_suratSelesai extends Fragment {
     private View view;
-    ArrayList<ModelSelesai> data = new ArrayList<>();
+    private ArrayList<ModelSelesai> data = new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_riwayat_surat_surat_selesai, container, false);
 
+        // Gunakan RecyclerView yang baru: view_selesai
         RecyclerView recyclerView = view.findViewById(R.id.view_selesai);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "");
 
@@ -49,30 +49,26 @@ public class riwayat_surat_suratSelesai extends Fragment {
             @Override
             public void onResponse(Call<ResponSelesai> call, Response<ResponSelesai> response) {
                 ResponSelesai responSelesai = response.body();
-                if(responSelesai !=null && responSelesai.getKode() ==1) {
+                if (responSelesai != null && responSelesai.getKode() == 1) {
                     ArrayList<ModelSelesai> list = (ArrayList<ModelSelesai>) responSelesai.getData();
-
                     if (list != null && !list.isEmpty()) {
-                        // Tambahkan data surat ke ArrayList dan set up RecyclerView
-                        ModelSelesai user = response.body().getData().get(0);
                         data.addAll(list);
                         SuratSelesai adapter = new SuratSelesai(data);
                         recyclerView.setAdapter(adapter);
                     } else {
-                        // Handle ketika data surat kosong
-                        Toast.makeText(getContext(), responSelesai.getPesan(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Data kosong", Toast.LENGTH_SHORT).show();
                     }
-                }else{
+                } else if (responSelesai != null) {
                     Toast.makeText(getContext(), responSelesai.getPesan(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<ResponSelesai> call, Throwable t) {
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Inflate the layout for this fragment
         return view;
     }
 }

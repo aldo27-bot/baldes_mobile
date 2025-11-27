@@ -7,36 +7,32 @@ import androidx.fragment.app.Fragment;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ELayang.Desa.Asset.Notifikasi.NotificationService;
 import com.ELayang.Desa.Login.login;
-import com.ELayang.Desa.Menu.Notifikasi;
-import com.ELayang.Desa.Menu.akun;
-import com.ELayang.Desa.Menu.dashboard;
-import com.ELayang.Desa.Menu.permintaan_surat;
-import com.ELayang.Desa.Menu.riwayat_surat;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.ELayang.Desa.Menu.permintaan_surat;
+
+import androidx.viewpager2.widget.ViewPager2;
+
 public class menu extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
-    private String KEY_NAME = "NAMA";
+    ViewPager2 viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,64 +40,50 @@ public class menu extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         // =============================
-        // BOTTOM NAVIGATION
+        // INIT
         // =============================
         bottomNavigationView = findViewById(R.id.bottomNavView);
-        bottomNavigationView.setElevation(0);
+        fab = findViewById(R.id.fab);
+        viewPager = findViewById(R.id.viewPager);
 
+        bottomNavigationView.setElevation(0);
         bottomNavigationView.getMenu().findItem(R.id.permintaan).setEnabled(false);
 
+        // =============================
+        // SETUP VIEWPAGER2
+        // =============================
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(adapter);
+
+        // swipe → navbar update
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                bottomNavigationView.getMenu().getItem(position).setChecked(true);
+            }
+        });
+
+        // navbar ditekan → viewpager pindah
         bottomNavigationView.setOnItemSelectedListener(item -> {
-
-            Fragment selectedFragment = null;
-
             int id = item.getItemId();
 
             if (id == R.id.dashboard) {
-                selectedFragment = new dashboard();
+                viewPager.setCurrentItem(0);
             } else if (id == R.id.notifikasi) {
-                selectedFragment = new Notifikasi();
+                viewPager.setCurrentItem(1);
             } else if (id == R.id.riwayat) {
-                selectedFragment = new riwayat_surat();
+                viewPager.setCurrentItem(2);
             } else if (id == R.id.profil) {
-                selectedFragment = new akun();
+                viewPager.setCurrentItem(3);
             }
-
-            if (selectedFragment != null) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frame, selectedFragment)
-                        .commit();
-            }
-
             return true;
         });
 
-        // =============================
-        // FRAGMENT AWAL
-        // =============================
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame, new dashboard())
-                .commit();
+        fab.setOnClickListener(v -> startActivity(new Intent(this, permintaan_surat.class)));
 
-        // =============================
-        // FLOATING ACTION BUTTON
-        // =============================
-        fab = findViewById(R.id.fab);
-        fab.setOnClickListener(v -> {
-            Intent buka = new Intent(this, permintaan_surat.class);
-            startActivity(buka);
-        });
-
-        // =============================
-        // JADWALKAN SERVICE NOTIFIKASI
-        // =============================
         schedulePopupNotif();
     }
 
-    // ==================================================
-    // 🔔 JADWALKAN JOB NOTIFIKASI SETIAP 15 MENIT
-    // ==================================================
     private void schedulePopupNotif() {
         SharedPreferences sp = getSharedPreferences("prefLogin", MODE_PRIVATE);
         String username = sp.getString("username", "");
@@ -113,7 +95,7 @@ public class menu extends AppCompatActivity {
 
         JobInfo jobInfo = new JobInfo.Builder(333, componentName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPeriodic(15 * 60 * 1000) // 15 menit
+                .setPeriodic(15 * 60 * 1000)
                 .setExtras(bundle)
                 .setPersisted(true)
                 .build();
@@ -122,9 +104,6 @@ public class menu extends AppCompatActivity {
         scheduler.schedule(jobInfo);
     }
 
-    // ==================================================
-    // HANDLE BACK → LOGOUT
-    // ==================================================
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -135,10 +114,9 @@ public class menu extends AppCompatActivity {
     }
 
     private void signOut() {
-        GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
+        GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .signOut()
                 .addOnCompleteListener(this, task -> finish());
-
-        finish();
     }
 
     @Override

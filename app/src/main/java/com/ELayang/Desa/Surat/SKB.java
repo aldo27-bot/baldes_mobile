@@ -1,7 +1,6 @@
 package com.ELayang.Desa.Surat;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentResolver;
@@ -13,17 +12,19 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton; // Import ImageButton
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Surat.ResponSkb;
-import com.ELayang.Desa.Menu.permintaan_surat; // Import activity tujuan
+import com.ELayang.Desa.Menu.permintaan_surat;
 import com.ELayang.Desa.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import okhttp3.MediaType;
@@ -35,36 +36,21 @@ import retrofit2.Response;
 
 public class SKB extends AppCompatActivity {
 
-    private ImageButton btnBack; // Deklarasi Tombol Kembali
+    private ImageButton btnBack;
     private EditText etNama, etNik, etAgama, etTTL, etPendidikan, etAlamat, etKeperluan;
-    private Button btnPilihFile, btnKirim;
-    private TextView tvNamaFile;
-    private Uri fileUri = null;
+    private Button btnKirim;
+    private TextView btnPilihFile;
+    private ImageView imgPreview;
 
-    private final ActivityResultLauncher<Intent> filePickerLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    fileUri = result.getData().getData();
-                    // Pastikan fileUri tidak null sebelum memanggil getFileName
-                    if (fileUri != null) {
-                        tvNamaFile.setText(getFileName(fileUri));
-                    }
-                } else if (result.getResultCode() == RESULT_CANCELED) {
-                    // Jika pemilihan dibatalkan
-                    fileUri = null;
-                    tvNamaFile.setText("Belum ada file dipilih");
-                }
-            });
+    private Uri uriFile;
+    private MultipartBody.Part filePart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Menggunakan layout modern yang baru: activity_form_skbb
         setContentView(R.layout.activity_surat_berkelakuan_baik);
 
-        // Inisialisasi Tombol Kembali
-        btnBack = findViewById(R.id.btnBack);
-
+        // Init EditText
         etNama = findViewById(R.id.etNama);
         etNik = findViewById(R.id.etNik);
         etAgama = findViewById(R.id.etAgama);
@@ -72,155 +58,197 @@ public class SKB extends AppCompatActivity {
         etPendidikan = findViewById(R.id.etPendidikan);
         etAlamat = findViewById(R.id.etAlamat);
         etKeperluan = findViewById(R.id.etKeperluan);
-        btnPilihFile = findViewById(R.id.btnPilihFile);
+
+        // Init View
         btnKirim = findViewById(R.id.btnKirim);
-        tvNamaFile = findViewById(R.id.tvNamaFile);
+        btnPilihFile = findViewById(R.id.btnPilihFile);
+        btnBack = findViewById(R.id.btnBack);
+        imgPreview = findViewById(R.id.imgPreview);
 
-        // Listener
-        btnBack.setOnClickListener(v -> onBackPressed()); // Implementasi Tombol Kembali
+        // Tombol Back
+        btnBack.setOnClickListener(v -> onBackPressed());
+
+        // Tombol pilih file
         btnPilihFile.setOnClickListener(v -> pilihFile());
-        btnKirim.setOnClickListener(v -> kirimData());
+
+        // Tombol Kirim + Validasi + Konfirmasi
+        btnKirim.setOnClickListener(v -> {
+
+            if (!validateForm()) return;
+
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle("Konfirmasi Pengajuan")
+                    .setMessage("Kirim Pengajuan Surat Keterangan Berkelakuan Baik?")
+                    .setPositiveButton("KIRIM", (dialog, which) -> kirimData())
+                    .setNegativeButton("BATAL", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
     }
 
+    // ====================================
+    // PILIH FILE
+    // ====================================
     private void pilihFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        filePickerLauncher.launch(intent);
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, 101);
     }
 
-    private String getFileName(Uri uri) {
-        String result = null;
-        if (uri.getScheme().equals("content")) {
-            // Gunakan try-with-resources untuk memastikan Cursor tertutup
-            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                    if (idx >= 0) result = cursor.getString(idx);
-                }
-            } catch (Exception e) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
+            uriFile = data.getData();
+            imgPreview.setImageURI(uriFile);
+            imgPreview.setVisibility(ImageView.VISIBLE);
+
+            try {
+                InputStream is = getContentResolver().openInputStream(uriFile);
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                int nRead;
+                byte[] temp = new byte[4096];
+                while ((nRead = is.read(temp)) != -1) buffer.write(temp, 0, nRead);
+
+                byte[] fileBytes = buffer.toByteArray();
+                is.close();
+
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), fileBytes);
+                filePart = MultipartBody.Part.createFormData(
+                        "file",
+                        "skb_" + System.currentTimeMillis() + ".jpg",
+                        reqFile
+                );
+
+            } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "Gagal membaca file", Toast.LENGTH_SHORT).show();
             }
-        }
-        if (result == null) {
-            result = uri.getLastPathSegment();
-        }
-        return result;
-    }
-
-    private MultipartBody.Part prepareFilePart(Uri uri) {
-        try {
-            ContentResolver resolver = getContentResolver();
-            // Fallback mimeType jika resolver.getType(uri) mengembalikan null
-            String mimeType = resolver.getType(uri);
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
-
-            InputStream is = resolver.openInputStream(uri);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            if (is == null) {
-                throw new Exception("Input stream is null");
-            }
-
-            while ((bytesRead = is.read(buffer)) != -1) {
-                bos.write(buffer, 0, bytesRead);
-            }
-            is.close();
-
-            RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), bos.toByteArray());
-            return MultipartBody.Part.createFormData("file", getFileName(uri), requestFile);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Gagal memproses file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            return null;
         }
     }
 
+    // ====================================
+    // VALIDASI FORM
+    // ====================================
+    private boolean validateForm() {
+
+        if (etNama.getText().toString().trim().isEmpty()) {
+            etNama.setError("Nama tidak boleh kosong");
+            etNama.requestFocus();
+            return false;
+        }
+
+        if (etNik.getText().toString().trim().isEmpty()) {
+            etNik.setError("NIK tidak boleh kosong");
+            etNik.requestFocus();
+            return false;
+        }
+
+        if (etAgama.getText().toString().trim().isEmpty()) {
+            etAgama.setError("Agama tidak boleh kosong");
+            etAgama.requestFocus();
+            return false;
+        }
+
+        if (etTTL.getText().toString().trim().isEmpty()) {
+            etTTL.setError("TTL tidak boleh kosong");
+            etTTL.requestFocus();
+            return false;
+        }
+
+        if (etPendidikan.getText().toString().trim().isEmpty()) {
+            etPendidikan.setError("Pendidikan tidak boleh kosong");
+            etPendidikan.requestFocus();
+            return false;
+        }
+
+        if (etAlamat.getText().toString().trim().isEmpty()) {
+            etAlamat.setError("Alamat tidak boleh kosong");
+            etAlamat.requestFocus();
+            return false;
+        }
+
+        if (etKeperluan.getText().toString().trim().isEmpty()) {
+            etKeperluan.setError("Keperluan harus diisi");
+            etKeperluan.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    // ====================================
+    // KIRIM DATA
+    // ====================================
     private void kirimData() {
+
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
-        String username = pref.getString("username", "").trim();
+        String username = pref.getString("username", "");
 
-        String nama = etNama.getText().toString().trim();
-        String nik = etNik.getText().toString().trim();
-        String agama = etAgama.getText().toString().trim();
-        String ttl = etTTL.getText().toString().trim();
-        String pendidikan = etPendidikan.getText().toString().trim();
-        String alamat = etAlamat.getText().toString().trim();
-        String keperluan = etKeperluan.getText().toString().trim();
-
-        // Validasi field wajib
-        if (nama.isEmpty() || nik.isEmpty() || agama.isEmpty() || ttl.isEmpty()
-                || pendidikan.isEmpty() || alamat.isEmpty() || keperluan.isEmpty()) {
-            Toast.makeText(this, "Semua field wajib diisi", Toast.LENGTH_LONG).show();
-            return;
-        }
         if (username.isEmpty()) {
             Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Siapkan RequestBody untuk data teks
-        RequestBody rbNama = RequestBody.create(MediaType.parse("text/plain"), nama);
-        RequestBody rbNik = RequestBody.create(MediaType.parse("text/plain"), nik);
-        RequestBody rbAgama = RequestBody.create(MediaType.parse("text/plain"), agama);
-        RequestBody rbTTL = RequestBody.create(MediaType.parse("text/plain"), ttl);
-        RequestBody rbPendidikan = RequestBody.create(MediaType.parse("text/plain"), pendidikan);
-        RequestBody rbAlamat = RequestBody.create(MediaType.parse("text/plain"), alamat);
-        RequestBody rbKeperluan = RequestBody.create(MediaType.parse("text/plain"), keperluan);
-        RequestBody rbKodeSurat = RequestBody.create(MediaType.parse("text/plain"), "SKBB");
-        RequestBody rbIdPejabat = RequestBody.create(MediaType.parse("text/plain"), "");
-        RequestBody rbUsername = RequestBody.create(MediaType.parse("text/plain"), username);
+        // RequestBody Data
+        RequestBody rbNama = rb(etNama.getText().toString().trim());
+        RequestBody rbNik = rb(etNik.getText().toString().trim());
+        RequestBody rbAgama = rb(etAgama.getText().toString().trim());
+        RequestBody rbTTL = rb(etTTL.getText().toString().trim());
+        RequestBody rbPendidikan = rb(etPendidikan.getText().toString().trim());
+        RequestBody rbAlamat = rb(etAlamat.getText().toString().trim());
+        RequestBody rbKeperluan = rb(etKeperluan.getText().toString().trim());
+        RequestBody rbKodeSurat = rb("SKBB");
+        RequestBody rbIdPejabat = rb("");
+        RequestBody rbUser = rb(username);
 
-        // Siapkan file part (Wajib jika diminta, tapi di sini diasumsikan opsional seperti SKTM)
-        // Jika file wajib, tambahkan validasi: if (fileUri == null) { Toast...; return; }
-
-        MultipartBody.Part filePart = null;
-        if (fileUri != null) {
-            filePart = prepareFilePart(fileUri);
-        }
-
-        // Buat filePart placeholder jika opsional dan kosong
-        MultipartBody.Part fotoPartFix = (filePart != null)
+        // File opsional
+        MultipartBody.Part fileFix = (filePart != null)
                 ? filePart
-                : MultipartBody.Part.createFormData("file", ""); // Part kosong
+                : MultipartBody.Part.createFormData("file", "");
 
+        // API
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponSkb> kirim = api.kirimskb(
-                rbNama, rbNik, rbAgama, rbTTL, rbPendidikan, rbAlamat,
-                fotoPartFix,
-                rbKeperluan,// Menggunakan fotoPartFix
-                rbKodeSurat, rbIdPejabat, rbUsername
+
+        Call<ResponSkb> call = api.kirimskb(
+                rbNama, rbNik, rbAgama, rbTTL, rbPendidikan,
+                rbAlamat, fileFix, rbKeperluan,
+                rbKodeSurat, rbIdPejabat, rbUser
         );
 
-        kirim.enqueue(new Callback<ResponSkb>() {
+        call.enqueue(new Callback<ResponSkb>() {
             @Override
             public void onResponse(Call<ResponSkb> call, Response<ResponSkb> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String pesan = response.body().getMessage();
-                    if (pesan == null || pesan.isEmpty()) {
-                        pesan = "Pengajuan SKBB berhasil dikirim.";
-                    }
-                    Toast.makeText(SKB.this, pesan, Toast.LENGTH_SHORT).show();
 
-                    // 🟢 LOGIKA PINDAH ACTIVITY
+                    Toast.makeText(SKB.this,
+                            response.body().getMessage(),
+                            Toast.LENGTH_SHORT).show();
+
+                    clearForm();
+
                     Intent intent = new Intent(SKB.this, permintaan_surat.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    finish(); // Tutup activity SKB
+                    finish();
+
                 } else {
-                    Toast.makeText(SKB.this, "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SKB.this, "Gagal mengirim data ke server",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponSkb> call, Throwable t) {
-                Toast.makeText(SKB.this, "Kesalahan koneksi: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(SKB.this,
+                        "Kesalahan koneksi: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private RequestBody rb(String value) {
+        return RequestBody.create(MediaType.parse("text/plain"), value);
     }
 
     private void clearForm() {
@@ -231,7 +259,11 @@ public class SKB extends AppCompatActivity {
         etPendidikan.setText("");
         etAlamat.setText("");
         etKeperluan.setText("");
-        tvNamaFile.setText("Belum ada file dipilih");
-        fileUri = null;
+
+        imgPreview.setImageURI(null);
+        imgPreview.setVisibility(ImageView.GONE);
+
+        filePart = null;
+        uriFile = null;
     }
 }

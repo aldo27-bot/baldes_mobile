@@ -38,7 +38,17 @@ public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.ViewHolder
 
         holder.nomor.setText(item.getIdPengajuanSurat());
         holder.nama.setText(item.getNama());
-        holder.tanggal.setText(item.getTanggal());
+
+        // === Format tanggal tanpa jam ===
+        String fullDate = item.getTanggal(); // contoh: 2025-11-26 13:45:48
+        String onlyDate = fullDate;
+
+        if (fullDate != null && fullDate.contains(" ")) {
+            onlyDate = fullDate.split(" ")[0]; // hasil: 2025-11-26
+        }
+
+        holder.tanggal.setText(onlyDate);
+
         holder.status.setText(item.getStatus());
 
         holder.itemView.setOnClickListener(v -> {
@@ -60,6 +70,7 @@ public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.ViewHolder
                     .commit();
         });
     }
+
 
     @Override
     public int getItemCount() {

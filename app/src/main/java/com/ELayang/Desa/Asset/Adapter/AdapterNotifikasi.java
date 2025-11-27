@@ -44,10 +44,20 @@ public class AdapterNotifikasi extends RecyclerView.Adapter<AdapterNotifikasi.Ho
         ModelNotifikasi data = listData.get(position);
 
         holder.tvStatus.setText(data.getStatus());
-        holder.tvNoPengajuan.setText("No: " + data.getJudul()); // <-- pakai judul
+        holder.tvNoPengajuan.setText(data.getJudul());
         holder.tvKode.setText(data.getJenis());
-        holder.tvTanggal.setText(data.getTanggal());
 
+        // === Format Tanggal Tanpa Jam ===
+        String fullDate = data.getTanggal();  // contoh: 2025-11-26 13:45:48
+        String onlyDate = fullDate;
+
+        if (fullDate != null && fullDate.contains(" ")) {
+            onlyDate = fullDate.split(" ")[0];  // hasil: 2025-11-26
+        }
+
+        holder.tvTanggal.setText(onlyDate);
+
+        // === Alasan ===
         if (data.getAlasan() != null && !data.getAlasan().isEmpty()) {
             holder.tvAlasan.setVisibility(View.VISIBLE);
             holder.tvAlasan.setText("Alasan: " + data.getAlasan());
@@ -55,6 +65,7 @@ public class AdapterNotifikasi extends RecyclerView.Adapter<AdapterNotifikasi.Ho
             holder.tvAlasan.setVisibility(View.GONE);
         }
 
+        // === Warna Status ===
         switch (data.getStatus().toLowerCase()) {
             case "ditolak":
                 holder.viewStatusBar.setBackgroundColor(context.getResources().getColor(android.R.color.holo_red_dark));
@@ -70,10 +81,12 @@ public class AdapterNotifikasi extends RecyclerView.Adapter<AdapterNotifikasi.Ho
                 break;
         }
 
+        // Klik item
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(data);
         });
     }
+
 
     @Override
     public int getItemCount() {

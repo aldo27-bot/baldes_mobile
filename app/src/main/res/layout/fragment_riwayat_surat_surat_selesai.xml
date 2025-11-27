@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".Menu.riwayat_surat_suratSelesai">
 
+    <!-- RecyclerView yang digunakan di Java -->
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/view_selesai"
-        android:layout_marginBottom="60dp"/>
-
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="60dp"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        android:scrollbarStyle="insideOverlay"/>
 </FrameLayout>

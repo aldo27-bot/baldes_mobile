@@ -47,13 +47,12 @@ public class SuratUsaha extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_surat_usaha);
 
-        // Inisialisasi Tombol Kembali
         btnBack = findViewById(R.id.btnBack);
 
         etNama = findViewById(R.id.etNama);
         etAlamat = findViewById(R.id.etAlamat);
-        etKapanUsaha = findViewById(R.id.etKapanUsaha);   // Tambahan
-        etLokasiUsaha = findViewById(R.id.etLokasiUsaha); // Tambahan
+        etKapanUsaha = findViewById(R.id.etKapanUsaha);
+        etLokasiUsaha = findViewById(R.id.etLokasiUsaha);
         etKeterangan = findViewById(R.id.etKeterangan);
         etTTL = findViewById(R.id.etTTL);
 
@@ -61,12 +60,10 @@ public class SuratUsaha extends AppCompatActivity {
         btnPilihFile = findViewById(R.id.btnPilihFile);
         tvNamaFile = findViewById(R.id.tvNamaFile);
 
-        // Listener
         btnBack.setOnClickListener(v -> onBackPressed());
         btnPilihFile.setOnClickListener(v -> pilihFile());
-        btnKirim.setOnClickListener(v -> kirimData());
+        btnKirim.setOnClickListener(v -> validasiDanKonfirmasi());
 
-        // Atur status awal file
         tvNamaFile.setText("Belum ada file dipilih (Opsional)");
     }
 
@@ -105,7 +102,6 @@ public class SuratUsaha extends AppCompatActivity {
                 RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileBytes);
                 filePart = MultipartBody.Part.createFormData("file", fileName, reqFile);
 
-                Log.d("SuratUsaha", "File siap diupload: " + fileName);
                 Toast.makeText(this, "File dipilih: " + fileName, Toast.LENGTH_SHORT).show();
 
             } catch (IOException e) {
@@ -114,40 +110,60 @@ public class SuratUsaha extends AppCompatActivity {
                 tvNamaFile.setText("Gagal membaca file");
                 Toast.makeText(this, "Gagal membaca file: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
-        } else if (requestCode == FILE_REQUEST_CODE) {
-            uriFile = null;
-            filePart = null;
-            tvNamaFile.setText("Belum ada file dipilih (Opsional)");
         }
     }
+
+    // ================================
+    // VALIDASI + POPUP KONFIRMASI
+    // ================================
+
+    private boolean cek(EditText et, String pesan) {
+        if (et.getText().toString().trim().isEmpty()) {
+            et.setError(pesan);
+            et.requestFocus();
+            return true;
+        }
+        return false;
+    }
+
+    private void validasiDanKonfirmasi() {
+
+        if (cek(etNama, "Nama wajib diisi")) return;
+        if (cek(etAlamat, "Alamat wajib diisi")) return;
+        if (cek(etKapanUsaha, "Waktu usaha wajib diisi")) return;
+        if (cek(etLokasiUsaha, "Lokasi usaha wajib diisi")) return;
+        if (cek(etKeterangan, "Keterangan wajib diisi")) return;
+        if (cek(etTTL, "TTL wajib diisi")) return;
+
+        // POPUP KONFIRMASI
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Konfirmasi")
+                .setMessage("Kirim Surat Usaha?")
+                .setPositiveButton("Ya", (dialog, which) -> kirimData())
+                .setNegativeButton("Tidak", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    // ================================
+    // KIRIM DATA KE SERVER
+    // ================================
 
     private void kirimData() {
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
         String username = pref.getString("username", "").trim();
 
-        // Ambil data dari form
         String namaText = etNama.getText().toString().trim();
         String alamatText = etAlamat.getText().toString().trim();
-        String kapanUsahaText = etKapanUsaha.getText().toString().trim();   // Tambahan
-        String lokasiUsahaText = etLokasiUsaha.getText().toString().trim(); // Tambahan
+        String kapanUsahaText = etKapanUsaha.getText().toString().trim();
+        String lokasiUsahaText = etLokasiUsaha.getText().toString().trim();
         String keteranganUsaha = etKeterangan.getText().toString().trim();
         String ttlText = etTTL.getText().toString().trim();
 
-        if (username.isEmpty()) {
-            Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (namaText.isEmpty() || alamatText.isEmpty() || kapanUsahaText.isEmpty() || lokasiUsahaText.isEmpty() || keteranganUsaha.isEmpty() || ttlText.isEmpty()) {
-            Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // RequestBody
         RequestBody nama = rb(namaText);
         RequestBody alamat = rb(alamatText);
         RequestBody kapanUsaha = rb(kapanUsahaText);
         RequestBody lokasiUsaha = rb(lokasiUsahaText);
-        RequestBody keterangan_usaha = rb(keteranganUsaha);
+        RequestBody keterangan = rb(keteranganUsaha);
         RequestBody ttl = rb(ttlText);
         RequestBody user = rb(username);
         RequestBody kodeSurat = rb("SKU");
@@ -156,18 +172,21 @@ public class SuratUsaha extends AppCompatActivity {
                 ? filePart
                 : MultipartBody.Part.createFormData("file", "");
 
-        // Panggil API
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponSuratUsaha> call = api.suratUsaha(user, nama, alamat, ttl, kapanUsaha, lokasiUsaha, keterangan_usaha, kodeSurat, fileFix);
+        Call<ResponSuratUsaha> call = api.suratUsaha(
+                user, nama, alamat, ttl,
+                kapanUsaha, lokasiUsaha, keterangan,
+                kodeSurat, fileFix
+        );
 
         call.enqueue(new Callback<ResponSuratUsaha>() {
             @Override
             public void onResponse(Call<ResponSuratUsaha> call, Response<ResponSuratUsaha> response) {
                 if (response.isSuccessful() && response.body() != null) {
+
                     String pesan = response.body().getMessage();
-                    if (pesan == null || pesan.isEmpty()) {
-                        pesan = "Pengajuan Surat Usaha berhasil dikirim.";
-                    }
+                    if (pesan == null || pesan.isEmpty()) pesan = "Pengajuan Surat Usaha berhasil dikirim.";
+
                     Toast.makeText(SuratUsaha.this, pesan, Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(SuratUsaha.this, permintaan_surat.class);
@@ -175,31 +194,19 @@ public class SuratUsaha extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(SuratUsaha.this, "Gagal mengirim data ke server. Kode: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(SuratUsaha.this, "Gagal mengirim! Kode: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponSuratUsaha> call, Throwable t) {
                 Toast.makeText(SuratUsaha.this, "Kesalahan koneksi: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                Log.e("SuratUsaha", "Gagal koneksi: " + t.getMessage());
+                Log.e("SuratUsaha", "Error: " + t.getMessage());
             }
         });
     }
 
     private RequestBody rb(String value) {
         return RequestBody.create(MediaType.parse("text/plain"), value);
-    }
-
-    private void clearForm() {
-        etNama.setText("");
-        etAlamat.setText("");
-        etKapanUsaha.setText("");   // Tambahan
-        etLokasiUsaha.setText("");  // Tambahan
-        etKeterangan.setText("");
-        etTTL.setText("");
-        uriFile = null;
-        filePart = null;
-        tvNamaFile.setText("Belum ada file dipilih (Opsional)");
     }
 }

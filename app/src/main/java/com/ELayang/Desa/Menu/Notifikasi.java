@@ -24,8 +24,11 @@ import com.ELayang.Desa.DataModel.Notifikasi.ResponNotifikasi;
 import com.ELayang.Desa.DataModel.Notifikasi.ResponPopup;
 import com.ELayang.Desa.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,11 +65,6 @@ public class Notifikasi extends Fragment {
 
         adapter = new AdapterNotifikasi(getContext(), list);
         rv.setAdapter(adapter);
-
-        // Listener Klik item dinonaktifkan
-        adapter.setOnItemClickListener(item -> {
-            // Tidak ada aksi klik
-        });
 
         prefLogin = requireActivity().getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
         prefNotif = requireActivity().getSharedPreferences(PREF_NOTIF, Context.MODE_PRIVATE);
@@ -105,8 +103,11 @@ public class Notifikasi extends Fragment {
 
                     list.clear();
                     list.addAll(response.body().getData());
-                    adapter.notifyDataSetChanged();
 
+                    // Hapus otomatis notif lama
+                    removeOldNotifications();
+
+                    adapter.notifyDataSetChanged();
                     tvNotAvail.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
 
                 } else {
@@ -125,6 +126,32 @@ public class Notifikasi extends Fragment {
                 Log.e("NOTIFIKASI", "ERROR => " + t.getMessage());
             }
         });
+    }
+
+    // ========================================================================================
+    // HAPUS NOTIFIKASI > 30 HARI
+    // ========================================================================================
+    private void removeOldNotifications() {
+        long now = System.currentTimeMillis();
+        long THIRTY_DAYS = 30L * 24 * 60 * 60 * 1000;
+
+        List<ModelNotifikasi> toRemove = new ArrayList<>();
+
+        for (ModelNotifikasi notif : list) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                Date date = sdf.parse(notif.getTanggal());
+
+                if (date != null && (now - date.getTime() > THIRTY_DAYS)) {
+                    toRemove.add(notif);
+                }
+
+            } catch (Exception e) {
+                Log.e("NOTIFIKASI", "Format tanggal salah: " + e.getMessage());
+            }
+        }
+
+        list.removeAll(toRemove);
     }
 
     // ========================================================================================
@@ -151,15 +178,13 @@ public class Notifikasi extends Fragment {
 
                     if (currentStatus != null && !currentStatus.equals(last)) {
 
-                        // Hanya menampilkan status dan alasan
-                        String title = "Status Notifikasi";
-                        String msg = currentStatus +
+                        String message = currentStatus +
                                 (currentAlasan != null && !currentAlasan.isEmpty()
                                         ? "\nAlasan: " + currentAlasan : "");
 
                         new android.app.AlertDialog.Builder(requireContext())
-                                .setTitle(title)
-                                .setMessage(msg)
+                                .setTitle("Status Notifikasi")
+                                .setMessage(message)
                                 .setPositiveButton("OK", (d, i) -> d.dismiss())
                                 .show();
 

@@ -1,5 +1,6 @@
 package com.ELayang.Desa.Surat;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,7 +39,6 @@ public class SKK extends AppCompatActivity {
     Spinner spJenisKelamin;
     EditText eNama, eAgama, eTTL, eAlamat, eKewarganegaraan, eKeterangan;
     Button btnKirim, btnChooseFile;
-
     ImageButton btnBack;
     String username, fileNameSaved = "";
     String currentNoPengajuan = null;
@@ -67,7 +67,6 @@ public class SKK extends AppCompatActivity {
         btnChooseFile = findViewById(R.id.btn_choose_file);
         btnBack = findViewById(R.id.btnBack);
 
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -87,26 +86,25 @@ public class SKK extends AppCompatActivity {
         btnKirim.setOnClickListener(v -> {
             if(isValid()) konfirmasiKirim();
         });
-
     }
 
-    private boolean isValid(){
-        if(eNama.getText().toString().trim().isEmpty()){
+    private boolean isValid() {
+        if (eNama.getText().toString().trim().isEmpty()) {
             eNama.setError("Nama wajib diisi");
             return false;
         }
-        if(eAlamat.getText().toString().trim().isEmpty()){
+        if (eAlamat.getText().toString().trim().isEmpty()) {
             eAlamat.setError("Alamat wajib diisi");
             return false;
         }
-        if(eKeterangan.getText().toString().trim().isEmpty()){
+        if (eKeterangan.getText().toString().trim().isEmpty()) {
             eKeterangan.setError("Keterangan kehilangan wajib diisi");
             return false;
         }
         return true;
     }
 
-    private void showDatePicker(){
+    private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
         picker = new DatePickerDialog(SKK.this, (view, y, m, d) -> {
             cal.set(y, m, d);
@@ -115,16 +113,16 @@ public class SKK extends AppCompatActivity {
         picker.show();
     }
 
-    private void konfirmasiKirim(){
+    private void konfirmasiKirim() {
         new AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim surat kehilangan?")
                 .setPositiveButton("Kirim", (d,w)-> kirim())
-                .setNegativeButton("Batal",null)
+                .setNegativeButton("Batal", null)
                 .show();
     }
 
-    private void kirim(){
+    private void kirim() {
         progressDialog.show();
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
@@ -144,9 +142,7 @@ public class SKK extends AppCompatActivity {
         call.enqueue(DefaultCallback("Berhasil mengirim surat"));
     }
 
-
-
-    private void chooseFile(){
+    private void chooseFile() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("*/*");
         i.addCategory(Intent.CATEGORY_OPENABLE);
@@ -155,38 +151,52 @@ public class SKK extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
         if(requestCode==PICK_FILE_REQUEST && resultCode==RESULT_OK && data!=null){
             Uri uri = data.getData();
-            fileNameSaved = getFileName(uri);
-            saveFile(uri);
-            btnChooseFile.setText("File: " + fileNameSaved);
+            if (uri != null) {
+                fileNameSaved = getFileName(uri);
+                saveFile(uri);
+                btnChooseFile.setText("File: " + fileNameSaved);
+            }
         }
-        super.onActivityResult(requestCode,resultCode,data);
     }
 
     @SuppressLint("Range")
     private String getFileName(Uri uri){
         Cursor cursor = getContentResolver().query(uri,null,null,null,null);
         if(cursor!=null && cursor.moveToFirst()){
-            return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            try {
+                return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            } finally {
+                cursor.close();
+            }
         }
-        return null;
+        // fallback
+        String path = uri.getPath();
+        if (path == null) return "";
+        int cut = path.lastIndexOf('/');
+        return (cut != -1) ? path.substring(cut + 1) : path;
     }
 
     private void saveFile(Uri uri){
-        try(InputStream is = getContentResolver().openInputStream(uri);
-            OutputStream os = new FileOutputStream(new File(getFilesDir(), fileNameSaved))){
+        if (uri == null || fileNameSaved == null || fileNameSaved.isEmpty()) return;
+        try (InputStream is = getContentResolver().openInputStream(uri);
+             OutputStream os = new FileOutputStream(new File(getFilesDir(), fileNameSaved))) {
 
             byte[] buf = new byte[1024];
             int len;
             while((len=is.read(buf))>0) os.write(buf,0,len);
 
-        } catch(Exception ignored){}
+        } catch(Exception ignored){
+            ignored.printStackTrace();
+        }
     }
 
     private MultipartBody.Part getFilePart(){
-        if(fileNameSaved.isEmpty()) return null;
+        if(fileNameSaved == null || fileNameSaved.isEmpty()) return null;
         File file = new File(getFilesDir(), fileNameSaved);
+        if (!file.exists()) return null;
         RequestBody rb = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         return MultipartBody.Part.createFormData("file", file.getName(), rb);
     }

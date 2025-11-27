@@ -83,8 +83,18 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         // Pilih File
         btnPilihFile.setOnClickListener(v -> pilihFile());
 
-        // Kirim Data
-        btnKirim.setOnClickListener(v -> kirimData());
+        // Kirim Data (dengan validasi & konfirmasi)
+        btnKirim.setOnClickListener(v -> {
+
+            if (!validateForm()) return;
+
+            new android.app.AlertDialog.Builder(FormSuratDomisiliActivity.this)
+                    .setTitle("Konfirmasi Pengajuan")
+                    .setMessage("Kirim Pengajuan Surat Domisili?")
+                    .setPositiveButton("KIRIM", (dialog, which) -> kirimData())
+                    .setNegativeButton("BATAL", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
     }
 
     private void pilihFile() {
@@ -107,7 +117,8 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 int nRead;
                 byte[] temp = new byte[4096];
-                while ((nRead = is.read(temp)) != -1) buffer.write(temp, 0, nRead);
+                while ((nRead = is.read(temp)) != -1)
+                    buffer.write(temp, 0, nRead);
                 byte[] fileBytes = buffer.toByteArray();
                 is.close();
 
@@ -126,6 +137,61 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         }
     }
 
+    // ======================== VALIDASI ===========================
+    private boolean validateForm() {
+
+        if (etNama.getText().toString().trim().isEmpty()) {
+            etNama.setError("Nama tidak boleh kosong");
+            etNama.requestFocus();
+            return false;
+        }
+
+        if (etNik.getText().toString().trim().isEmpty()) {
+            etNik.setError("NIK tidak boleh kosong");
+            etNik.requestFocus();
+            return false;
+        }
+
+        if (etTTL.getText().toString().trim().isEmpty()) {
+            etTTL.setError("TTL tidak boleh kosong");
+            etTTL.requestFocus();
+            return false;
+        }
+
+        if (etAlamat.getText().toString().trim().isEmpty()) {
+            etAlamat.setError("Alamat tidak boleh kosong");
+            etAlamat.requestFocus();
+            return false;
+        }
+
+        if (etPekerjaan.getText().toString().trim().isEmpty()) {
+            etPekerjaan.setError("Pekerjaan tidak boleh kosong");
+            etPekerjaan.requestFocus();
+            return false;
+        }
+
+        if (etAgama.getText().toString().trim().isEmpty()) {
+            etAgama.setError("Agama tidak boleh kosong");
+            etAgama.requestFocus();
+            return false;
+        }
+
+        if (etStatusPerkawinan.getText().toString().trim().isEmpty()) {
+            etStatusPerkawinan.setError("Status Perkawinan tidak boleh kosong");
+            etStatusPerkawinan.requestFocus();
+            return false;
+        }
+
+        if (etKeterangan.getText().toString().trim().isEmpty()) {
+            etKeterangan.setError("Keterangan tidak boleh kosong");
+            etKeterangan.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    // =============================================================
     private void kirimData() {
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
         String username = pref.getString("username", "");
@@ -135,7 +201,7 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
             return;
         }
 
-        // Ambil data dari form
+        // Ambil data form
         RequestBody nama = rb(etNama.getText().toString().trim());
         RequestBody nik = rb(etNik.getText().toString().trim());
         RequestBody ttl = rb(etTTL.getText().toString().trim());
@@ -147,6 +213,7 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         RequestBody keterangan = rb(etKeterangan.getText().toString().trim());
         RequestBody user = rb(username);
 
+        // File opsional → kirim part kosong jika tidak ada
         MultipartBody.Part fileFix = (filePart != null)
                 ? filePart
                 : MultipartBody.Part.createFormData("file", "");
@@ -188,7 +255,7 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         etNik.setText("");
         etTTL.setText("");
         etAlamat.setText("");
-        spinnerJK.setSelection(0); // reset spinner
+        spinnerJK.setSelection(0);
         etPekerjaan.setText("");
         etAgama.setText("");
         etStatusPerkawinan.setText("");

@@ -1,6 +1,7 @@
 package com.ELayang.Desa.Surat;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -33,11 +34,9 @@ import retrofit2.Response;
 
 public class SKM extends AppCompatActivity {
 
-    private static final String TAG = "SKM_ACTIVITY";
-
     private ImageButton btnBack;
     private EditText etNama, etTTL, etPekerjaan, etAgama, etAlamat, etKewarganegaraan, etKeterangan;
-    private Spinner spinnerJK; // 📌 Dropdown untuk Jenis Kelamin
+    private Spinner spinnerJK;
     private Button btnKirim, btnChooseFile;
     private TextView tFileName;
     private Uri fileUri;
@@ -50,15 +49,9 @@ public class SKM extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.surat_skm);
 
-        Log.d(TAG, "onCreate: Activity SKM dimulai");
-
-        // Ambil username dari SharedPreferences
         usernameUser = getSharedPreferences("prefLogin", MODE_PRIVATE).getString("username", "");
-        Log.d(TAG, "Username dari SharedPref: " + usernameUser);
 
-        // Inisialisasi Komponen
         btnBack = findViewById(R.id.btnBack);
-
         etNama = findViewById(R.id.etNama);
         etTTL = findViewById(R.id.etTTL);
         etPekerjaan = findViewById(R.id.etPekerjaan);
@@ -67,10 +60,11 @@ public class SKM extends AppCompatActivity {
         etKewarganegaraan = findViewById(R.id.etkewarganegaraan);
         etKeterangan = findViewById(R.id.etKeterangan);
 
-        spinnerJK = findViewById(R.id.spinnerJK); // Spinner jenis kelamin
+        spinnerJK = findViewById(R.id.spinnerJK);
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
-                R.array.jenis_kelamin_array, // harus ada di res/values/strings.xml
+                R.array.jenis_kelamin_array,
                 android.R.layout.simple_spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -80,18 +74,85 @@ public class SKM extends AppCompatActivity {
         btnChooseFile = findViewById(R.id.btn_choose_file);
         tFileName = findViewById(R.id.t_file_name);
 
+        tFileName.setText("Tidak ada file yang dipilih");
+
         btnBack.setOnClickListener(v -> onBackPressed());
         btnChooseFile.setOnClickListener(v -> chooseFile());
-        btnKirim.setOnClickListener(v -> kirimData());
-
-        tFileName.setText("Tidak ada file yang dipilih");
+        btnKirim.setOnClickListener(v -> validasiSebelumKirim());
     }
 
+    // ====================================================== //
+    //                VALIDASI SEBELUM KIRIM
+    // ====================================================== //
+    private void validasiSebelumKirim() {
+        if (!isValidForm()) return;  // Jika gagal validasi → stop
+
+        // Popup konfirmasi
+        new AlertDialog.Builder(this)
+                .setTitle("Konfirmasi")
+                .setMessage("Kirim Surat Kematian?")
+                .setPositiveButton("Kirim", (d, w) -> kirimData())
+                .setNegativeButton("Batal", null)
+                .show();
+    }
+
+    // ====================================================== //
+    //               VALIDASI INPUT FORM
+    // ====================================================== //
+    private boolean isValidForm() {
+
+        if (etNama.getText().toString().trim().isEmpty()) {
+            etNama.setError("Nama wajib diisi");
+            etNama.requestFocus();
+            return false;
+        }
+        if (etTTL.getText().toString().trim().isEmpty()) {
+            etTTL.setError("Tempat/Tanggal Lahir wajib diisi");
+            etTTL.requestFocus();
+            return false;
+        }
+        if (spinnerJK.getSelectedItem().toString().equals("Pilih Jenis Kelamin")) {
+            Toast.makeText(this, "Pilih jenis kelamin!", Toast.LENGTH_SHORT).show();
+            spinnerJK.performClick();
+            return false;
+        }
+        if (etAgama.getText().toString().trim().isEmpty()) {
+            etAgama.setError("Agama wajib diisi");
+            etAgama.requestFocus();
+            return false;
+        }
+        if (etPekerjaan.getText().toString().trim().isEmpty()) {
+            etPekerjaan.setError("Pekerjaan wajib diisi");
+            etPekerjaan.requestFocus();
+            return false;
+        }
+        if (etAlamat.getText().toString().trim().isEmpty()) {
+            etAlamat.setError("Alamat wajib diisi");
+            etAlamat.requestFocus();
+            return false;
+        }
+        if (etKewarganegaraan.getText().toString().trim().isEmpty()) {
+            etKewarganegaraan.setError("Kewarganegaraan wajib diisi");
+            etKewarganegaraan.requestFocus();
+            return false;
+        }
+        if (etKeterangan.getText().toString().trim().isEmpty()) {
+            etKeterangan.setError("Keterangan wajib diisi");
+            etKeterangan.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    // ====================================================== //
+    //                       PILIH FILE
+    // ====================================================== //
     private void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "Pilih Dokumen Pendukung"), FILE_SELECT_CODE);
+        startActivityForResult(Intent.createChooser(intent, "Pilih File Pendukung"), FILE_SELECT_CODE);
     }
 
     @Override
@@ -100,24 +161,27 @@ public class SKM extends AppCompatActivity {
 
         if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null) {
             fileUri = data.getData();
-            String fileName = fileUri.getLastPathSegment();
 
+            String fileName = fileUri.getLastPathSegment();
             if (fileName.length() > 30) {
                 fileName = fileName.substring(0, 15) + "..." + fileName.substring(fileName.lastIndexOf('.') - 4);
             }
 
             tFileName.setText(fileName);
-            Toast.makeText(this, "File dipilih: " + fileName, Toast.LENGTH_SHORT).show();
         } else {
             fileUri = null;
             tFileName.setText("Tidak ada file yang dipilih");
         }
     }
 
+    // ====================================================== //
+    //                    KIRIM KE SERVER
+    // ====================================================== //
     private void kirimData() {
+
         String nama = etNama.getText().toString().trim();
         String ttl = etTTL.getText().toString().trim();
-        String jk = spinnerJK.getSelectedItem().toString(); // Ambil dari spinner
+        String jk = spinnerJK.getSelectedItem().toString();
         String agama = etAgama.getText().toString().trim();
         String pekerjaan = etPekerjaan.getText().toString().trim();
         String alamat = etAlamat.getText().toString().trim();
@@ -125,55 +189,51 @@ public class SKM extends AppCompatActivity {
         String keterangan = etKeterangan.getText().toString().trim();
         String username = usernameUser;
 
-        if (username.isEmpty()) {
-            Toast.makeText(this, "Akun belum login!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (nama.isEmpty() || ttl.isEmpty() || jk.isEmpty() || agama.isEmpty() ||
-                alamat.isEmpty() || kewarganegaraan.isEmpty() || keterangan.isEmpty()) {
-            Toast.makeText(this, "Harap isi semua kolom", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        RequestBody rNama = RequestBody.create(MediaType.parse("text/plain"), nama);
-        RequestBody rAlamat = RequestBody.create(MediaType.parse("text/plain"), alamat);
-        RequestBody rJK = RequestBody.create(MediaType.parse("text/plain"), jk);
-        RequestBody rTTL = RequestBody.create(MediaType.parse("text/plain"), ttl);
-        RequestBody rPekerjaan = RequestBody.create(MediaType.parse("text/plain"), pekerjaan);
-        RequestBody rAgama = RequestBody.create(MediaType.parse("text/plain"), agama);
-        RequestBody rKewarganegaraan = RequestBody.create(MediaType.parse("text/plain"), kewarganegaraan);
-        RequestBody rKeterangan = RequestBody.create(MediaType.parse("text/plain"), keterangan);
-        RequestBody rUsername = RequestBody.create(MediaType.parse("text/plain"), username);
+        RequestBody rNama = rb(nama);
+        RequestBody rAlamat = rb(alamat);
+        RequestBody rJK = rb(jk);
+        RequestBody rTTL = rb(ttl);
+        RequestBody rPekerjaan = rb(pekerjaan);
+        RequestBody rAgama = rb(agama);
+        RequestBody rKewarganegaraan = rb(kewarganegaraan);
+        RequestBody rKeterangan = rb(keterangan);
+        RequestBody rUsername = rb(username);
 
         MultipartBody.Part filePart = null;
 
-        if (fileUri != null) {
-            try {
+        try {
+            if (fileUri != null) {
                 InputStream inputStream = getContentResolver().openInputStream(fileUri);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    bos.write(buffer, 0, bytesRead);
-                }
-                String mimeType = getContentResolver().getType(fileUri);
-                if (mimeType == null) mimeType = "application/octet-stream";
-                RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), bos.toByteArray());
-                String fileName = fileUri.getLastPathSegment();
-                filePart = MultipartBody.Part.createFormData("file", fileName, requestFile);
+
+                byte[] buf = new byte[1024];
+                int n;
+                while ((n = inputStream.read(buf)) > 0) bos.write(buf, 0, n);
+
+                String mime = getContentResolver().getType(fileUri);
+                if (mime == null) mime = "application/octet-stream";
+
+                RequestBody reqFile = RequestBody.create(MediaType.parse(mime), bos.toByteArray());
+
+                filePart = MultipartBody.Part.createFormData("file",
+                        fileUri.getLastPathSegment(), reqFile);
+
                 inputStream.close();
-            } catch (Exception e) {
-                Toast.makeText(this, "Gagal memproses file: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                filePart = null;
+            } else {
+                filePart = MultipartBody.Part.createFormData("file", "");
             }
+        } catch (Exception e) {
+            Toast.makeText(this, "Gagal membaca file!", Toast.LENGTH_SHORT).show();
+            filePart = MultipartBody.Part.createFormData("file", "");
         }
 
-        MultipartBody.Part filePartFix = (filePart != null) ? filePart : MultipartBody.Part.createFormData("file", "");
-
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponSkm> call = api.uploadSKM(rNama, rAlamat, rJK, rTTL, rAgama, rPekerjaan,
-                rKewarganegaraan, rKeterangan, rUsername, filePartFix);
+
+        Call<ResponSkm> call = api.uploadSKM(
+                rNama, rAlamat, rJK, rTTL, rAgama,
+                rPekerjaan, rKewarganegaraan, rKeterangan,
+                rUsername, filePart
+        );
 
         call.enqueue(new Callback<ResponSkm>() {
             @Override
@@ -193,5 +253,10 @@ public class SKM extends AppCompatActivity {
                 Toast.makeText(SKM.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    // Utility
+    private RequestBody rb(String value) {
+        return RequestBody.create(MediaType.parse("text/plain"), value);
     }
 }

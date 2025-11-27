@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="10dp"
-                />
+                android:scrollbars="vertical"/>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -46,12 +46,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="--FITUR AKAN SEGERA TERSEDIA--"
+            android:text="--Notifikasi Kosong--"
             android:textSize="18sp"
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
-            android:visibility="gone"
-            tools:visibility="visible" />
-    </RelativeLayout>
+            android:visibility="gone" />
 
+    </RelativeLayout>
 </LinearLayout>

@@ -7,13 +7,14 @@
     android:background="@drawable/background_sikunir2"
     tools:context=".menu">
 
-    <FrameLayout
-        android:id="@+id/frame"
+    <!-- 🚀 GANTI FrameLayout MENJADI ViewPager2 UNTUK SWIPE -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:elevation="4dp"
-        android:paddingBottom="?attr/actionBarSize" />
+        android:paddingBottom="70dp" />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
@@ -26,10 +27,7 @@
         app:fabCradleMargin="10dp"
         app:fabCradleRoundedCornerRadius="90dp"
         app:fabCradleVerticalOffset="10dp"
-
-        app:hideOnScroll="false">
-</com.google.android.material.bottomappbar.BottomAppBar>
-
+        app:hideOnScroll="false" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -45,7 +43,6 @@
         app:maxImageSize="45dp"
         app:borderWidth="0dp" />
 
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
@@ -54,4 +51,5 @@
         android:background="@android:color/transparent"
         style="@style/BottomNavStyle"
         app:menu="@menu/menu" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -34,7 +34,14 @@ public class SuratSelesai extends RecyclerView.Adapter<SuratSelesai.RecyclerView
         holder.nomor.setText(item.getId());
         holder.nama.setText(item.getNama());
         holder.kode.setText(item.getKode_surat());
-        holder.tanggal.setText(item.getTanggal());
+
+        String FullDate = item.getTanggal();
+        String onlyDate = FullDate;
+
+        if(FullDate != null && FullDate.contains(" ")) {
+            onlyDate = FullDate.split(" ")[0];
+        }
+        holder.tanggal.setText(onlyDate);
     }
 
     @Override
