@@ -8,12 +8,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.ImageButton;
-import android.widget.TextView; // 📌 PENTING: Import TextView
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
@@ -34,9 +36,9 @@ import retrofit2.Response;
 public class FormSuratDomisiliActivity extends AppCompatActivity {
 
     ImageButton btnBack;
-
     private EditText etNama, etNik, etTTL, etAlamat,
-            etJK, etPekerjaan, etAgama, etStatusPerkawinan, etKeterangan;
+            etPekerjaan, etAgama, etStatusPerkawinan, etKeterangan;
+    private Spinner spinnerJK;
     private Button btnKirim;
     private TextView btnPilihFile;
     private ImageView imgPreview;
@@ -47,7 +49,6 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Pastikan Anda menggunakan layout XML yang sudah dimodifikasi di sini
         setContentView(R.layout.activity_form_surat_domisili);
 
         // Inisialisasi EditText
@@ -55,24 +56,34 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         etNik = findViewById(R.id.etNik);
         etTTL = findViewById(R.id.etTTL);
         etAlamat = findViewById(R.id.etAlamat);
-        etJK = findViewById(R.id.etJK);
         etPekerjaan = findViewById(R.id.etPekerjaan);
         etAgama = findViewById(R.id.etAgama);
         etStatusPerkawinan = findViewById(R.id.etStatusPerkawinan);
         etKeterangan = findViewById(R.id.etKeterangan);
 
-        // Inisialisasi Komponen Aksi
+        // Inisialisasi Spinner
+        spinnerJK = findViewById(R.id.spinnerJK);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.jenis_kelamin_array,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerJK.setAdapter(adapter);
+
+        // Inisialisasi komponen aksi
         btnKirim = findViewById(R.id.btnKirim);
-        btnPilihFile = findViewById(R.id.btnPilihFile); // 📌 Ditemukan sebagai TextView
+        btnPilihFile = findViewById(R.id.btnPilihFile);
         btnBack = findViewById(R.id.btnBack);
         imgPreview = findViewById(R.id.imgPreview);
 
-        // =========================================================
-        // 📌 Implementasi Tombol Kembali: Sudah benar, menggunakan onBackPressed()
+        // Tombol Kembali
         btnBack.setOnClickListener(view -> onBackPressed());
-        // =========================================================
 
+        // Pilih File
         btnPilihFile.setOnClickListener(v -> pilihFile());
+
+        // Kirim Data
         btnKirim.setOnClickListener(v -> kirimData());
     }
 
@@ -82,14 +93,11 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         startActivityForResult(intent, 101);
     }
 
-    // ... Metode onActivityResult, kirimData, rb, dan clearForm (tidak diubah) ...
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
-            // ... (Kode membaca file tetap sama)
-            // Pastikan Anda juga mengupdate TextView tvNamaFile jika ada
             uriFile = data.getData();
             imgPreview.setImageURI(uriFile);
             imgPreview.setVisibility(ImageView.VISIBLE);
@@ -127,12 +135,12 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
             return;
         }
 
-        // RequestBody untuk Multipart
+        // Ambil data dari form
         RequestBody nama = rb(etNama.getText().toString().trim());
         RequestBody nik = rb(etNik.getText().toString().trim());
         RequestBody ttl = rb(etTTL.getText().toString().trim());
         RequestBody alamat = rb(etAlamat.getText().toString().trim());
-        RequestBody jk = rb(etJK.getText().toString().trim());
+        RequestBody jk = rb(spinnerJK.getSelectedItem().toString());
         RequestBody pekerjaan = rb(etPekerjaan.getText().toString().trim());
         RequestBody agama = rb(etAgama.getText().toString().trim());
         RequestBody status = rb(etStatusPerkawinan.getText().toString().trim());
@@ -153,12 +161,11 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
             public void onResponse(Call<ResponDomisili> call, Response<ResponDomisili> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     String pesan = response.body().getPesan();
-                    if (pesan == null || pesan.isEmpty()) {
-                        pesan = "Pengajuan selesai"; // fallback
-                    }
+                    if (pesan == null || pesan.isEmpty()) pesan = "Pengajuan selesai";
+
                     Toast.makeText(FormSuratDomisiliActivity.this, pesan, Toast.LENGTH_SHORT).show();
                     clearForm();
-                    finish(); // kembali ke menu pengajuan surat
+                    finish();
                 } else {
                     Toast.makeText(FormSuratDomisiliActivity.this, "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
                 }
@@ -181,7 +188,7 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         etNik.setText("");
         etTTL.setText("");
         etAlamat.setText("");
-        etJK.setText("");
+        spinnerJK.setSelection(0); // reset spinner
         etPekerjaan.setText("");
         etAgama.setText("");
         etStatusPerkawinan.setText("");

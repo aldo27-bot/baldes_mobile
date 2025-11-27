@@ -13,24 +13,16 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal">
 
-        <!-- Header Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            android:layout_marginBottom="30dp"
-            android:backgroundTint="@color/purple_dark">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Profil"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-        </androidx.cardview.widget.CardView>
+        <!-- Judul Profil -->
+        <TextView
+            android:id="@+id/kode_surat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profil"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="30dp"/>
 
         <!-- Foto Profil -->
         <ImageView
@@ -58,7 +50,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/masukan_email"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="50dp"
                     android:inputType="textEmailAddress"
                     android:textSize="14sp"
                     android:backgroundTint="@color/white"/>
@@ -73,7 +65,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/masukan_username"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="50dp"
                     android:textSize="14sp"
                     android:backgroundTint="@color/white"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -87,7 +79,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/masukan_nama"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="50dp"
                     android:textSize="14sp"
                     android:backgroundTint="@color/white"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -105,7 +97,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buka"
                 android:layout_width="140dp"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_marginEnd="20dp"
                 android:text="Edit"
                 android:textColor="@color/white"
@@ -115,7 +107,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/logout"
                 android:layout_width="140dp"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:text="Keluar"
                 android:textColor="@color/white"
                 app:cornerRadius="12dp"

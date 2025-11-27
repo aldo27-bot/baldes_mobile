@@ -239,7 +239,10 @@
                     android:textSize="16sp"
                     android:background="@drawable/btn_upload_file_bedanama"
                     android:clickable="true"
-                    android:focusable="true"/>
+                    android:focusable="true"
+                    android:backgroundTint="@null"
+                    app:backgroundTint="@null"
+                    android:foregroundTint="@null"/>
 
                 <TextView
                     android:id="@+id/tvNamaFile"

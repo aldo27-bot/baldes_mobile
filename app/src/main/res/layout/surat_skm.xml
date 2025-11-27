@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="32dp">
 
+        <!-- Tombol Kembali -->
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
@@ -20,20 +21,18 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:background="@android:color/transparent"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:padding="8dp"
             android:src="@drawable/ic_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/black"
             android:contentDescription="Tombol Kembali"/>
 
+        <!-- Judul -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Surat Kematian"
+            android:text="Surat Keterangan Meninggal (SKM)"
             android:textColor="@color/color_title_text"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -42,6 +41,7 @@
             app:layout_constraintStart_toEndOf="@+id/btnBack"
             app:layout_constraintTop_toTopOf="@+id/btnBack" />
 
+        <!-- Container Form -->
         <LinearLayout
             android:id="@+id/inputContainer"
             android:layout_width="match_parent"
@@ -51,15 +51,7 @@
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Data Almarhum/Almarhumah"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="16dp"/>
-
+            <!-- Nama -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,10 +71,11 @@
                 android:hint="Nama lengkap almarhum"
                 android:minHeight="48dp" />
 
+            <!-- TTL -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="Tempat, Tanggal Lahir"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
@@ -99,31 +92,29 @@
                 android:hint="Contoh: Jakarta, 01-01-1970"
                 android:minHeight="48dp" />
 
+            <!-- Jenis Kelamin (Spinner) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="Jenis Kelamin"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
 
-            <EditText
-                android:id="@+id/etJenisKelamin"
+            <Spinner
+                android:id="@+id/spinnerJK"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="textCapSentences"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Pria / Wanita"
-                android:minHeight="48dp" />
+                android:padding="8dp"/>
 
+            <!-- Pekerjaan -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/label_pekerjaan"
+                android:layout_marginTop="16dp"
+                android:text="Pekerjaan"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
 
@@ -139,10 +130,11 @@
                 android:hint="Pekerjaan saat ini"
                 android:minHeight="48dp" />
 
+            <!-- Agama -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="Agama"
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
@@ -159,10 +151,11 @@
                 android:hint="Contoh: Islam"
                 android:minHeight="48dp" />
 
+            <!-- Kewarganegaraan -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="Kewarganegaraan"
                 android:textColor="@color/color_label_text"
                 android:textSize="14sp" />
@@ -179,10 +172,11 @@
                 android:hint="Contoh: Indonesia (WNI)"
                 android:minHeight="48dp" />
 
+            <!-- Alamat -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="Alamat Almarhum"
                 android:textColor="@color/color_label_text"
                 android:textSize="14sp" />
@@ -201,13 +195,14 @@
                 android:hint="Alamat lengkap (Jalan, RT/RW)"
                 android:minHeight="48dp" />
 
+            <!-- Keterangan -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Keterangan Kematian (Waktu dan Lokasi)"
                 android:textColor="@color/color_label_text"
                 android:textSize="14sp"
-                android:layout_marginTop="24dp" />
+                android:layout_marginTop="16dp" />
 
             <EditText
                 android:id="@+id/etKeterangan"
@@ -222,7 +217,7 @@
                 android:inputType="textMultiLine"
                 android:hint="Contoh: Meninggal pada hari Senin, 18 November 2025 di RSUD X, karena sakit jantung." />
 
-
+            <!-- Dokumen Pendukung -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -231,15 +226,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"/>
-
-            <TextView
-                android:id="@+id/t_file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pilih Dokumen (Contoh: Surat Pengantar RT/RW, KTP)"
-                android:textSize="14sp"
-                android:textColor="@color/color_label_text" />
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -257,13 +244,7 @@
                     android:text="Pilih File"
                     android:textColor="#000000"
                     android:textSize="16sp"
-                    android:background="@drawable/btn_upload_file_bedanama"
-                    android:backgroundTint="@null"
-                    app:backgroundTint="@null"
-                    android:foregroundTint="@null"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:onClick="chooseFile"/>
+                    android:background="@drawable/btn_upload_file_bedanama"/>
 
                 <TextView
                     android:id="@+id/t_file_name"
@@ -278,9 +259,9 @@
                     android:singleLine="true"
                     android:ellipsize="start"/>
             </LinearLayout>
-
         </LinearLayout>
 
+        <!-- Tombol Kirim -->
         <Button
             android:id="@+id/btnKirim"
             android:layout_width="0dp"
