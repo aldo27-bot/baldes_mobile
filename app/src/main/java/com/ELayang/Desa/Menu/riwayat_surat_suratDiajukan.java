@@ -33,23 +33,23 @@ public class riwayat_surat_suratDiajukan extends Fragment {
     private ArrayList<ModelDiajukan> data = new ArrayList<>();
     private RecyclerView recyclerView;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.fragment_riwayat_surat_surat_diajukan, container, false);
+
         recyclerView = view.findViewById(R.id.D_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         loadData();
 
-        // Tangani tombol back fisik Android
+        // Tombol back fisik
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
-                        // Kembali ke riwayat_surat
                         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
                             getParentFragmentManager().popBackStack();
                         }
@@ -60,18 +60,21 @@ public class riwayat_surat_suratDiajukan extends Fragment {
     }
 
     private void loadData() {
-        // Ambil username dari SharedPreferences
+
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "");
 
-        // Panggil API
         APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponDiajukan> call = apiRequestData.proses(username);
+
         call.enqueue(new Callback<ResponDiajukan>() {
             @Override
             public void onResponse(Call<ResponDiajukan> call, Response<ResponDiajukan> response) {
+
                 ResponDiajukan respon = response.body();
+
                 if (respon != null && respon.getKode() == 1) {
+
                     ArrayList<ModelDiajukan> list = (ArrayList<ModelDiajukan>) respon.getData();
 
                     if (list != null && !list.isEmpty()) {
@@ -80,9 +83,11 @@ public class riwayat_surat_suratDiajukan extends Fragment {
 
                         SuratDiajukan adapter = new SuratDiajukan(getActivity(), data);
                         recyclerView.setAdapter(adapter);
+
                     } else {
                         Toast.makeText(getContext(), "Belum ada surat diajukan", Toast.LENGTH_SHORT).show();
                     }
+
                 } else {
                     Toast.makeText(getContext(), respon != null ? respon.getPesan() : "Gagal mengambil data", Toast.LENGTH_SHORT).show();
                 }

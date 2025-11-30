@@ -67,7 +67,7 @@ public class edit_profil extends AppCompatActivity {
         btnSimpan = findViewById(R.id.simpan);
         btnGantiPassword = findViewById(R.id.gantipw);
 
-        loadData(); // Load data termasuk foto profil
+        loadData();
 
         btnGantiFoto.setOnClickListener(v -> pilihGambar());
         btnSimpan.setOnClickListener(v -> updateProfil());
@@ -83,13 +83,13 @@ public class edit_profil extends AppCompatActivity {
         etNama.setText(sp.getString("nama",""));
         etEmail.setText(sp.getString("email",""));
         etUsername.setText(sp.getString("username",""));
+
         String savedUrl = sp.getString("photo_url","");
 
         if (savedUrl != null && !savedUrl.isEmpty()) {
             loadFotoDenganGlide(savedUrl);
         } else {
-            String username = sp.getString("username","");
-            ambilFotoDariAPI(username);
+            ambilFotoDariAPI(etUsername.getText().toString());
         }
     }
 
@@ -101,20 +101,6 @@ public class edit_profil extends AppCompatActivity {
                 .error(R.drawable.akun_profil)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("Glide", "Gagal memuat foto profil: " + e.getMessage());
-                        fotoProfil.setImageResource(R.drawable.akun_profil);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Log.d("Glide", "Foto profil berhasil dimuat.");
-                        return false;
-                    }
-                })
                 .into(fotoProfil);
     }
 
@@ -138,7 +124,6 @@ public class edit_profil extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponFotoProfil> call, Throwable t) {
-                Log.e("API", "Gagal ambil foto profil: " + t.getMessage());
                 fotoProfil.setImageResource(R.drawable.akun_profil);
             }
         });
@@ -191,8 +176,17 @@ public class edit_profil extends AppCompatActivity {
         }
 
         progressBar.setVisibility(View.VISIBLE);
+
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponUpdate> call = api.updateAkun(username,nama,email,base64Image);
+
+        Call<ResponUpdate> call = api.updateAkun(
+                username,
+                nama,
+                email,
+                base64Image,
+                "",        // password dikosongkan untuk edit profil biasa
+                0          // flag: 0 = edit profil
+        );
 
         call.enqueue(new Callback<ResponUpdate>() {
             @Override

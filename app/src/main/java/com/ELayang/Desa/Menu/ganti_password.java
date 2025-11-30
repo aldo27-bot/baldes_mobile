@@ -1,15 +1,11 @@
 package com.ELayang.Desa.Menu;
 
-import static com.ELayang.Desa.API.RetroServer.API_FotoProfil;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
-import android.text.method.TransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,11 +19,7 @@ import com.ELayang.Desa.DataModel.Akun.ResponFotoProfil;
 import com.ELayang.Desa.DataModel.Akun.ResponUpdate;
 import com.ELayang.Desa.R;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,91 +29,68 @@ public class ganti_password extends AppCompatActivity {
 
     private EditText password1, password2;
     private Button simpan;
-    private ImageView foto, togglePassword1, togglePassword2;
-    private boolean isPassword1Visible = false, isPassword2Visible = false;
+    private ImageView foto;
 
     private SharedPreferences sharedPreferences;
-    private String username, email;
+    private String username, email, nama;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ganti_password);
 
+        // Inisialisasi
         password1 = findViewById(R.id.e_password1);
         password2 = findViewById(R.id.e_password2);
         foto = findViewById(R.id.ikon);
         simpan = findViewById(R.id.simpan);
 
-        // SharedPreferences
         sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
         username = sharedPreferences.getString("username", "");
         email = sharedPreferences.getString("email", "");
+        nama = sharedPreferences.getString("nama", "");
 
-        // Load foto profil
         loadProfileImage();
 
-        // Sembunyikan password default
+        // Menyembunyikan password
         password1.setTransformationMethod(PasswordTransformationMethod.getInstance());
         password2.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
-        // Tombol simpan password
         simpan.setOnClickListener(v -> validateAndUpdatePassword());
     }
 
     private void loadProfileImage() {
-        APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponFotoProfil> call = apiRequestData.getProfile(username);
+        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<ResponFotoProfil> call = api.getProfile(username);
+
         call.enqueue(new Callback<ResponFotoProfil>() {
             @Override
             public void onResponse(Call<ResponFotoProfil> call, Response<ResponFotoProfil> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ResponFotoProfil data = response.body();
-                    if (data.getKode() == 1 && data.getUrl_gambar_profil() != null && !data.getUrl_gambar_profil().isEmpty()) {
-                        String imageUrl = data.getUrl_gambar_profil().replace(" ", "%20");
 
+                    String url = response.body().getUrl_gambar_profil();
+
+                    if (url != null && !url.isEmpty()) {
                         Glide.with(ganti_password.this)
-                                .load(imageUrl)
+                                .load(url.replace(" ", "%20"))
                                 .placeholder(R.drawable.akun_profil)
                                 .error(R.drawable.akun_profil)
                                 .circleCrop()
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .skipMemoryCache(true)
-                                .transition(com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade(300)) // fade-in 300ms
-                                .listener(new RequestListener<Drawable>() {
-                                    @Override
-                                    public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                        Log.e("Glide", "Gagal memuat foto profil: " + e.getMessage());
-                                        Toast.makeText(ganti_password.this, "Gagal memuat foto profil!", Toast.LENGTH_SHORT).show();
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                        Log.d("Glide", "Foto profil berhasil dimuat.");
-                                        return false;
-                                    }
-                                })
                                 .into(foto);
-
                     } else {
-                        Log.e("API", "Foto profil kosong atau URL tidak valid");
                         foto.setImageResource(R.drawable.akun_profil);
                     }
-                } else {
-                    Log.e("API", "Response body kosong atau gagal");
-                    foto.setImageResource(R.drawable.akun_profil);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponFotoProfil> call, Throwable t) {
-                Log.e("API", "Error: " + t.getMessage());
                 foto.setImageResource(R.drawable.akun_profil);
             }
         });
     }
-
 
     private void validateAndUpdatePassword() {
         String pass1 = password1.getText().toString().trim();
@@ -151,38 +120,62 @@ public class ganti_password extends AppCompatActivity {
             return;
         }
 
-        // Konfirmasi dialog
         new AlertDialog.Builder(this)
-                .setMessage("Apakah kamu yakin ingin mengubah password?")
-                .setPositiveButton("Ya", (dialog, which) -> updatePassword(pass2))
+                .setTitle("Konfirmasi")
+                .setMessage("Apakah kamu yakin ingin mengganti password?")
+                .setPositiveButton("Ya", (d, w) -> updatePassword(pass2))
                 .setNegativeButton("Tidak", null)
                 .show();
     }
 
     private void updatePassword(String newPassword) {
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
-        api.updateAkun(username, email, newPassword, sharedPreferences.getString("nama", ""))
-                .enqueue(new Callback<ResponUpdate>() {
-                    @Override
-                    public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
-                        if (response.body() != null) {
-                            if (response.body().getKode() == 1) {
-                                Toast.makeText(ganti_password.this, response.body().getPesan(), Toast.LENGTH_SHORT).show();
-                                sharedPreferences.edit().putString("password", newPassword).apply();
-                                finish();
-                            } else {
-                                Toast.makeText(ganti_password.this, "Gagal: " + response.body().getPesan(), Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(ganti_password.this, "Response kosong!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ResponUpdate> call, Throwable t) {
-                        Toast.makeText(ganti_password.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        Call<ResponUpdate> call = api.updateAkun(
+                username,
+                nama,
+                email,
+                "",
+                newPassword,
+                1 // flag perubahan password
+        );
+
+        call.enqueue(new Callback<ResponUpdate>() {
+            @Override
+            public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
+                ResponUpdate r = response.body();
+
+                if (r != null) {
+                    if (r.getKode() == 1) {
+
+                        sharedPreferences.edit()
+                                .putString("password", newPassword)
+                                .apply();
+
+                        Toast.makeText(ganti_password.this,
+                                "Password berhasil diperbarui!",
+                                Toast.LENGTH_SHORT).show();
+
+                        finish();
+                    } else {
+                        Toast.makeText(ganti_password.this,
+                                "Gagal: " + r.getPesan(),
+                                Toast.LENGTH_SHORT).show();
                     }
-                });
+                } else {
+                    Toast.makeText(ganti_password.this,
+                            "Response kosong dari server!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponUpdate> call, Throwable t) {
+                Toast.makeText(ganti_password.this,
+                        "Error: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void kembali(View view) {

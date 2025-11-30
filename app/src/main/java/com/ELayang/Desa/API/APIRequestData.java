@@ -47,18 +47,6 @@ public interface APIRequestData {
     @GET("Retrieve.php")
     Call<ResponLogin> ardRetrieveData();
 
-//    @POST("ambil_notifikasi_aspirasi.php")
-//    @FormUrlEncoded
-//    Call<ResponNotifikasi> getNotifikasi(@Field("username") String username);
-//
-//    @POST("notifikasi_popup_aspirasi.php")
-//    @FormUrlEncoded
-//    Call<ResponNotifikasi> notifikasi_popup_aspirasi(@Field("username") String username);
-//
-//    @POST("notifikasi_aspirasi.php")
-//    @FormUrlEncoded
-//    Call<ResponNotifikasi> notifikasi_aspirasi(@Field("username") String username);
-
     @FormUrlEncoded
     @POST("login.php")
     Call<ResponLogin> ardLogin(
@@ -311,8 +299,11 @@ public interface APIRequestData {
             @Field("username") String username,
             @Field("nama") String nama,
             @Field("email") String email,
-            @Field("profile_image_base64") String base64Image
+            @Field("profile_image_base64") String profileImageBase64,
+            @Field("password") String password, // KOSONGKAN DI GANTI PROFIL
+            @Field("is_change_password") int isChangePassword // TAMBAHKAN FLAG
     );
+
 
 
     @GET("ambil_foto_profil.php")

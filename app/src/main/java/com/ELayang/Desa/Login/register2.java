@@ -28,20 +28,55 @@ import retrofit2.Response;
 public class register2 extends AppCompatActivity {
     CountDownTimer countDownTimer;
     private long timeLeftInMillis = 30000;
-Button lanjut, kirimbos;
-TextView timer;
-ImageButton kembali;
+    Button lanjut, kirimbos;
+    TextView timer;
+    ImageButton kembali;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register2);
+
         EditText kode_otp = findViewById(R.id.kode_otp);
+        kirimbos = findViewById(R.id.kirimbos);
+        timer = findViewById(R.id.timer);
 
-        SharedPreferences sharedPreferences =getSharedPreferences("prefRegister", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username","");
-        String email = sharedPreferences.getString("email","");
-        String nama = sharedPreferences.getString("nama","");
+        SharedPreferences sharedPreferences = getSharedPreferences("prefRegister", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
 
+        // ======================================================
+        // 🔥 OTP OTOMATIS TERKIRIM SAAT HALAMAN DIBUKA
+        // ======================================================
+        APIRequestData apiAuto = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<ResponOTP> callAuto = apiAuto.kirim_otp(username);
+
+        callAuto.enqueue(new Callback<ResponOTP>() {
+            @Override
+            public void onResponse(Call<ResponOTP> call, Response<ResponOTP> response) {
+                if (response.body() != null) {
+                    if (response.body().kode == 1) {
+                        Toast.makeText(register2.this, "Kode OTP telah dikirim", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(register2.this, "Gagal mengirim OTP otomatis", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponOTP> call, Throwable t) {
+                Toast.makeText(register2.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Matikan tombol kirim lagi + mulai timer otomatis
+        kirimbos.setEnabled(false);
+        startTimer();
+        // ======================================================
+
+
+        // ======================================================
+        //  TOMBOL KEMBALI (hapus data + kembali ke register1)
+        // ======================================================
         kembali = findViewById(R.id.kembali);
         kembali.setOnClickListener(v -> {
             APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
@@ -50,11 +85,9 @@ ImageButton kembali;
             call.enqueue(new Callback<ResponDelete>() {
                 @Override
                 public void onResponse(Call<ResponDelete> call, Response<ResponDelete> response) {
-
                     if (response.isSuccessful() && response.body() != null) {
 
                         if (response.body().kode == 0) {
-                            // berhasil hapus → kembali ke register1
                             Intent intent = new Intent(register2.this, register1.class);
                             startActivity(intent);
                             finish();
@@ -79,28 +112,32 @@ ImageButton kembali;
         });
 
 
+        // ======================================================
+        //  TOMBOL LANJUT → cek OTP
+        // ======================================================
         lanjut = findViewById(R.id.lanjut);
-        lanjut.setOnClickListener(v ->{
+        lanjut.setOnClickListener(v -> {
             String otp = kode_otp.getText().toString();
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("otp", otp);
-            editor.apply(); // Simpan OTP ke SharedPreferences
+            editor.apply();
 
             APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-            Call<ResponRegister2> call = apiRequestData.register2(username,otp);
+            Call<ResponRegister2> call = apiRequestData.register2(username, otp);
 
             call.enqueue(new Callback<ResponRegister2>() {
                 @Override
-               public void onResponse(Call<ResponRegister2> call, Response<ResponRegister2> response) {
-                            if (response.body().kode == 0) {
-                                Intent pindah = new Intent(register2.this, register3.class);
-                                startActivity(pindah);
-                                finish();
-                            } else if (response.body().kode == 1) {
-                                Toast.makeText(register2.this, "Kode otp salah ", Toast.LENGTH_SHORT).show();
+                public void onResponse(Call<ResponRegister2> call, Response<ResponRegister2> response) {
+                    if (response.body().kode == 0) {
+                        Intent pindah = new Intent(register2.this, register3.class);
+                        startActivity(pindah);
+                        finish();
+                    } else if (response.body().kode == 1) {
+                        Toast.makeText(register2.this, "Kode OTP salah", Toast.LENGTH_SHORT).show();
                     }
                 }
+
                 @Override
                 public void onFailure(Call<ResponRegister2> call, Throwable t) {
 
@@ -108,74 +145,73 @@ ImageButton kembali;
             });
         });
 
-        kirimbos = findViewById(R.id.kirimbos);
-        timer = findViewById(R.id.timer);
 
-        kirimbos.setOnClickListener(view ->{
+        // ======================================================
+        //  TOMBOL "KIRIM LAGI"
+        // ======================================================
+        kirimbos.setOnClickListener(view -> {
             APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
             Call<ResponOTP> call = apiRequestData.kirim_otp(username);
+
             call.enqueue(new Callback<ResponOTP>() {
                 @Override
                 public void onResponse(Call<ResponOTP> call, Response<ResponOTP> response) {
-                    if (response.body().kode == 0){
-                        Toast.makeText(register2.this, "error username tidak ikut", Toast.LENGTH_SHORT).show();
+                    if (response.body().kode == 0) {
+                        Toast.makeText(register2.this, "Error username tidak ikut", Toast.LENGTH_SHORT).show();
                     } else if (response.body().kode == 1) {
                         Toast.makeText(register2.this, "Berhasil terkirim", Toast.LENGTH_SHORT).show();
-                    } else if (response.body().kode ==2 ) {
-                        Toast.makeText(register2.this, "Gagal Mengirim Kode OTP", Toast.LENGTH_SHORT).show();
+                    } else if (response.body().kode == 2) {
+                        Toast.makeText(register2.this, "Gagal mengirim kode OTP", Toast.LENGTH_SHORT).show();
                     }
                 }
+
                 @Override
                 public void onFailure(Call<ResponOTP> call, Throwable t) {
                     Toast.makeText(register2.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-            countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timeLeftInMillis = millisUntilFinished;
-                    updateTimer();
-                }
-                @Override
-                public void onFinish() {
-                    kirimbos.setEnabled(true); // Aktifkan tombol setelah 30 detik berlalu
-                    timer.setText("Selesai!");
-                    resetTimer();
-                }
-            }.start();
+
             kirimbos.setEnabled(false);
+            startTimer();
         });
+    }
+
+
+    // ======================================================
+    // TIMER METHOD
+    // ======================================================
+    private void startTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
                 updateTimer();
             }
+
             @Override
             public void onFinish() {
-                enableButton(kirimbos); // Aktifkan tombol setelah 30 detik berlalu
+                kirimbos.setEnabled(true);
                 timer.setText("Selesai!");
                 resetTimer();
             }
         }.start();
-        kirimbos.setEnabled(false);
     }
+
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event){
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             return true;
         }
         return super.onKeyDown(keyCode, event);
     }
-    private void enableButton(Button button){
-        button.setEnabled(true);
-    }
+
     private void updateTimer() {
         int seconds = (int) (timeLeftInMillis / 1000);
-        timer.setText(String.valueOf(seconds) + " detik");
-    }
-    private void resetTimer(){
-        timeLeftInMillis = 30000;
+        timer.setText(seconds + " detik");
     }
 
+    private void resetTimer() {
+        timeLeftInMillis = 30000;
+    }
 }
