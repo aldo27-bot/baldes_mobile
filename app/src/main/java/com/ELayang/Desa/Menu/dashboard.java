@@ -1,11 +1,10 @@
 package com.ELayang.Desa.Menu;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,70 +14,51 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
-import com.ELayang.Desa.Asset.Notifikasi.NotificationService;
 import com.ELayang.Desa.Asset.imagePagerAdapter;
 import com.ELayang.Desa.DataModel.StatusDasboardModel;
 import com.ELayang.Desa.DataModel.StatusDasboardRespon;
 import com.ELayang.Desa.R;
-import com.ELayang.Desa.menu;
 
-import org.w3c.dom.Text;
-
-import java.util.Objects;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.util.Map;
 
 public class dashboard extends Fragment {
 
-    private String nama;
-    private String KEY_NAME = "NAMA";
-    private String username;
-    TextView selesai, proses, tolak, masuk;
-    imagePagerAdapter adapter;
+    private TextView selesai, proses, tolak, masuk;
+    private imagePagerAdapter adapter;
     private Handler autoScrollHandler;
     private Runnable autoScrollRunnable;
     private static final int AUTO_SCROLL_DELAY = 4000;
     private boolean isUserScrolling = false;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.activity_dashboard, container, false);
 
         selesai = rootView.findViewById(R.id.surat_selesai);
         tolak = rootView.findViewById(R.id.surat_ditolak);
         masuk = rootView.findViewById(R.id.surat_masuk);
+        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
-        //bundle get
-        Bundle bundle = getActivity().getIntent().getExtras();
+        TextView hello = rootView.findViewById(R.id.hello);
 
+        // Ambil data SharedPreferences
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
-
-        // Mengambil seluruh data dari SharedPreferences
-        Map<String, ?> allEntries = sharedPreferences.getAll();
-
-        // Mengiterasi dan menampilkan seluruh data ke Logcat
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            Log.d("SharedPreferencesData", entry.getKey() + ": " + entry.getValue().toString());
-        }
-
         String username = sharedPreferences.getString("username", "");
         String nama = sharedPreferences.getString("nama", "");
-        TextView hello = rootView.findViewById(R.id.hello);
         hello.setText("Halo, " + nama);
 
+        // Setup ViewPager
         ViewPager viewPager = rootView.findViewById(R.id.viewPager);
         adapter = new imagePagerAdapter(getContext());
         viewPager.setAdapter(adapter);
-
-        // Set indeks awal ke nilai tengah untuk tampilan awal yang baik
         int middle = adapter.getCount() / 2;
         viewPager.setCurrentItem(middle, true);
 
@@ -92,23 +72,15 @@ public class dashboard extends Fragment {
             }
         };
 
-        // Tambahkan listener untuk mendeteksi perubahan halaman manual
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // Tidak perlu implementasi pada saat ini
-            }
-
+            @Override public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
             @Override
             public void onPageSelected(int position) {
-                // Pengguna menggeser manual, hentikan otomatis bergulir
                 stopAutoScroll();
                 isUserScrolling = true;
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {
-                // Jika pengguna telah selesai menggeser, mulai kembali otomatis bergulir
                 if (state == ViewPager.SCROLL_STATE_IDLE && isUserScrolling) {
                     startAutoScroll();
                     isUserScrolling = false;
@@ -116,53 +88,27 @@ public class dashboard extends Fragment {
             }
         });
 
-        //status
-        APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<StatusDasboardRespon> call = apiRequestData.dashboard(username);
-        call.enqueue(new Callback<StatusDasboardRespon>() {
-            @Override
-            public void onResponse(Call<StatusDasboardRespon> call, Response<StatusDasboardRespon> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().isKode()) {
-                        StatusDasboardModel model = response.body().getData().get(0);
-                        selesai.setText(model.getSelesai() != null ? model.getSelesai() : "0");
-                        tolak.setText(model.getTolak() != null ? model.getTolak() : "0");
-                        masuk.setText(model.getMasuk() != null ? model.getMasuk() : "0");
-                    } else {
-                        selesai.setText("0");
-                        tolak.setText("0");
-                        masuk.setText("0");
-                    }
-                } else {
-                    Log.e("Dashboard", "Response gagal / null");
-                    selesai.setText("0");
-                    tolak.setText("0");
-                    masuk.setText("0");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<StatusDasboardRespon> call, Throwable t) {
-                Log.e("error dashboard", t.getMessage());
-                selesai.setText("0");
-                tolak.setText("0");
-                masuk.setText("0");
-            }
+        // Swipe refresh listener
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            loadDashboardData();
         });
+
+        // Load data pertama kali
+        loadDashboardData();
+
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Mulai otomatis bergulir ketika aktivitas di-resume
         startAutoScroll();
+        loadDashboardData(); // update data setiap fragment muncul
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // Hentikan otomatis bergulir ketika aktivitas di-pause
         stopAutoScroll();
     }
 
@@ -174,5 +120,36 @@ public class dashboard extends Fragment {
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
     }
 
+    private void loadDashboardData() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
 
+        APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
+        Call<StatusDasboardRespon> call = apiRequestData.dashboard(username);
+        call.enqueue(new Callback<StatusDasboardRespon>() {
+            @Override
+            public void onResponse(Call<StatusDasboardRespon> call, Response<StatusDasboardRespon> response) {
+                swipeRefreshLayout.setRefreshing(false); // hentikan refresh
+                if (response.isSuccessful() && response.body() != null && response.body().isKode()) {
+                    StatusDasboardModel model = response.body().getData().get(0);
+                    selesai.setText(model.getSelesai() != null ? model.getSelesai() : "0");
+                    tolak.setText(model.getTolak() != null ? model.getTolak() : "0");
+                    masuk.setText(model.getMasuk() != null ? model.getMasuk() : "0");
+                } else {
+                    selesai.setText("0");
+                    tolak.setText("0");
+                    masuk.setText("0");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StatusDasboardRespon> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                selesai.setText("0");
+                tolak.setText("0");
+                masuk.setText("0");
+                Log.e("DashboardError", t.getMessage());
+            }
+        });
+    }
 }
