@@ -2,6 +2,7 @@ package com.ELayang.Desa.Menu;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Akun.ResponFotoProfil;
+import com.ELayang.Desa.Login.login;
 import com.ELayang.Desa.R;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -67,14 +69,14 @@ public class akun extends Fragment {
         // logout
         keluar.setOnClickListener(v -> logout());
 
-        // listener untuk perubahan SharedPreferences (foto, nama, email, username)
+        // listener SharedPreferences
         listener = (sharedPreferences, key) -> {
+            if (key == null) return; // jika key null, abaikan
+
             switch (key) {
                 case "photo_url":
                     String newPhotoUrl = sharedPreferences.getString("photo_url", "");
-                    if (newPhotoUrl != null && !newPhotoUrl.isEmpty()) {
-                        loadWithGlide(newPhotoUrl);
-                    }
+                    if (newPhotoUrl != null && !newPhotoUrl.isEmpty()) loadWithGlide(newPhotoUrl);
                     break;
                 case "nama":
                     String newNama = sharedPreferences.getString("nama", "");
@@ -90,6 +92,7 @@ public class akun extends Fragment {
                     break;
             }
         };
+
         sp.registerOnSharedPreferenceChangeListener(listener);
 
         return view;
@@ -103,7 +106,6 @@ public class akun extends Fragment {
             return;
         }
 
-        // ambil dari API jika belum ada
         APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponFotoProfil> call = apiRequestData.getProfile(username);
         call.enqueue(new Callback<ResponFotoProfil>() {
@@ -148,15 +150,18 @@ public class akun extends Fragment {
     }
 
     private void logout() {
+        // Hapus semua data login
         sp.edit().clear().apply();
-        getActivity().finish();
+
+        // Buka LoginActivity dan hapus semua activity sebelumnya
+        Intent intent = new Intent(getActivity(), login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (sp != null && listener != null) {
-            sp.unregisterOnSharedPreferenceChangeListener(listener);
-        }
+        if (sp != null && listener != null) sp.unregisterOnSharedPreferenceChangeListener(listener);
     }
 }

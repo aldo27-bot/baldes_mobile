@@ -17,7 +17,6 @@ import com.ELayang.Desa.Asset.Notifikasi.NotificationService;
 import com.ELayang.Desa.Login.login;
 import com.ELayang.Desa.Menu.permintaan_surat;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,12 +31,19 @@ public class menu extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // ✅ Cek session login
+        SharedPreferences sp = getSharedPreferences("prefLogin", MODE_PRIVATE);
+        if (!sp.contains("username")) {
+            startActivity(new Intent(this, login.class));
+            finish();
+            return;
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        // =============================
         // INIT
-        // =============================
         bottomNavigationView = findViewById(R.id.bottomNavView);
         fab = findViewById(R.id.fab);
         viewPager = findViewById(R.id.viewPager);
@@ -45,13 +51,10 @@ public class menu extends AppCompatActivity {
         bottomNavigationView.setElevation(0);
         bottomNavigationView.getMenu().findItem(R.id.permintaan).setEnabled(false);
 
-        // =============================
         // SETUP VIEWPAGER2
-        // =============================
         ViewPagerAdapter adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
-        // swipe → navbar update (menggunakan ID agar selalu sinkron)
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -72,25 +75,17 @@ public class menu extends AppCompatActivity {
             }
         });
 
-        // navbar ditekan → viewpager pindah
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.dashboard) {
-                viewPager.setCurrentItem(0, true);
-            } else if (id == R.id.notifikasi) {
-                viewPager.setCurrentItem(1, true);
-            } else if (id == R.id.riwayat) {
-                viewPager.setCurrentItem(2, true);
-            } else if (id == R.id.profil) {
-                viewPager.setCurrentItem(3, true);
-            }
+            if (id == R.id.dashboard) viewPager.setCurrentItem(0, true);
+            else if (id == R.id.notifikasi) viewPager.setCurrentItem(1, true);
+            else if (id == R.id.riwayat) viewPager.setCurrentItem(2, true);
+            else if (id == R.id.profil) viewPager.setCurrentItem(3, true);
             return true;
         });
 
-        // FAB → pindah ke permintaan surat
         fab.setOnClickListener(v -> startActivity(new Intent(this, permintaan_surat.class)));
 
-        // Schedule notifikasi popup
         schedulePopupNotif();
     }
 
@@ -114,24 +109,9 @@ public class menu extends AppCompatActivity {
         scheduler.schedule(jobInfo);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            signOut();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    private void signOut() {
-        GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .signOut()
-                .addOnCompleteListener(this, task -> finish());
-    }
-
+    // Back button → keluar aplikasi
     @Override
     public void onBackPressed() {
-        Toast.makeText(this, "kembali", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(menu.this, login.class));
+        finishAffinity(); // menutup semua activity
     }
 }
