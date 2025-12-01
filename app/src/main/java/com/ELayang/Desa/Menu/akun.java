@@ -1,11 +1,8 @@
 package com.ELayang.Desa.Menu;
 
-import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,9 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.ELayang.Desa.API.APIRequestData;
@@ -24,12 +19,7 @@ import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Akun.ResponFotoProfil;
 import com.ELayang.Desa.R;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +34,9 @@ public class akun extends Fragment {
 
     public static final String KEY_PREF = "prefLogin";
 
+    private SharedPreferences sp;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,7 +50,9 @@ public class akun extends Fragment {
         Button buka = view.findViewById(R.id.buka);
         keluar = view.findViewById(R.id.logout);
 
-        SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
+        sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
+
+        // load data awal
         String username = sp.getString("username", "");
         nama.setText(sp.getString("nama", ""));
         email.setText(sp.getString("email", ""));
@@ -67,20 +62,43 @@ public class akun extends Fragment {
 
         // buka edit profil
         buka.setOnClickListener(v -> startActivityForResult(
-                new Intent(getContext(), edit_profil.class), 100));
+                new android.content.Intent(getContext(), edit_profil.class), 100));
 
         // logout
         keluar.setOnClickListener(v -> logout());
+
+        // listener untuk perubahan SharedPreferences (foto, nama, email, username)
+        listener = (sharedPreferences, key) -> {
+            switch (key) {
+                case "photo_url":
+                    String newPhotoUrl = sharedPreferences.getString("photo_url", "");
+                    if (newPhotoUrl != null && !newPhotoUrl.isEmpty()) {
+                        loadWithGlide(newPhotoUrl);
+                    }
+                    break;
+                case "nama":
+                    String newNama = sharedPreferences.getString("nama", "");
+                    if (newNama != null) nama.setText(newNama);
+                    break;
+                case "email":
+                    String newEmail = sharedPreferences.getString("email", "");
+                    if (newEmail != null) email.setText(newEmail);
+                    break;
+                case "username":
+                    String newUsername = sharedPreferences.getString("username", "");
+                    if (newUsername != null) usernamee.setText(newUsername);
+                    break;
+            }
+        };
+        sp.registerOnSharedPreferenceChangeListener(listener);
 
         return view;
     }
 
     private void loadProfileImage(String username) {
-        SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
         String savedUrl = sp.getString("photo_url", "");
 
         if (!savedUrl.isEmpty()) {
-            // gunakan savedUrl jika ada
             loadWithGlide(savedUrl);
             return;
         }
@@ -126,35 +144,19 @@ public class akun extends Fragment {
                 .circleCrop()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
-                .transition(DrawableTransitionOptions.withCrossFade(300))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("Glide", "Gagal memuat foto profil: " + e.getMessage());
-                        Toast.makeText(getContext(), "Gagal memuat foto profil!", Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Log.d("Glide", "Foto profil berhasil dimuat.");
-                        return false;
-                    }
-                })
                 .into(foto);
     }
 
     private void logout() {
-        SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
         sp.edit().clear().apply();
         getActivity().finish();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 100 && resultCode == RESULT_OK) {
-            SharedPreferences sp = getActivity().getSharedPreferences(KEY_PREF, MODE_PRIVATE);
-            loadProfileImage(sp.getString("username", ""));
+    public void onDestroy() {
+        super.onDestroy();
+        if (sp != null && listener != null) {
+            sp.unregisterOnSharedPreferenceChangeListener(listener);
         }
     }
 }
