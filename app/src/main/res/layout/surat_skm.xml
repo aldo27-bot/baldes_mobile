@@ -32,7 +32,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Surat Keterangan Meninggal (SKM)"
+            android:text="Surat Keterangan Meninggal"
             android:textColor="@color/color_title_text"
             android:textSize="20sp"
             android:textStyle="bold"

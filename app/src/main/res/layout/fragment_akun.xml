@@ -52,6 +52,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:inputType="textEmailAddress"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:longClickable="false"
+                    android:editable="false"
                     android:textSize="14sp"
                     android:backgroundTint="@color/white"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -66,6 +72,12 @@
                     android:id="@+id/masukan_username"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:longClickable="false"
+                    android:editable="false"
                     android:textSize="14sp"
                     android:backgroundTint="@color/white"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -80,6 +92,12 @@
                     android:id="@+id/masukan_nama"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:longClickable="false"
+                    android:editable="false"
                     android:textSize="14sp"
                     android:backgroundTint="@color/white"/>
             </com.google.android.material.textfield.TextInputLayout>

@@ -39,6 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="=>Nama"
+                    android:textColor="@color/black"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNama"
@@ -51,6 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="=>NIK"
+                    android:textColor="@color/black"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNik"
@@ -63,6 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="=>No Pengajuan"
+                    android:textColor="@color/black"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvNoPengajuan"
@@ -75,6 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="=>Tanggal"
+                    android:textColor="@color/black"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvTanggal"
@@ -87,6 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="=>Kode Surat"
+                    android:textColor="@color/black"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvKodeSurat"
@@ -99,6 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="=>Status"
+                    android:textColor="@color/black"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/tvStatus"

@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:text="Nama Pemohon"
             android:textSize="16sp"
+            android:textColor="@color/black"
             android:textStyle="bold"/>
 
         <TextView
@@ -33,6 +34,7 @@
             android:layout_height="wrap_content"
             android:text="Tanggal Pengajuan"
             android:textSize="14sp"
+            android:textColor="@color/black"
             android:paddingTop="2dp"/>
 
         <TextView
@@ -50,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="ID Pengajuan"
             android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:textColor="@color/black" />
 
     </LinearLayout>
 
