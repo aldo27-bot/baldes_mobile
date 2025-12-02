@@ -49,11 +49,9 @@ public class riwayat_surat extends Fragment {
     }
 
     private void loadFragment(Fragment fragment) {
-        FragmentManager fm = getParentFragmentManager();
+        FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.replace(R.id.frame_riwayat, fragment);
-        transaction.addToBackStack(null);
         transaction.commit();
     }
-
 }
