@@ -15,14 +15,12 @@ import com.ELayang.Desa.DataModel.Register.ResponRegister2;
 import com.ELayang.Desa.DataModel.Register.ResponRegister3;
 import com.ELayang.Desa.DataModel.StatusDasboardRespon;
 import com.ELayang.Desa.DataModel.Surat.ResponDomisili;
-import com.ELayang.Desa.DataModel.Surat.ResponSkck;
 import com.ELayang.Desa.DataModel.ResponSurat;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponDiajukan;
 import com.ELayang.Desa.DataModel.RiwayatSurat.ResponSelesai;
 import com.ELayang.Desa.DataModel.Surat.ResponSkk;
 import com.ELayang.Desa.DataModel.Surat.ResponSkm;
 import com.ELayang.Desa.DataModel.Surat.ResponSktm;
-import com.ELayang.Desa.DataModel.Surat.ResponSuratijin;
 import com.ELayang.Desa.DataModel.Surat.ResponSkb;
 import com.ELayang.Desa.DataModel.AspirasiResponse;
 import com.ELayang.Desa.DataModel.Surat.ResponBedaNama;
@@ -38,8 +36,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import retrofit2.http.Headers;
-
 
 
 public interface APIRequestData {
@@ -95,21 +91,21 @@ public interface APIRequestData {
 //            @Field("tanggapan") String tanggapan
 //    );
 
-    @Multipart
-    @POST("surat/skck.php")
-    Call<ResponSkck> uploadFile(
-            @Part("nama") RequestBody nama,
-            @Part("nik") RequestBody nik,
-            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
-            @Part("kebangsaan") RequestBody kebangsaan,
-            @Part("agama") RequestBody agama,
-            @Part("status_perkawinan") RequestBody status,
-            @Part("pekerjaan") RequestBody pekerjaan,
-            @Part("tempat_tinggal") RequestBody tempatTinggal,
-            @Part("username") RequestBody username,
-            @Part("jenis_kelamin") RequestBody jenis_kelamin,
-            @Part MultipartBody.Part file
-    );
+//    @Multipart
+//    @POST("surat/skck.php")
+//    Call<ResponSkck> uploadFile(
+//            @Part("nama") RequestBody nama,
+//            @Part("nik") RequestBody nik,
+//            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+//            @Part("kebangsaan") RequestBody kebangsaan,
+//            @Part("agama") RequestBody agama,
+//            @Part("status_perkawinan") RequestBody status,
+//            @Part("pekerjaan") RequestBody pekerjaan,
+//            @Part("tempat_tinggal") RequestBody tempatTinggal,
+//            @Part("username") RequestBody username,
+//            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+//            @Part MultipartBody.Part file
+//    );
 
     @Multipart
     @POST("surat/skm.php")
@@ -142,22 +138,22 @@ public interface APIRequestData {
     );
 
 
-    @Multipart
-    @POST("updatesurat/skck.php")
-    Call<ResponSkck> updatefileskck(
-            @Part("no_pengajuan") RequestBody no_pengajuan,
-            @Part("kode_surat") RequestBody kode_surat,
-            @Part("nama") RequestBody nama,
-            @Part("nik") RequestBody nik,
-            @Part("tempat_tgl_lahir") RequestBody tempat_tgl_lahir,
-            @Part("kebangsaan") RequestBody kebangsaan,
-            @Part("agama") RequestBody agama,
-            @Part("status_perkawinan") RequestBody status_perkawinan,
-            @Part("pekerjaan") RequestBody pekerjaan,
-            @Part("alamat") RequestBody alamat,
-            @Part("jenis_kelamin") RequestBody jenis_kelamin,
-            @Part MultipartBody.Part file
-    );
+//    @Multipart
+//    @POST("updatesurat/skck.php")
+//    Call<ResponSkck> updatefileskck(
+//            @Part("no_pengajuan") RequestBody no_pengajuan,
+//            @Part("kode_surat") RequestBody kode_surat,
+//            @Part("nama") RequestBody nama,
+//            @Part("nik") RequestBody nik,
+//            @Part("tempat_tgl_lahir") RequestBody tempat_tgl_lahir,
+//            @Part("kebangsaan") RequestBody kebangsaan,
+//            @Part("agama") RequestBody agama,
+//            @Part("status_perkawinan") RequestBody status_perkawinan,
+//            @Part("pekerjaan") RequestBody pekerjaan,
+//            @Part("alamat") RequestBody alamat,
+//            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+//            @Part MultipartBody.Part file
+//    );
 
     @FormUrlEncoded
     @POST("register/register1.php")
@@ -224,24 +220,24 @@ public interface APIRequestData {
             @Field("username") String username
     );
 
-    @Multipart
-    @POST("surat/surat_ijin.php")
-    Call<ResponSuratijin> suratijin(
-            @Part("username") RequestBody username,
-            @Part("nama") RequestBody nama,
-            @Part("nik") RequestBody nik,
-            @Part("jenis_kelamin") RequestBody jenis_kelamin,
-            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
-            @Part("kewarganegaraan") RequestBody kewarganegaraan,
-            @Part("agama") RequestBody agama,
-            @Part("pekerjaan") RequestBody pekerjaan,
-            @Part("alamat") RequestBody alamat,
-            @Part("tempat_kerja") RequestBody tempat_kerja,
-            @Part("bagian") RequestBody bagian,
-            @Part("tanggal") RequestBody tanggal,
-            @Part("alasan") RequestBody alasan,
-            @Part MultipartBody.Part file
-    );
+//    @Multipart
+//    @POST("surat/surat_ijin.php")
+//    Call<ResponSuratijin> suratijin(
+//            @Part("username") RequestBody username,
+//            @Part("nama") RequestBody nama,
+//            @Part("nik") RequestBody nik,
+//            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+//            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+//            @Part("kewarganegaraan") RequestBody kewarganegaraan,
+//            @Part("agama") RequestBody agama,
+//            @Part("pekerjaan") RequestBody pekerjaan,
+//            @Part("alamat") RequestBody alamat,
+//            @Part("tempat_kerja") RequestBody tempat_kerja,
+//            @Part("bagian") RequestBody bagian,
+//            @Part("tanggal") RequestBody tanggal,
+//            @Part("alasan") RequestBody alasan,
+//            @Part MultipartBody.Part file
+//    );
 
     @Multipart
     @POST("surat/sktm.php")
@@ -338,19 +334,19 @@ public interface APIRequestData {
     );
 
 
-    @FormUrlEncoded
-    @POST("updatesurat/skck.php")
-    Call<ResponSkck> ambilskck(
-            @Field("no_pengajuan") String no,
-            @Field("kode") String kode
-    );
-
-    @FormUrlEncoded
-    @POST("updatesurat/sktm.php")
-    Call<ResponSktm> ambilsktm(
-            @Field("no_pengajuan") String no,
-            @Field("kode") String kode
-    );
+//    @FormUrlEncoded
+//    @POST("updatesurat/skck.php")
+//    Call<ResponSkck> ambilskck(
+//            @Field("no_pengajuan") String no,
+//            @Field("kode") String kode
+//    );
+//
+//    @FormUrlEncoded
+//    @POST("updatesurat/sktm.php")
+//    Call<ResponSktm> ambilsktm(
+//            @Field("no_pengajuan") String no,
+//            @Field("kode") String kode
+//    );
 //    @Multipart
 //    @POST("updatesurat/sktm.php")
 //    Call<ResponSktm> updatesktm(
@@ -394,31 +390,31 @@ public interface APIRequestData {
 //            @Part MultipartBody.Part file
 //    );
 
-    @FormUrlEncoded
-    @POST("updatesurat/surat_ijin.php")
-    Call<ResponSuratijin> ambilsuratijin(
-            @Field("no_pengajuan") String no,
-            @Field("kode") String kode
-    );
-    @Multipart
-    @POST("updatesurat/surat_ijin.php")
-    Call<ResponSuratijin> updatesuratijin(
-            @Part("no_pengajuan") RequestBody no,
-            @Part("kode") RequestBody kode,
-            @Part("nama") RequestBody nama,
-            @Part("nik") RequestBody nik,
-            @Part("jenis_kelamin") RequestBody jenis_kelamin,
-            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
-            @Part("kewarganegaraan") RequestBody kewarganegaraan,
-            @Part("agama") RequestBody agama,
-            @Part("pekerjaan") RequestBody pekerjaan,
-            @Part("alamat") RequestBody alamat,
-            @Part("tempat_kerja") RequestBody tempat_kerja,
-            @Part("bagian") RequestBody bagian,
-            @Part("tanggal") RequestBody tanggal,
-            @Part("alasan") RequestBody alasan,
-            @Part MultipartBody.Part file
-    );
+//    @FormUrlEncoded
+//    @POST("updatesurat/surat_ijin.php")
+//    Call<ResponSuratijin> ambilsuratijin(
+//            @Field("no_pengajuan") String no,
+//            @Field("kode") String kode
+//    );
+//    @Multipart
+//    @POST("updatesurat/surat_ijin.php")
+//    Call<ResponSuratijin> updatesuratijin(
+//            @Part("no_pengajuan") RequestBody no,
+//            @Part("kode") RequestBody kode,
+//            @Part("nama") RequestBody nama,
+//            @Part("nik") RequestBody nik,
+//            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+//            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+//            @Part("kewarganegaraan") RequestBody kewarganegaraan,
+//            @Part("agama") RequestBody agama,
+//            @Part("pekerjaan") RequestBody pekerjaan,
+//            @Part("alamat") RequestBody alamat,
+//            @Part("tempat_kerja") RequestBody tempat_kerja,
+//            @Part("bagian") RequestBody bagian,
+//            @Part("tanggal") RequestBody tanggal,
+//            @Part("alasan") RequestBody alasan,
+//            @Part MultipartBody.Part file
+//    );
 
     @Multipart
     @POST("surat/surat_usaha.php")
