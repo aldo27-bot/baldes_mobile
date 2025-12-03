@@ -12,10 +12,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.util.Log;
-import android.widget.ImageButton; // Import ImageButton
+import android.widget.ImageButton;
 
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream; // Tambahkan ini untuk membaca seluruh stream
+import java.io.ByteArrayOutputStream;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,28 +31,25 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.text.InputFilter;
 
 public class TambahAspirasiActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE = 100;
 
-    private ImageButton btnBack; // Deklarasi Tombol Kembali
+    private ImageButton btnBack;
     private EditText etJudul, etDeskripsi;
     private Spinner spKategori;
     private Button btnKirim, btnPilihFoto;
     private ImageView ivPreview;
     private Uri uriFoto;
-    // Hapus imagePath karena kita menggunakan URI dan InputStream
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Asumsi menggunakan layout modern: activity_form_aspirasi
         setContentView(R.layout.activity_tambah_aspirasi);
 
-        // Inisialisasi Tombol Kembali
         btnBack = findViewById(R.id.btnBack);
-
         etJudul = findViewById(R.id.etJudul);
         etDeskripsi = findViewById(R.id.etDeskripsi);
         spKategori = findViewById(R.id.spKategori);
@@ -60,28 +57,48 @@ public class TambahAspirasiActivity extends AppCompatActivity {
         btnKirim = findViewById(R.id.btnKirim);
         btnPilihFoto = findViewById(R.id.btnPilihFoto);
 
+        // ================================
+        // 🔒 FILTER ANTI EMOJI
+        // ================================
+        InputFilter filterNoEmoji = (source, start, end, dest, dstart, dend) -> {
+            for (int i = start; i < end; i++) {
+                int type = Character.getType(source.charAt(i));
+                if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                    Toast.makeText(this, "Emoji tidak diperbolehkan", Toast.LENGTH_SHORT).show();
+                    return "";
+                }
+            }
+            return null;
+        };
+
+        etJudul.setFilters(new InputFilter[]{filterNoEmoji});
+        etDeskripsi.setFilters(new InputFilter[]{filterNoEmoji});
+        // ================================
+
         // Isi spinner kategori
         String[] kategoriList = {
-                "Pilih Kategori", // Tambahkan opsi default
+                "Pilih Kategori",
                 "Pembangunan", "Kesehatan", "Pendidikan", "Sosial",
                 "Ekonomi", "Lingkungan", "Keamanan", "Lainnya"
         };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, kategoriList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                kategoriList
+        );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spKategori.setAdapter(adapter);
 
         // Listener
-        btnBack.setOnClickListener(v -> onBackPressed()); // 🟢 Logika Tombol Kembali
+        btnBack.setOnClickListener(v -> onBackPressed());
         btnPilihFoto.setOnClickListener(v -> pilihFoto());
         btnKirim.setOnClickListener(v -> uploadAspirasi());
     }
 
-    // Pilih foto dari galeri
     private void pilihFoto() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE); // Pastikan kompatibilitas
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent, "Pilih Foto Bukti"), PICK_IMAGE);
     }
 
@@ -93,14 +110,12 @@ public class TambahAspirasiActivity extends AppCompatActivity {
             ivPreview.setImageURI(uriFoto);
             Log.d("UPLOAD_ASPIRASI", "Foto berhasil dipilih: " + uriFoto.getLastPathSegment());
         } else if (requestCode == PICK_IMAGE && resultCode == RESULT_CANCELED) {
-            // Opsional: Atur ulang jika pemilihan dibatalkan
             uriFoto = null;
-            ivPreview.setImageResource(R.drawable.placeholder); // Ganti dengan placeholder Anda
+            ivPreview.setImageResource(R.drawable.placeholder);
             Log.d("UPLOAD_ASPIRASI", "Pemilihan foto dibatalkan.");
         }
     }
 
-    // Upload aspirasi
     private void uploadAspirasi() {
         String judul = etJudul.getText().toString().trim();
         String kategori = spKategori.getSelectedItem().toString().trim();
@@ -134,23 +149,18 @@ public class TambahAspirasiActivity extends AppCompatActivity {
         try {
             if (uriFoto != null) {
                 InputStream is = getContentResolver().openInputStream(uriFoto);
-
-                // Gunakan ByteArrayOutputStream untuk membaca seluruh data stream
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead;
+
                 while ((bytesRead = is.read(buffer)) != -1) {
                     bos.write(buffer, 0, bytesRead);
                 }
                 is.close();
 
-                // Dapatkan mime type
                 String mimeType = getContentResolver().getType(uriFoto);
-                if (mimeType == null) {
-                    mimeType = "image/*";
-                }
+                if (mimeType == null) mimeType = "image/*";
 
-                // Dapatkan nama file yang lebih baik
                 String fileName = uriFoto.getLastPathSegment();
                 if (fileName == null) fileName = "upload.jpg";
 
@@ -159,10 +169,8 @@ public class TambahAspirasiActivity extends AppCompatActivity {
 
                 Log.d("UPLOAD_ASPIRASI", "Foto siap diupload: " + fileName);
             } else {
-                // Jika foto opsional dan tidak ada, kirim part kosong
                 RequestBody empty = RequestBody.create(MediaType.parse("text/plain"), "");
                 partFoto = MultipartBody.Part.createFormData("foto", "", empty);
-                Log.d("UPLOAD_ASPIRASI", "Tidak ada foto yang diunggah");
             }
         } catch (Exception e) {
             pd.dismiss();
@@ -181,7 +189,6 @@ public class TambahAspirasiActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(TambahAspirasiActivity.this, response.body().getPesan(), Toast.LENGTH_SHORT).show();
                     if (response.body().getKode() == 1) {
-                        // Jika pengajuan berhasil, tutup activity
                         finish();
                     }
                 } else {
