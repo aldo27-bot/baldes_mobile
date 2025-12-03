@@ -1,52 +1,37 @@
 package com.ELayang.Desa.Menu;
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ImageButton;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.ELayang.Desa.R;
 
-public class DetailSuratFragment extends Fragment {
+public class DetailSuratFragment extends AppCompatActivity {
 
     private TextView tvNama, tvNik, tvNoPengajuan, tvTanggal, tvKodeSurat, tvStatus;
     private ImageButton btnKembali;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail_surat, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_detail_surat);
 
-        tvNama = rootView.findViewById(R.id.tvNama);
-        tvNik = rootView.findViewById(R.id.tvNik);
-        tvNoPengajuan = rootView.findViewById(R.id.tvNoPengajuan);
-        tvTanggal = rootView.findViewById(R.id.tvTanggal);
-        tvKodeSurat = rootView.findViewById(R.id.tvKodeSurat);
-        tvStatus = rootView.findViewById(R.id.tvStatus);
+        tvNama = findViewById(R.id.tvNama);
+        tvNik = findViewById(R.id.tvNik);
+        tvNoPengajuan = findViewById(R.id.tvNoPengajuan);
+        tvTanggal = findViewById(R.id.tvTanggal);
+        tvKodeSurat = findViewById(R.id.tvKodeSurat);
+        tvStatus = findViewById(R.id.tvStatus);
 
-        btnKembali = rootView.findViewById(R.id.btnkembali);
-        btnKembali.setOnClickListener(v -> {
-            if (getParentFragmentManager().getBackStackEntryCount() > 0) {
-                getParentFragmentManager().popBackStack();
-            }
-        });
+        btnKembali = findViewById(R.id.btnkembali);
+        btnKembali.setOnClickListener(v -> finish());
 
-        if (getArguments() != null) {
-            tvNama.setText(getArguments().getString("nama"));
-            tvNik.setText(getArguments().getString("nik"));
-            tvNoPengajuan.setText(getArguments().getString("no_pengajuan"));
-            tvTanggal.setText(getArguments().getString("tanggal"));
-            tvKodeSurat.setText(getArguments().getString("kode_surat"));
-            tvStatus.setText(getArguments().getString("status"));
-        }
-
-        return rootView;
+        tvNama.setText(getIntent().getStringExtra("nama"));
+        tvNik.setText(getIntent().getStringExtra("nik"));
+        tvNoPengajuan.setText(getIntent().getStringExtra("no_pengajuan"));
+        tvTanggal.setText(getIntent().getStringExtra("tanggal"));
+        tvKodeSurat.setText(getIntent().getStringExtra("kode_surat"));
+        tvStatus.setText(getIntent().getStringExtra("status"));
     }
 }

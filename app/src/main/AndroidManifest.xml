@@ -80,21 +80,14 @@
             android:name=".Surat.SKTM"
             android:exported="false" />
         <activity
-            android:name=".Surat.Surat_Ijin"
-            android:exported="false" />
-        <activity
             android:name=".Asset.RiwayatSurat.SuratDiajukan"
             android:exported="false"
             tools:ignore="Instantiatable" />
         <activity
-            android:name=".Surat.SKCK"
-            android:exported="false" />
-        <activity
             android:name=".Surat.Beda_Nama"
             android:exported="false"/>
-        <activity
-            android:name=".Menu.detail_permintaan_surat"
-            android:exported="false" />
+        <activity android:name=".Menu.DetailSuratFragment" />
+
         <activity
             android:name=".Menu.permintaan_surat"
             android:exported="false" />

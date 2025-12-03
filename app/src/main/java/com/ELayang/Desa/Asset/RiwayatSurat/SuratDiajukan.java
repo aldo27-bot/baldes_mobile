@@ -1,13 +1,12 @@
 package com.ELayang.Desa.Asset.RiwayatSurat;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ELayang.Desa.DataModel.RiwayatSurat.ModelDiajukan;
@@ -40,37 +39,30 @@ public class SuratDiajukan extends RecyclerView.Adapter<SuratDiajukan.ViewHolder
         holder.nama.setText(item.getNama());
 
         // === Format tanggal tanpa jam ===
-        String fullDate = item.getTanggal(); // contoh: 2025-11-26 13:45:48
+        String fullDate = item.getTanggal();
         String onlyDate = fullDate;
 
         if (fullDate != null && fullDate.contains(" ")) {
-            onlyDate = fullDate.split(" ")[0]; // hasil: 2025-11-26
+            onlyDate = fullDate.split(" ")[0];
         }
 
         holder.tanggal.setText(onlyDate);
-
         holder.status.setText(item.getStatus());
 
+        // ==== Pindah ke Activity DetailSuratFragment ====
         holder.itemView.setOnClickListener(v -> {
-            DetailSuratFragment fragment = new DetailSuratFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("id_pengajuan_surat", item.getIdPengajuanSurat());
-            bundle.putString("no_pengajuan", item.getNoPengajuan());
-            bundle.putString("nama", item.getNama());
-            bundle.putString("nik", item.getNik());
-            bundle.putString("tanggal", item.getTanggal());
-            bundle.putString("kode_surat", item.getKodeSurat());
-            bundle.putString("status", item.getStatus());
-            fragment.setArguments(bundle);
+            Intent intent = new Intent(context, DetailSuratFragment.class);
+            intent.putExtra("id_pengajuan_surat", item.getIdPengajuanSurat());
+            intent.putExtra("no_pengajuan", item.getNoPengajuan());
+            intent.putExtra("nama", item.getNama());
+            intent.putExtra("nik", item.getNik());
+            intent.putExtra("tanggal", item.getTanggal());
+            intent.putExtra("kode_surat", item.getKodeSurat());
+            intent.putExtra("status", item.getStatus());
 
-            ((AppCompatActivity) context).getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame_riwayat, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            context.startActivity(intent);
         });
     }
-
 
     @Override
     public int getItemCount() {
