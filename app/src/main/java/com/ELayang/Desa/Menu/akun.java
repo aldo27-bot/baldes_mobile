@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+
+
 
 import androidx.fragment.app.Fragment;
 
@@ -150,14 +154,29 @@ public class akun extends Fragment {
     }
 
     private void logout() {
-        // Hapus semua data login
-        sp.edit().clear().apply();
+        // Cek apakah ada data login
+        if (sp.getAll().isEmpty()) {
+            Toast.makeText(getActivity(), "Anda belum login.", Toast.LENGTH_SHORT).show();
+            return; // keluar jika tidak ada data login
+        }
 
-        // Buka LoginActivity dan hapus semua activity sebelumnya
-        Intent intent = new Intent(getActivity(), login.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        // Tampilkan dialog konfirmasi
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Konfirmasi Logout")
+                .setMessage("Apakah Anda yakin ingin keluar?")
+                .setPositiveButton("Ya", (dialog, which) -> {
+                    // Hapus semua data login
+                    sp.edit().clear().apply();
+
+                    // Buka LoginActivity dan hapus semua activity sebelumnya
+                    Intent intent = new Intent(getActivity(), login.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                })
+                .setNegativeButton("tidak", (dialog, which) -> dialog.dismiss())
+                .show();
     }
+
 
     @Override
     public void onDestroy() {
