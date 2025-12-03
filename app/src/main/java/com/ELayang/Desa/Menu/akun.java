@@ -177,7 +177,6 @@ public class akun extends Fragment {
                 .show();
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();

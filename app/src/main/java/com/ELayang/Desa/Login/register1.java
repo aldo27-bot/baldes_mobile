@@ -79,6 +79,11 @@ public class register1 extends AppCompatActivity {
                 email.requestFocus();
                 enableButton(lanjut);
 
+            } else if (!emailtext.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$")) {
+                email.setError("Email harus menggunakan format @gmail.com");
+                email.requestFocus();
+                enableButton(lanjut);
+
             } else if (namatext.isEmpty()) {
                 nama.setError("Nama harus diisi");
                 enableButton(lanjut);
