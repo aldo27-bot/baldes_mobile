@@ -84,7 +84,7 @@ public class SKK extends AppCompatActivity {
         eTTL.setOnClickListener(v -> showDatePicker());
 
         btnKirim.setOnClickListener(v -> {
-            if(isValid()) konfirmasiKirim();
+            if (isValid()) konfirmasiKirim();
         });
     }
 
@@ -101,14 +101,41 @@ public class SKK extends AppCompatActivity {
             eKeterangan.setError("Keterangan kehilangan wajib diisi");
             return false;
         }
+
+        // 🔹 Validasi larangan emoji
+        if (containsEmoji(eNama.getText().toString())) {
+            eNama.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(eAlamat.getText().toString())) {
+            eAlamat.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(eKeterangan.getText().toString())) {
+            eKeterangan.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+
         return true;
+    }
+
+    // 🔹 Fungsi cek emoji (tidak mengganggu kode lain)
+    private boolean containsEmoji(String text) {
+        if (text == null) return false;
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
         picker = new DatePickerDialog(SKK.this, (view, y, m, d) -> {
             cal.set(y, m, d);
-            eTTL.setText(new SimpleDateFormat("dd MMMM yyyy", new Locale("id","ID")).format(cal.getTime()));
+            eTTL.setText(new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID")).format(cal.getTime()));
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
         picker.show();
     }
@@ -117,7 +144,7 @@ public class SKK extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim surat kehilangan?")
-                .setPositiveButton("Kirim", (d,w)-> kirim())
+                .setPositiveButton("Kirim", (d, w) -> kirim())
                 .setNegativeButton("Batal", null)
                 .show();
     }
@@ -135,7 +162,7 @@ public class SKK extends AppCompatActivity {
                 rb(eAlamat.getText().toString()),
                 rb(eKewarganegaraan.getText().toString()),
                 rb(eKeterangan.getText().toString()),
-                rb("SKK"), // ✅ KODE SURAT FIXED
+                rb("SKK"),
                 getFilePart()
         );
 
@@ -146,13 +173,13 @@ public class SKK extends AppCompatActivity {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("*/*");
         i.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(i,"Pilih File"), PICK_FILE_REQUEST);
+        startActivityForResult(Intent.createChooser(i, "Pilih File"), PICK_FILE_REQUEST);
     }
 
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode==PICK_FILE_REQUEST && resultCode==RESULT_OK && data!=null){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             if (uri != null) {
                 fileNameSaved = getFileName(uri);
@@ -163,59 +190,61 @@ public class SKK extends AppCompatActivity {
     }
 
     @SuppressLint("Range")
-    private String getFileName(Uri uri){
-        Cursor cursor = getContentResolver().query(uri,null,null,null,null);
-        if(cursor!=null && cursor.moveToFirst()){
+    private String getFileName(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
             try {
                 return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
             } finally {
                 cursor.close();
             }
         }
-        // fallback
         String path = uri.getPath();
         if (path == null) return "";
         int cut = path.lastIndexOf('/');
         return (cut != -1) ? path.substring(cut + 1) : path;
     }
 
-    private void saveFile(Uri uri){
+    private void saveFile(Uri uri) {
         if (uri == null || fileNameSaved == null || fileNameSaved.isEmpty()) return;
         try (InputStream is = getContentResolver().openInputStream(uri);
              OutputStream os = new FileOutputStream(new File(getFilesDir(), fileNameSaved))) {
 
             byte[] buf = new byte[1024];
             int len;
-            while((len=is.read(buf))>0) os.write(buf,0,len);
+            while ((len = is.read(buf)) > 0) os.write(buf, 0, len);
 
-        } catch(Exception ignored){
+        } catch (Exception ignored) {
             ignored.printStackTrace();
         }
     }
 
-    private MultipartBody.Part getFilePart(){
-        if(fileNameSaved == null || fileNameSaved.isEmpty()) return null;
+    private MultipartBody.Part getFilePart() {
+        if (fileNameSaved == null || fileNameSaved.isEmpty()) return null;
         File file = new File(getFilesDir(), fileNameSaved);
         if (!file.exists()) return null;
         RequestBody rb = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         return MultipartBody.Part.createFormData("file", file.getName(), rb);
     }
 
-    private Callback<ResponSkk> DefaultCallback(String successMessage){
+    private Callback<ResponSkk> DefaultCallback(String successMessage) {
         return new Callback<ResponSkk>() {
-            @Override public void onResponse(Call<ResponSkk> call, Response<ResponSkk> response){
+            @Override
+            public void onResponse(Call<ResponSkk> call, Response<ResponSkk> response) {
                 progressDialog.dismiss();
                 Toast.makeText(SKK.this, successMessage, Toast.LENGTH_SHORT).show();
                 finish();
             }
-            @Override public void onFailure(Call<ResponSkk> call, Throwable t){
+
+            @Override
+            public void onFailure(Call<ResponSkk> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(SKK.this, "Gagal: "+t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(SKK.this, "Gagal: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         };
     }
 
-    private RequestBody rb(String v){
+    private RequestBody rb(String v) {
         return RequestBody.create(MediaType.parse("text/plain"), v == null ? "" : v);
     }
 }

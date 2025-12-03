@@ -138,6 +138,18 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
     }
 
     // ======================== VALIDASI ===========================
+
+    // Tambahan: deteksi emoji
+    private boolean containsEmoji(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean validateForm() {
 
         if (etNama.getText().toString().trim().isEmpty()) {
@@ -185,6 +197,40 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         if (etKeterangan.getText().toString().trim().isEmpty()) {
             etKeterangan.setError("Keterangan tidak boleh kosong");
             etKeterangan.requestFocus();
+            return false;
+        }
+
+        // ================= TAMBAHAN VALIDASI EMOJI =================
+        if (containsEmoji(etNama.getText().toString())) {
+            etNama.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etNik.getText().toString())) {
+            etNik.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etTTL.getText().toString())) {
+            etTTL.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etAlamat.getText().toString())) {
+            etAlamat.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etPekerjaan.getText().toString())) {
+            etPekerjaan.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etAgama.getText().toString())) {
+            etAgama.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etStatusPerkawinan.getText().toString())) {
+            etStatusPerkawinan.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+        if (containsEmoji(etKeterangan.getText().toString())) {
+            etKeterangan.setError("Tidak boleh mengandung emoji");
             return false;
         }
 

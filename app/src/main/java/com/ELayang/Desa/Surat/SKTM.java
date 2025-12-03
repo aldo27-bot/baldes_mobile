@@ -84,6 +84,20 @@ public class SKTM extends AppCompatActivity {
         btnKirim.setOnClickListener(v -> kirimForm());
     }
 
+    // =====================================================
+    // DETEKSI EMOJI (DITAMBAHKAN)
+    // =====================================================
+    private boolean containsEmoji(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // =====================================================
+
     private void pilihFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
@@ -147,6 +161,14 @@ public class SKTM extends AppCompatActivity {
             et.requestFocus();
             return true;
         }
+
+        // VALIDASI EMOJI
+        if (containsEmoji(et.getText().toString())) {
+            et.setError("Tidak boleh mengandung emoji");
+            et.requestFocus();
+            return true;
+        }
+
         return false;
     }
 
@@ -176,7 +198,7 @@ public class SKTM extends AppCompatActivity {
             return;
         }
 
-        // === VALIDASI TOMBOL KIRIM (POPUP KONFIRMASI) ===
+        // POPUP KONFIRMASI
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim Surat Keterangan Tidak Mampu?")
@@ -185,9 +207,6 @@ public class SKTM extends AppCompatActivity {
                 .show();
     }
 
-    // ==============================
-    //     FUNGSI KIRIM KE SERVER
-    // ==============================
     private void kirimKeServer() {
 
         ProgressDialog pd = new ProgressDialog(SKTM.this);

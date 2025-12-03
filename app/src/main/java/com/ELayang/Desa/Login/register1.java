@@ -63,17 +63,26 @@ public class register1 extends AppCompatActivity {
                 username.setError("Username harus diisi");
                 username.requestFocus();
                 enableButton(lanjut);
+
             } else if (username.length() <= 6) {
                 username.setError("Username harus lebih dari 6 karakter");
                 username.requestFocus();
                 enableButton(lanjut);
+
+            } else if (!usernameText.matches("^[a-zA-Z0-9._]+$")) {
+                username.setError("Username tidak boleh mengandung emoji atau simbol");
+                username.requestFocus();
+                enableButton(lanjut);
+
             } else if (emailtext.isEmpty()) {
                 email.setError("Email harus diisi");
                 email.requestFocus();
                 enableButton(lanjut);
+
             } else if (namatext.isEmpty()) {
                 nama.setError("Nama harus diisi");
                 enableButton(lanjut);
+
             } else {
                 APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
                 Call<ResponRegister1> call = apiRequestData.register1(usernameText, emailtext, namatext);

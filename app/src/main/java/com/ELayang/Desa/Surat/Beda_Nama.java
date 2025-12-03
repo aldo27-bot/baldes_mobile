@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-// Import yang diperlukan untuk API dan File Handling
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
 import com.ELayang.Desa.DataModel.Surat.ResponBedaNama;
@@ -38,19 +37,16 @@ import retrofit2.Response;
 
 public class Beda_Nama extends AppCompatActivity {
 
-    // Konstanta untuk request file
     private static final int PICK_FILE_REQUEST = 1;
 
-    // Komponen UI
     EditText etNama, etNamaBaru, etNIK, etTTL, etPekerjaan, etAlamat, etKeterangan;
     Button btnKirim;
     ImageButton btnBack;
     TextView btnChooseFile, tvNamaFile;
 
-    // Variabel data
     String username;
-    String fileNameSaved = ""; // Nama file yang disimpan di internal storage
-    Uri fileUri = null; // URI file yang dipilih
+    String fileNameSaved = "";
+    Uri fileUri = null;
 
     ProgressDialog progressDialog;
 
@@ -58,17 +54,13 @@ public class Beda_Nama extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
 
-        setContentView(R.layout.surat_beda_nama); // Pastikan ini layout yang benar
+        setContentView(R.layout.surat_beda_nama);
 
-        // Ambil username dari SharedPreferences
         SharedPreferences sp = getSharedPreferences("prefLogin", Context.MODE_PRIVATE);
         username = sp.getString("username", "").trim();
 
-        // Inisialisasi UI
         etNama = findViewById(R.id.etNama);
         etNamaBaru = findViewById(R.id.etNamaBaru);
         etNIK = findViewById(R.id.etNIK);
@@ -79,7 +71,6 @@ public class Beda_Nama extends AppCompatActivity {
         btnKirim = findViewById(R.id.btnKirim);
         btnBack = findViewById(R.id.btnBack);
 
-        // Komponen File
         btnChooseFile = findViewById(R.id.btnChooseFile);
         tvNamaFile = findViewById(R.id.tvNamaFile);
 
@@ -87,75 +78,95 @@ public class Beda_Nama extends AppCompatActivity {
         progressDialog.setMessage("Memproses...");
         progressDialog.setCancelable(false);
 
-        // Listener
-        btnBack.setOnClickListener(view -> onBackPressed());
-
+        btnBack.setOnClickListener(v -> onBackPressed());
         btnChooseFile.setOnClickListener(v -> chooseFile());
 
         btnKirim.setOnClickListener(v -> {
-            if(isValid()) konfirmasiKirim();
+            if (isValid()) konfirmasiKirim();
         });
     }
 
-    private boolean isValid(){
-        // Validasi Username (Wajib)
-        if(TextUtils.isEmpty(username)){
+    // ============================
+    // 🔥 CEK EMOJI (SEPERTI DOMISILI)
+    // ============================
+    private boolean containsEmoji(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isValid() {
+
+        if (TextUtils.isEmpty(username)) {
             Toast.makeText(this, "Username tidak ditemukan. Harap login ulang.", Toast.LENGTH_LONG).show();
             return false;
         }
 
-        // Validasi Semua Field Text Wajib
-        if(etNama.getText().toString().trim().isEmpty()){
+        if (etNama.getText().toString().trim().isEmpty()) {
             etNama.setError("Nama Lama wajib diisi");
             return false;
         }
-        if(etNamaBaru.getText().toString().trim().isEmpty()){
+        if (etNamaBaru.getText().toString().trim().isEmpty()) {
             etNamaBaru.setError("Nama Baru wajib diisi");
             return false;
         }
-        if(etNIK.getText().toString().trim().isEmpty()){
+        if (etNIK.getText().toString().trim().isEmpty()) {
             etNIK.setError("NIK wajib diisi");
             return false;
         }
-        if(etAlamat.getText().toString().trim().isEmpty()){
+        if (etAlamat.getText().toString().trim().isEmpty()) {
             etAlamat.setError("Alamat wajib diisi");
             return false;
         }
-        if(etTTL.getText().toString().trim().isEmpty()){
+        if (etTTL.getText().toString().trim().isEmpty()) {
             etTTL.setError("Tempat/Tanggal Lahir wajib diisi");
             return false;
         }
-        if(etPekerjaan.getText().toString().trim().isEmpty()){
+        if (etPekerjaan.getText().toString().trim().isEmpty()) {
             etPekerjaan.setError("Pekerjaan wajib diisi");
             return false;
         }
-        if(etKeterangan.getText().toString().trim().isEmpty()){
+        if (etKeterangan.getText().toString().trim().isEmpty()) {
             etKeterangan.setError("Keterangan wajib diisi");
             return false;
         }
-        // File bersifat opsional, tidak perlu validasi
+
+        // ============================================
+        // 🔥 VALIDASI: TIDAK BOLEH MENGANDUNG EMOJI
+        // ============================================
+        if (containsEmoji(etNama.getText().toString())) { etNama.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etNamaBaru.getText().toString())) { etNamaBaru.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etNIK.getText().toString())) { etNIK.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etTTL.getText().toString())) { etTTL.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etAlamat.getText().toString())) { etAlamat.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etPekerjaan.getText().toString())) { etPekerjaan.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etKeterangan.getText().toString())) { etKeterangan.setError("Teks tidak boleh mengandung emoji"); return false; }
+
         return true;
     }
 
-    private void konfirmasiKirim(){
+    private void konfirmasiKirim() {
         new AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim pengajuan Surat Beda Nama?")
-                .setPositiveButton("Kirim", (d,w)-> kirimDataPengajuan())
-                .setNegativeButton("Batal",null)
+                .setPositiveButton("Kirim", (d, w) -> kirimDataPengajuan())
+                .setNegativeButton("Batal", null)
                 .show();
     }
 
-    private void kirimDataPengajuan(){
+    private void kirimDataPengajuan() {
         progressDialog.show();
+
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
-        // Ambil data teks
         String nama = etNama.getText().toString().trim();
         String namaBaru = etNamaBaru.getText().toString().trim();
         String nik = etNIK.getText().toString().trim();
-        // Ganti nama variabel lokal 'ttl' menjadi 'tempat_tanggal_lahir' agar konsisten
-        String tempat_tanggal_lahir = etTTL.getText().toString().trim();
+        String ttl = etTTL.getText().toString().trim();
         String pekerjaan = etPekerjaan.getText().toString().trim();
         String alamat = etAlamat.getText().toString().trim();
         String keterangan = etKeterangan.getText().toString().trim();
@@ -168,7 +179,7 @@ public class Beda_Nama extends AppCompatActivity {
                 rb(namaBaru),
                 rb(nik),
                 rb(alamat),
-                rb(tempat_tanggal_lahir), // Kirim data TTL dengan key yang benar
+                rb(ttl),
                 rb(pekerjaan),
                 rb(keterangan),
                 getFilePart()
@@ -177,106 +188,94 @@ public class Beda_Nama extends AppCompatActivity {
         call.enqueue(DefaultCallback("Pengajuan Surat Beda Nama berhasil dikirim!"));
     }
 
-    private void chooseFile(){
+    private void chooseFile() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("*/*");
         i.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(i,"Pilih File"), PICK_FILE_REQUEST);
+        startActivityForResult(Intent.createChooser(i, "Pilih File"), PICK_FILE_REQUEST);
     }
 
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,Intent data){
-        if(requestCode==PICK_FILE_REQUEST && resultCode==RESULT_OK && data!=null){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             fileUri = data.getData();
-            if(fileUri != null) {
+            if (fileUri != null) {
                 fileNameSaved = getFileName(fileUri);
-                // 1. Simpan salinan file ke internal storage
                 saveFile(fileUri);
-                // 2. Update UI
                 tvNamaFile.setText(fileNameSaved);
                 Toast.makeText(this, "File dipilih: " + fileNameSaved, Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Jika user membatalkan, reset
             fileUri = null;
             fileNameSaved = "";
             tvNamaFile.setText("Tidak ada file yang dipilih");
         }
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @SuppressLint("Range")
-    private String getFileName(Uri uri){
-        Cursor cursor = getContentResolver().query(uri,null,null,null,null);
-        if(cursor!=null && cursor.moveToFirst()){
+    private String getFileName(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
             return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
         }
         return null;
     }
 
-    private void saveFile(Uri uri){
-        // Menjaga agar file bisa diakses oleh OkHttp/Retrofit
-        try(InputStream is = getContentResolver().openInputStream(uri);
-            OutputStream os = new FileOutputStream(new File(getFilesDir(), fileNameSaved))){
+    private void saveFile(Uri uri) {
+        try (InputStream is = getContentResolver().openInputStream(uri);
+             OutputStream os = new FileOutputStream(new File(getFilesDir(), fileNameSaved))) {
 
             byte[] buf = new byte[1024];
             int len;
-            while((len=is.read(buf))>0) os.write(buf,0,len);
+            while ((len = is.read(buf)) > 0) os.write(buf, 0, len);
 
-        } catch(Exception ignored){
-            Toast.makeText(this, "Gagal menyimpan salinan file: " + ignored.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Gagal menyimpan file: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private MultipartBody.Part getFilePart(){
-        // File OPSIONAL: Jika tidak ada file, kirim NULL
-        if(fileNameSaved.isEmpty() || fileUri == null) {
-            return null;
-        }
+    private MultipartBody.Part getFilePart() {
+
+        if (fileNameSaved.isEmpty() || fileUri == null) return null;
+
         File file = new File(getFilesDir(), fileNameSaved);
 
-        // Pastikan file tersebut ada
-        if (!file.exists()) {
-            Toast.makeText(this, "Error: File tidak ditemukan di penyimpanan internal.", Toast.LENGTH_LONG).show();
-            return null;
-        }
+        if (!file.exists()) return null;
 
-        // Key "file" HARUS SAMA dengan $_FILES['file'] di PHP
         RequestBody rb = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         return MultipartBody.Part.createFormData("file", file.getName(), rb);
     }
 
-    // --- UTILITY METHODS ---
-    private Callback<ResponBedaNama> DefaultCallback(String successMessage){
+    private Callback<ResponBedaNama> DefaultCallback(String successMessage) {
         return new Callback<ResponBedaNama>() {
-            @Override public void onResponse(Call<ResponBedaNama> call, Response<ResponBedaNama> response){
+            @Override
+            public void onResponse(Call<ResponBedaNama> call, Response<ResponBedaNama> response) {
                 progressDialog.dismiss();
-                // Opsional: Hapus file lokal setelah berhasil dikirim
-                if(fileNameSaved!=null && !fileNameSaved.isEmpty()) {
-                    new File(getFilesDir(), fileNameSaved).delete();
-                }
 
-                if(response.isSuccessful() && response.body() != null && response.body().isKode()){
+                if (!fileNameSaved.isEmpty()) new File(getFilesDir(), fileNameSaved).delete();
+
+                if (response.isSuccessful() && response.body() != null && response.body().isKode()) {
                     Toast.makeText(Beda_Nama.this, successMessage, Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    String errorMsg = response.body() != null ? response.body().getPesan() : "Respon server tidak valid.";
-                    Toast.makeText(Beda_Nama.this, "Gagal: " + errorMsg, Toast.LENGTH_LONG).show();
+                    String err = response.body() != null ? response.body().getPesan() : "Respon tidak valid";
+                    Toast.makeText(Beda_Nama.this, "Gagal: " + err, Toast.LENGTH_LONG).show();
                 }
             }
-            @Override public void onFailure(Call<ResponBedaNama> call, Throwable t){
+
+            @Override
+            public void onFailure(Call<ResponBedaNama> call, Throwable t) {
                 progressDialog.dismiss();
-                // Opsional: Hapus file lokal jika terjadi kegagalan koneksi
-                if(fileNameSaved!=null && !fileNameSaved.isEmpty()) {
-                    new File(getFilesDir(), fileNameSaved).delete();
-                }
-                // Kemungkinan besar error dari IllegalStateException karena output bocor dari PHP/Koneksi.php
-                Toast.makeText(Beda_Nama.this, "Gagal Koneksi: "+t.getMessage(), Toast.LENGTH_LONG).show();
+
+                if (!fileNameSaved.isEmpty()) new File(getFilesDir(), fileNameSaved).delete();
+
+                Toast.makeText(Beda_Nama.this, "Gagal koneksi: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         };
     }
 
-    private RequestBody rb(String v){
+    private RequestBody rb(String v) {
         return RequestBody.create(MediaType.parse("text/plain"), v == null ? "" : v);
     }
 }

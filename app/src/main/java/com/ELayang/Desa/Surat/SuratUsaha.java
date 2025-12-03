@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.text.InputFilter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,6 +43,34 @@ public class SuratUsaha extends AppCompatActivity {
     private MultipartBody.Part filePart;
     private static final int FILE_REQUEST_CODE = 77;
 
+    // ==========================================
+    //             FILTER EMOJI (DITAMBAHKAN)
+    // ==========================================
+    private final InputFilter emojiFilter = (source, start, end, dest, dstart, dend) -> {
+        for (int i = start; i < end; i++) {
+            int type = Character.getType(source.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return ""; // blokir emoji
+            }
+        }
+        return null;
+    };
+
+    // ==========================================
+    //             CEK EMOJI (VALIDASI)
+    // ==========================================
+    private boolean containsEmoji(String text) {
+        if (text == null) return false;
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // ==========================================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +88,16 @@ public class SuratUsaha extends AppCompatActivity {
         btnKirim = findViewById(R.id.btnKirim);
         btnPilihFile = findViewById(R.id.btnPilihFile);
         tvNamaFile = findViewById(R.id.tvNamaFile);
+
+        // ========================================================
+        //     PASANG FILTER EMOJI KE SEMUA EDITTEXT (DITAMBAHKAN)
+        // ========================================================
+        etNama.setFilters(new InputFilter[]{emojiFilter});
+        etAlamat.setFilters(new InputFilter[]{emojiFilter});
+        etKapanUsaha.setFilters(new InputFilter[]{emojiFilter});
+        etLokasiUsaha.setFilters(new InputFilter[]{emojiFilter});
+        etKeterangan.setFilters(new InputFilter[]{emojiFilter});
+        etTTL.setFilters(new InputFilter[]{emojiFilter});
 
         btnBack.setOnClickListener(v -> onBackPressed());
         btnPilihFile.setOnClickListener(v -> pilihFile());
@@ -113,10 +152,6 @@ public class SuratUsaha extends AppCompatActivity {
         }
     }
 
-    // ================================
-    // VALIDASI + POPUP KONFIRMASI
-    // ================================
-
     private boolean cek(EditText et, String pesan) {
         if (et.getText().toString().trim().isEmpty()) {
             et.setError(pesan);
@@ -135,7 +170,41 @@ public class SuratUsaha extends AppCompatActivity {
         if (cek(etKeterangan, "Keterangan wajib diisi")) return;
         if (cek(etTTL, "TTL wajib diisi")) return;
 
-        // POPUP KONFIRMASI
+        // ==========================================
+        //        VALIDASI EMOJI (TAMBAHAN)
+        // ==========================================
+        if (containsEmoji(etNama.getText().toString())) {
+            etNama.setError("Teks tidak boleh mengandung emoji");
+            etNama.requestFocus();
+            return;
+        }
+        if (containsEmoji(etAlamat.getText().toString())) {
+            etAlamat.setError("Teks tidak boleh mengandung emoji");
+            etAlamat.requestFocus();
+            return;
+        }
+        if (containsEmoji(etKapanUsaha.getText().toString())) {
+            etKapanUsaha.setError("Teks tidak boleh mengandung emoji");
+            etKapanUsaha.requestFocus();
+            return;
+        }
+        if (containsEmoji(etLokasiUsaha.getText().toString())) {
+            etLokasiUsaha.setError("Teks tidak boleh mengandung emoji");
+            etLokasiUsaha.requestFocus();
+            return;
+        }
+        if (containsEmoji(etKeterangan.getText().toString())) {
+            etKeterangan.setError("Teks tidak boleh mengandung emoji");
+            etKeterangan.requestFocus();
+            return;
+        }
+        if (containsEmoji(etTTL.getText().toString())) {
+            etTTL.setError("Teks tidak boleh mengandung emoji");
+            etTTL.requestFocus();
+            return;
+        }
+        // ==========================================
+
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim Surat Usaha?")
@@ -143,10 +212,6 @@ public class SuratUsaha extends AppCompatActivity {
                 .setNegativeButton("Tidak", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
-    // ================================
-    // KIRIM DATA KE SERVER
-    // ================================
 
     private void kirimData() {
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);

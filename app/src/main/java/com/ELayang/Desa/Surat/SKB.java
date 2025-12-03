@@ -3,13 +3,10 @@ package com.ELayang.Desa.Surat;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -65,13 +62,9 @@ public class SKB extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         imgPreview = findViewById(R.id.imgPreview);
 
-        // Tombol Back
         btnBack.setOnClickListener(v -> onBackPressed());
-
-        // Tombol pilih file
         btnPilihFile.setOnClickListener(v -> pilihFile());
 
-        // Tombol Kirim + Validasi + Konfirmasi
         btnKirim.setOnClickListener(v -> {
 
             if (!validateForm()) return;
@@ -128,7 +121,20 @@ public class SKB extends AppCompatActivity {
     }
 
     // ====================================
-    // VALIDASI FORM
+    // DETEKSI EMOJI
+    // ====================================
+    private boolean containsEmoji(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ====================================
+    // VALIDASI FORM + CEK EMOJI
     // ====================================
     private boolean validateForm() {
 
@@ -137,10 +143,18 @@ public class SKB extends AppCompatActivity {
             etNama.requestFocus();
             return false;
         }
+        if (containsEmoji(etNama.getText().toString())) {
+            etNama.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
 
         if (etNik.getText().toString().trim().isEmpty()) {
             etNik.setError("NIK tidak boleh kosong");
             etNik.requestFocus();
+            return false;
+        }
+        if (containsEmoji(etNik.getText().toString())) {
+            etNik.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
@@ -149,10 +163,18 @@ public class SKB extends AppCompatActivity {
             etAgama.requestFocus();
             return false;
         }
+        if (containsEmoji(etAgama.getText().toString())) {
+            etAgama.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
 
         if (etTTL.getText().toString().trim().isEmpty()) {
             etTTL.setError("TTL tidak boleh kosong");
             etTTL.requestFocus();
+            return false;
+        }
+        if (containsEmoji(etTTL.getText().toString())) {
+            etTTL.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
@@ -161,16 +183,28 @@ public class SKB extends AppCompatActivity {
             etPendidikan.requestFocus();
             return false;
         }
+        if (containsEmoji(etPendidikan.getText().toString())) {
+            etPendidikan.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
 
         if (etAlamat.getText().toString().trim().isEmpty()) {
             etAlamat.setError("Alamat tidak boleh kosong");
             etAlamat.requestFocus();
             return false;
         }
+        if (containsEmoji(etAlamat.getText().toString())) {
+            etAlamat.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
 
         if (etKeperluan.getText().toString().trim().isEmpty()) {
             etKeperluan.setError("Keperluan harus diisi");
             etKeperluan.requestFocus();
+            return false;
+        }
+        if (containsEmoji(etKeperluan.getText().toString())) {
+            etKeperluan.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
@@ -190,7 +224,6 @@ public class SKB extends AppCompatActivity {
             return;
         }
 
-        // RequestBody Data
         RequestBody rbNama = rb(etNama.getText().toString().trim());
         RequestBody rbNik = rb(etNik.getText().toString().trim());
         RequestBody rbAgama = rb(etAgama.getText().toString().trim());
@@ -202,12 +235,10 @@ public class SKB extends AppCompatActivity {
         RequestBody rbIdPejabat = rb("");
         RequestBody rbUser = rb(username);
 
-        // File opsional
         MultipartBody.Part fileFix = (filePart != null)
                 ? filePart
                 : MultipartBody.Part.createFormData("file", "");
 
-        // API
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
 
         Call<ResponSkb> call = api.kirimskb(

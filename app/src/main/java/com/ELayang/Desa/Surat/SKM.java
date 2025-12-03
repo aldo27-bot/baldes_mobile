@@ -142,7 +142,53 @@ public class SKM extends AppCompatActivity {
             return false;
         }
 
+        // ====================================================== //
+        //               🔹 VALIDASI TAMBAHAN: ANTI-EMOJI
+        // ====================================================== //
+        if (containsEmoji(etNama.getText().toString())) {
+            etNama.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(etTTL.getText().toString())) {
+            etTTL.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(etPekerjaan.getText().toString())) {
+            etPekerjaan.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(etAgama.getText().toString())) {
+            etAgama.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(etAlamat.getText().toString())) {
+            etAlamat.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(etKewarganegaraan.getText().toString())) {
+            etKewarganegaraan.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+        if (containsEmoji(etKeterangan.getText().toString())) {
+            etKeterangan.setError("Tidak boleh menggunakan emoji");
+            return false;
+        }
+
         return true;
+    }
+
+    // ====================================================== //
+    //             🔹 FUNGSI CHECK EMOJI (DITAMBAHKAN)
+    // ====================================================== //
+    private boolean containsEmoji(String text) {
+        if (text == null) return false;
+        for (int i = 0; i < text.length(); i++) {
+            int type = Character.getType(text.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ====================================================== //
