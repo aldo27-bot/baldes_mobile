@@ -96,6 +96,10 @@ public class ganti_password extends AppCompatActivity {
         String pass1 = password1.getText().toString().trim();
         String pass2 = password2.getText().toString().trim();
 
+        // Regex untuk mendeteksi emoji
+        String emojiPattern = ".*[\\p{So}\\p{Cn}].*";
+
+        // --- Validasi Kosong ---
         if (pass1.isEmpty()) {
             password1.setError("Password harus diisi");
             password1.requestFocus();
@@ -108,18 +112,47 @@ public class ganti_password extends AppCompatActivity {
             return;
         }
 
+        // --- Validasi Spasi ---
+        if (pass1.contains(" ")) {
+            password1.setError("Password tidak boleh mengandung spasi");
+            password1.requestFocus();
+            return;
+        }
+
+        if (pass2.contains(" ")) {
+            password2.setError("Konfirmasi password tidak boleh mengandung spasi");
+            password2.requestFocus();
+            return;
+        }
+
+        // --- Validasi Emoji ---
+        if (pass1.matches(emojiPattern)) {
+            password1.setError("Password tidak boleh mengandung emoji");
+            password1.requestFocus();
+            return;
+        }
+
+        if (pass2.matches(emojiPattern)) {
+            password2.setError("Konfirmasi password tidak boleh mengandung emoji");
+            password2.requestFocus();
+            return;
+        }
+
+        // --- Validasi Kesesuaian ---
         if (!pass1.equals(pass2)) {
             password2.setError("Konfirmasi password tidak sama");
             password2.requestFocus();
             return;
         }
 
+        // --- Validasi Minimal Karakter ---
         if (pass1.length() < 6) {
             password1.setError("Password minimal 6 karakter");
             password1.requestFocus();
             return;
         }
 
+        // --- Dialog Konfirmasi ---
         new AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Apakah kamu yakin ingin mengganti password?")
@@ -127,6 +160,7 @@ public class ganti_password extends AppCompatActivity {
                 .setNegativeButton("Tidak", null)
                 .show();
     }
+
 
     private void updatePassword(String newPassword) {
         APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
