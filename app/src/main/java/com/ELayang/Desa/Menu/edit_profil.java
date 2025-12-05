@@ -166,12 +166,27 @@ public class edit_profil extends AppCompatActivity {
 
     private void updateProfil(){
         String username = etUsername.getText().toString().trim();
-        String nama = etNama.getText().toString().trim();
+
+        String namaRaw = etNama.getText().toString().trim();
+        String nama = namaRaw.replaceAll(" +", " "); // rapikan spasi ganda
+
         String email = etEmail.getText().toString().trim();
 
         if (username.isEmpty()){
             etUsername.setError("Username wajib diisi");
             etUsername.requestFocus();
+            return;
+        }
+
+        // ➤ VALIDASI NAMA HANYA HURUF DAN SPASI
+        if (nama.isEmpty()){
+            etNama.setError("Nama wajib diisi");
+            etNama.requestFocus();
+            return;
+        }
+        else if (!nama.matches("^[a-zA-Z ]+$")) {
+            etNama.setError("Nama hanya boleh berisi huruf dan spasi");
+            etNama.requestFocus();
             return;
         }
 
@@ -213,6 +228,7 @@ public class edit_profil extends AppCompatActivity {
             }
         });
     }
+
 
     private void simpanSharedPref(ResponUpdate.Data data){
         SharedPreferences sp = getSharedPreferences(KEY_PREF,MODE_PRIVATE);

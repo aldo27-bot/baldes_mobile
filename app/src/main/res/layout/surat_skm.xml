@@ -32,7 +32,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Surat Keterangan Meninggal"
+            android:text="Surat Kematian"
             android:textColor="@color/color_title_text"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -139,17 +139,14 @@
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
 
-            <EditText
-                android:id="@+id/etAgama"
+            <Spinner
+                android:id="@+id/spinnerAgama"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="textCapSentences"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Contoh: Islam"
-                android:minHeight="48dp" />
+                android:padding="8dp" />
+
 
             <!-- Kewarganegaraan -->
             <TextView
@@ -160,17 +157,13 @@
                 android:textColor="@color/color_label_text"
                 android:textSize="14sp" />
 
-            <EditText
-                android:id="@+id/etkewarganegaraan"
+            <Spinner
+                android:id="@+id/e_Kewarganegaraan"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="textCapSentences"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Contoh: Indonesia (WNI)"
-                android:minHeight="48dp" />
+                android:padding="8dp" />
 
             <!-- Alamat -->
             <TextView

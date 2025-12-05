@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import android.util.Log; // 🔹 Tambahkan untuk logging
+import android.util.Log;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
@@ -53,11 +53,13 @@ public class register1 extends AppCompatActivity {
         lanjut.setEnabled(true);
 
         lanjut.setOnClickListener(view -> {
-            lanjut.setEnabled(false); // 🔹 Nonaktifkan tombol saat ditekan
+            lanjut.setEnabled(false);
 
             String usernameText = username.getText().toString();
             String emailtext = email.getText().toString();
-            String namatext = nama.getText().toString();
+            String namatextRaw = nama.getText().toString();
+            String namatext = namatextRaw.trim().replaceAll(" +", " ");
+
 
             if (TextUtils.isEmpty(usernameText)) {
                 username.setError("Username harus diisi");
@@ -86,6 +88,13 @@ public class register1 extends AppCompatActivity {
 
             } else if (namatext.isEmpty()) {
                 nama.setError("Nama harus diisi");
+                nama.requestFocus();
+                enableButton(lanjut);
+
+                // ➤ VALIDASI NAMA HANYA HURUF DAN SPASI
+            } else if (!namatext.matches("^[a-zA-Z ]+$")) {
+                nama.setError("Nama hanya boleh berisi huruf dan spasi");
+                nama.requestFocus();
                 enableButton(lanjut);
 
             } else {
@@ -166,4 +175,3 @@ public class register1 extends AppCompatActivity {
         button.setEnabled(true);
     }
 }
-   

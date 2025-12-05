@@ -30,6 +30,30 @@
     <string name="button_kirim">Kirim</string>
     <string name="desc_back_button">Tombol Kembali</string>
     <string name="text_fitur_belum_tersedia">FITUR BELUM TERSEDIA</string>
+
+    <string-array name="agama_resmi_array">
+        <item>Islam</item>
+        <item>Kristen</item>
+        <item>Katolik</item>
+        <item>Hindu</item>
+        <item>Buddha</item>
+        <item>Khonghucu</item>
+        <item>Kepercayaan</item>
+    </string-array>
+
+    <string-array name="status_perkawinan_array">
+        <item>Belum Kawin</item>
+        <item>Kawin</item>
+        <item>Cerai Hidup</item>
+        <item>Cerai Mati</item>
+    </string-array>
+
+    <string-array name="kewarganegaraan_array">
+        <item>Pilih Kewarganegaraan</item>
+        <item>WNI</item>
+        <item>WNA</item>
+    </string-array>
+
 </resources>
 
 

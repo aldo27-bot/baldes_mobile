@@ -85,7 +85,7 @@ public class SKTM extends AppCompatActivity {
     }
 
     // =====================================================
-    // DETEKSI EMOJI (DITAMBAHKAN)
+    // DETEKSI EMOJI
     // =====================================================
     private boolean containsEmoji(String text) {
         for (int i = 0; i < text.length(); i++) {
@@ -96,7 +96,20 @@ public class SKTM extends AppCompatActivity {
         }
         return false;
     }
+
     // =====================================================
+    // VALIDASI NAMA (HANYA HURUF + SPASI)
+    // =====================================================
+    private boolean isValidNama(String nama) {
+        return nama.matches("^[a-zA-Z ]+$");
+    }
+
+    // =====================================================
+    // VALIDASI ANGKA
+    // =====================================================
+    private boolean isNumeric(String text) {
+        return text.matches("\\d+");
+    }
 
     private void pilihFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -174,31 +187,45 @@ public class SKTM extends AppCompatActivity {
 
     private void kirimForm() {
 
-        // VALIDASI FIELD WAJIB
+        // VALIDASI WAJIB
         if (cekField(eNama, "Nama tidak boleh kosong")) return;
+        if (!isValidNama(eNama.getText().toString().trim())) {
+            eNama.setError("Nama hanya boleh berisi huruf dan spasi");
+            eNama.requestFocus();
+            return;
+        }
+
         if (cekField(eTTL, "TTL tidak boleh kosong")) return;
         if (cekField(eAsalSekolah, "Asal sekolah tidak boleh kosong")) return;
         if (cekField(eKeperluan, "Keperluan tidak boleh kosong")) return;
         if (cekField(eNamaOrtu, "Nama orang tua tidak boleh kosong")) return;
-        if (cekField(eNikOrtu, "NIK orang tua tidak boleh kosong")) return;
-        if (cekField(eAlamatOrtu, "Alamat orang tua tidak boleh kosong")) return;
-        if (cekField(eTtlOrtu, "TTL orang tua tidak boleh kosong")) return;
-        if (cekField(ePekerjaanOrtu, "Pekerjaan orang tua tidak boleh kosong")) return;
 
-        // VALIDASI NIK 16 DIGIT
-        if (eNikOrtu.getText().toString().trim().length() != 16) {
-            eNikOrtu.setError("NIK harus 16 digit");
+        if (cekField(eNikOrtu, "NIK orang tua tidak boleh kosong")) return;
+
+        // VALIDASI NIK: HANYA ANGKA + 16 DIGIT
+        String nik = eNikOrtu.getText().toString().trim();
+        if (!isNumeric(nik)) {
+            eNikOrtu.setError("NIK hanya boleh angka!");
             eNikOrtu.requestFocus();
             return;
         }
 
-        // VALIDASI FILE WAJIB
+        if (nik.length() != 16) {
+            eNikOrtu.setError("NIK harus 16 digit!");
+            eNikOrtu.requestFocus();
+            return;
+        }
+
+        if (cekField(eAlamatOrtu, "Alamat orang tua tidak boleh kosong")) return;
+        if (cekField(eTtlOrtu, "TTL orang tua tidak boleh kosong")) return;
+        if (cekField(ePekerjaanOrtu, "Pekerjaan tidak boleh kosong")) return;
+
         if (fileFix == null) {
             Toast.makeText(this, "File wajib di-upload!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // POPUP KONFIRMASI
+        // POPUP
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim Surat Keterangan Tidak Mampu?")

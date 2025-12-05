@@ -35,8 +35,8 @@ import retrofit2.Response;
 public class SKM extends AppCompatActivity {
 
     private ImageButton btnBack;
-    private EditText etNama, etTTL, etPekerjaan, etAgama, etAlamat, etKewarganegaraan, etKeterangan;
-    private Spinner spinnerJK;
+    private EditText etNama, etTTL, etPekerjaan, etAlamat, etKeterangan;
+    private Spinner spinnerJK, spinnerAgama, spinnerKewarganegaraan;
     private Button btnKirim, btnChooseFile;
     private TextView tFileName;
     private Uri fileUri;
@@ -55,20 +55,33 @@ public class SKM extends AppCompatActivity {
         etNama = findViewById(R.id.etNama);
         etTTL = findViewById(R.id.etTTL);
         etPekerjaan = findViewById(R.id.etPekerjaan);
-        etAgama = findViewById(R.id.etAgama);
         etAlamat = findViewById(R.id.etAlamat);
-        etKewarganegaraan = findViewById(R.id.etkewarganegaraan);
         etKeterangan = findViewById(R.id.etKeterangan);
 
         spinnerJK = findViewById(R.id.spinnerJK);
+        spinnerAgama = findViewById(R.id.spinnerAgama);
+        spinnerKewarganegaraan = findViewById(R.id.e_Kewarganegaraan);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.jenis_kelamin_array,
-                android.R.layout.simple_spinner_item
+        // Jenis Kelamin
+        ArrayAdapter<CharSequence> adapterJK = ArrayAdapter.createFromResource(
+                this, R.array.jenis_kelamin_array, android.R.layout.simple_spinner_item
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerJK.setAdapter(adapter);
+        adapterJK.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerJK.setAdapter(adapterJK);
+
+        // Agama
+        ArrayAdapter<CharSequence> adapterAgama = ArrayAdapter.createFromResource(
+                this, R.array.agama_resmi_array, android.R.layout.simple_spinner_item
+        );
+        adapterAgama.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAgama.setAdapter(adapterAgama);
+
+        // Kewarganegaraan
+        ArrayAdapter<CharSequence> adapterKW = ArrayAdapter.createFromResource(
+                this, R.array.kewarganegaraan_array, android.R.layout.simple_spinner_item
+        );
+        adapterKW.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerKewarganegaraan.setAdapter(adapterKW);
 
         btnKirim = findViewById(R.id.btnKirim);
         btnChooseFile = findViewById(R.id.btn_choose_file);
@@ -81,13 +94,9 @@ public class SKM extends AppCompatActivity {
         btnKirim.setOnClickListener(v -> validasiSebelumKirim());
     }
 
-    // ====================================================== //
-    //                VALIDASI SEBELUM KIRIM
-    // ====================================================== //
     private void validasiSebelumKirim() {
-        if (!isValidForm()) return;  // Jika gagal validasi → stop
+        if (!isValidForm()) return;
 
-        // Popup konfirmasi
         new AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")
                 .setMessage("Kirim Surat Kematian?")
@@ -96,90 +105,78 @@ public class SKM extends AppCompatActivity {
                 .show();
     }
 
-    // ====================================================== //
-    //               VALIDASI INPUT FORM
-    // ====================================================== //
     private boolean isValidForm() {
 
-        if (etNama.getText().toString().trim().isEmpty()) {
+        String namaInput = etNama.getText().toString().trim();
+
+        // Validasi Nama
+        if (namaInput.isEmpty()) {
             etNama.setError("Nama wajib diisi");
-            etNama.requestFocus();
             return false;
         }
-        if (etTTL.getText().toString().trim().isEmpty()) {
-            etTTL.setError("Tempat/Tanggal Lahir wajib diisi");
-            etTTL.requestFocus();
+        if (containsEmoji(namaInput)) {
+            etNama.setError("Tidak boleh mengandung emoji");
             return false;
         }
-        if (spinnerJK.getSelectedItem().toString().equals("Pilih Jenis Kelamin")) {
-            Toast.makeText(this, "Pilih jenis kelamin!", Toast.LENGTH_SHORT).show();
-            spinnerJK.performClick();
-            return false;
-        }
-        if (etAgama.getText().toString().trim().isEmpty()) {
-            etAgama.setError("Agama wajib diisi");
-            etAgama.requestFocus();
-            return false;
-        }
-        if (etPekerjaan.getText().toString().trim().isEmpty()) {
-            etPekerjaan.setError("Pekerjaan wajib diisi");
-            etPekerjaan.requestFocus();
-            return false;
-        }
-        if (etAlamat.getText().toString().trim().isEmpty()) {
-            etAlamat.setError("Alamat wajib diisi");
-            etAlamat.requestFocus();
-            return false;
-        }
-        if (etKewarganegaraan.getText().toString().trim().isEmpty()) {
-            etKewarganegaraan.setError("Kewarganegaraan wajib diisi");
-            etKewarganegaraan.requestFocus();
-            return false;
-        }
-        if (etKeterangan.getText().toString().trim().isEmpty()) {
-            etKeterangan.setError("Keterangan wajib diisi");
-            etKeterangan.requestFocus();
+        if (!namaInput.matches("^[a-zA-Z ]+$")) {
+            etNama.setError("Nama hanya boleh berisi huruf dan spasi");
             return false;
         }
 
-        // ====================================================== //
-        //               🔹 VALIDASI TAMBAHAN: ANTI-EMOJI
-        // ====================================================== //
-        if (containsEmoji(etNama.getText().toString())) {
-            etNama.setError("Tidak boleh menggunakan emoji");
+        if (etTTL.getText().toString().trim().isEmpty()) {
+            etTTL.setError("TTL wajib diisi");
             return false;
         }
         if (containsEmoji(etTTL.getText().toString())) {
-            etTTL.setError("Tidak boleh menggunakan emoji");
+            etTTL.setError("Tidak boleh mengandung emoji");
+            return false;
+        }
+
+        if (spinnerJK.getSelectedItem().equals("Pilih Jenis Kelamin")) {
+            Toast.makeText(this, "Pilih jenis kelamin!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (spinnerAgama.getSelectedItem().equals("Pilih Agama")) {
+            Toast.makeText(this, "Pilih agama!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (spinnerKewarganegaraan.getSelectedItem().equals("Pilih Kewarganegaraan")) {
+            Toast.makeText(this, "Pilih kewarganegaraan!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (etPekerjaan.getText().toString().trim().isEmpty()) {
+            etPekerjaan.setError("Pekerjaan wajib diisi");
             return false;
         }
         if (containsEmoji(etPekerjaan.getText().toString())) {
-            etPekerjaan.setError("Tidak boleh menggunakan emoji");
+            etPekerjaan.setError("Tidak boleh mengandung emoji");
             return false;
         }
-        if (containsEmoji(etAgama.getText().toString())) {
-            etAgama.setError("Tidak boleh menggunakan emoji");
+
+        if (etAlamat.getText().toString().trim().isEmpty()) {
+            etAlamat.setError("Alamat wajib diisi");
             return false;
         }
         if (containsEmoji(etAlamat.getText().toString())) {
-            etAlamat.setError("Tidak boleh menggunakan emoji");
+            etAlamat.setError("Tidak boleh mengandung emoji");
             return false;
         }
-        if (containsEmoji(etKewarganegaraan.getText().toString())) {
-            etKewarganegaraan.setError("Tidak boleh menggunakan emoji");
+
+        if (etKeterangan.getText().toString().trim().isEmpty()) {
+            etKeterangan.setError("Keterangan wajib diisi");
             return false;
         }
         if (containsEmoji(etKeterangan.getText().toString())) {
-            etKeterangan.setError("Tidak boleh menggunakan emoji");
+            etKeterangan.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
         return true;
     }
 
-    // ====================================================== //
-    //             🔹 FUNGSI CHECK EMOJI (DITAMBAHKAN)
-    // ====================================================== //
     private boolean containsEmoji(String text) {
         if (text == null) return false;
         for (int i = 0; i < text.length(); i++) {
@@ -191,9 +188,6 @@ public class SKM extends AppCompatActivity {
         return false;
     }
 
-    // ====================================================== //
-    //                       PILIH FILE
-    // ====================================================== //
     private void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
@@ -209,10 +203,6 @@ public class SKM extends AppCompatActivity {
             fileUri = data.getData();
 
             String fileName = fileUri.getLastPathSegment();
-            if (fileName.length() > 30) {
-                fileName = fileName.substring(0, 15) + "..." + fileName.substring(fileName.lastIndexOf('.') - 4);
-            }
-
             tFileName.setText(fileName);
         } else {
             fileUri = null;
@@ -220,30 +210,17 @@ public class SKM extends AppCompatActivity {
         }
     }
 
-    // ====================================================== //
-    //                    KIRIM KE SERVER
-    // ====================================================== //
     private void kirimData() {
 
-        String nama = etNama.getText().toString().trim();
-        String ttl = etTTL.getText().toString().trim();
-        String jk = spinnerJK.getSelectedItem().toString();
-        String agama = etAgama.getText().toString().trim();
-        String pekerjaan = etPekerjaan.getText().toString().trim();
-        String alamat = etAlamat.getText().toString().trim();
-        String kewarganegaraan = etKewarganegaraan.getText().toString().trim();
-        String keterangan = etKeterangan.getText().toString().trim();
-        String username = usernameUser;
-
-        RequestBody rNama = rb(nama);
-        RequestBody rAlamat = rb(alamat);
-        RequestBody rJK = rb(jk);
-        RequestBody rTTL = rb(ttl);
-        RequestBody rPekerjaan = rb(pekerjaan);
-        RequestBody rAgama = rb(agama);
-        RequestBody rKewarganegaraan = rb(kewarganegaraan);
-        RequestBody rKeterangan = rb(keterangan);
-        RequestBody rUsername = rb(username);
+        RequestBody rNama = rb(etNama.getText().toString());
+        RequestBody rTTL = rb(etTTL.getText().toString());
+        RequestBody rJK = rb(spinnerJK.getSelectedItem().toString());
+        RequestBody rAgama = rb(spinnerAgama.getSelectedItem().toString());
+        RequestBody rPekerjaan = rb(etPekerjaan.getText().toString());
+        RequestBody rAlamat = rb(etAlamat.getText().toString());
+        RequestBody rKW = rb(spinnerKewarganegaraan.getSelectedItem().toString());
+        RequestBody rKet = rb(etKeterangan.getText().toString());
+        RequestBody rUsername = rb(usernameUser);
 
         MultipartBody.Part filePart = null;
 
@@ -277,7 +254,7 @@ public class SKM extends AppCompatActivity {
 
         Call<ResponSkm> call = api.uploadSKM(
                 rNama, rAlamat, rJK, rTTL, rAgama,
-                rPekerjaan, rKewarganegaraan, rKeterangan,
+                rPekerjaan, rKW, rKet,
                 rUsername, filePart
         );
 
@@ -301,7 +278,6 @@ public class SKM extends AppCompatActivity {
         });
     }
 
-    // Utility
     private RequestBody rb(String value) {
         return RequestBody.create(MediaType.parse("text/plain"), value);
     }

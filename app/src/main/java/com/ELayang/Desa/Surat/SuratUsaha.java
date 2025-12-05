@@ -3,6 +3,7 @@ package com.ELayang.Desa.Surat;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import com.ELayang.Desa.R;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -43,12 +45,26 @@ public class SuratUsaha extends AppCompatActivity {
     private MultipartBody.Part filePart;
     private static final int FILE_REQUEST_CODE = 77;
 
-    // ==========================================
-    //             FILTER EMOJI (DITAMBAHKAN)
-    // ==========================================
+    // FILTER EMOJI
     private final InputFilter emojiFilter = (source, start, end, dest, dstart, dend) -> {
         for (int i = start; i < end; i++) {
             int type = Character.getType(source.charAt(i));
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL)
+                return "";
+        }
+        return null;
+    };
+
+    // FILTER NAMA (HURUF + SPASI SAJA)
+    private final InputFilter hurufSpasiFilter = (source, start, end, dest, dstart, dend) -> {
+        for (int i = start; i < end; i++) {
+            char c = source.charAt(i);
+
+            if (!Character.isLetter(c) && c != ' ') {
+                return ""; // blokir angka & simbol
+            }
+
+            int type = Character.getType(c);
             if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
                 return ""; // blokir emoji
             }
@@ -56,20 +72,15 @@ public class SuratUsaha extends AppCompatActivity {
         return null;
     };
 
-    // ==========================================
-    //             CEK EMOJI (VALIDASI)
-    // ==========================================
     private boolean containsEmoji(String text) {
         if (text == null) return false;
         for (int i = 0; i < text.length(); i++) {
             int type = Character.getType(text.charAt(i));
-            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL)
                 return true;
-            }
         }
         return false;
     }
-    // ==========================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,21 +100,40 @@ public class SuratUsaha extends AppCompatActivity {
         btnPilihFile = findViewById(R.id.btnPilihFile);
         tvNamaFile = findViewById(R.id.tvNamaFile);
 
-        // ========================================================
-        //     PASANG FILTER EMOJI KE SEMUA EDITTEXT (DITAMBAHKAN)
-        // ========================================================
-        etNama.setFilters(new InputFilter[]{emojiFilter});
+        // FILTER EDITTEXT
+        etNama.setFilters(new InputFilter[]{hurufSpasiFilter});
         etAlamat.setFilters(new InputFilter[]{emojiFilter});
         etKapanUsaha.setFilters(new InputFilter[]{emojiFilter});
         etLokasiUsaha.setFilters(new InputFilter[]{emojiFilter});
         etKeterangan.setFilters(new InputFilter[]{emojiFilter});
         etTTL.setFilters(new InputFilter[]{emojiFilter});
 
+        // DATE PICKER
+        etKapanUsaha.setOnClickListener(v -> showDatePicker());
+        etKapanUsaha.setFocusable(false);
+
         btnBack.setOnClickListener(v -> onBackPressed());
         btnPilihFile.setOnClickListener(v -> pilihFile());
         btnKirim.setOnClickListener(v -> validasiDanKonfirmasi());
 
         tvNamaFile.setText("Belum ada file dipilih (Opsional)");
+    }
+
+    private void showDatePicker() {
+        Calendar cal = Calendar.getInstance();
+
+        DatePickerDialog dp = new DatePickerDialog(
+                this,
+                (view, year, month, day) -> {
+                    String tgl = day + "-" + (month + 1) + "-" + year;
+                    etKapanUsaha.setText(tgl);
+                },
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+        );
+
+        dp.show();
     }
 
     private void pilihFile() {
@@ -170,40 +200,20 @@ public class SuratUsaha extends AppCompatActivity {
         if (cek(etKeterangan, "Keterangan wajib diisi")) return;
         if (cek(etTTL, "TTL wajib diisi")) return;
 
-        // ==========================================
-        //        VALIDASI EMOJI (TAMBAHAN)
-        // ==========================================
+        // VALIDASI NAMA TIDAK MENGANDUNG EMOJI
         if (containsEmoji(etNama.getText().toString())) {
-            etNama.setError("Teks tidak boleh mengandung emoji");
+            etNama.setError("Nama tidak boleh mengandung emoji");
             etNama.requestFocus();
             return;
         }
-        if (containsEmoji(etAlamat.getText().toString())) {
-            etAlamat.setError("Teks tidak boleh mengandung emoji");
-            etAlamat.requestFocus();
+
+        // VALIDASI NAMA HANYA HURUF + SPASI (REGEX)
+        String namaInput = etNama.getText().toString().trim();
+        if (!namaInput.matches("[a-zA-Z ]+")) {
+            etNama.setError("Nama hanya boleh berisi huruf dan spasi");
+            etNama.requestFocus();
             return;
         }
-        if (containsEmoji(etKapanUsaha.getText().toString())) {
-            etKapanUsaha.setError("Teks tidak boleh mengandung emoji");
-            etKapanUsaha.requestFocus();
-            return;
-        }
-        if (containsEmoji(etLokasiUsaha.getText().toString())) {
-            etLokasiUsaha.setError("Teks tidak boleh mengandung emoji");
-            etLokasiUsaha.requestFocus();
-            return;
-        }
-        if (containsEmoji(etKeterangan.getText().toString())) {
-            etKeterangan.setError("Teks tidak boleh mengandung emoji");
-            etKeterangan.requestFocus();
-            return;
-        }
-        if (containsEmoji(etTTL.getText().toString())) {
-            etTTL.setError("Teks tidak boleh mengandung emoji");
-            etTTL.requestFocus();
-            return;
-        }
-        // ==========================================
 
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Konfirmasi")

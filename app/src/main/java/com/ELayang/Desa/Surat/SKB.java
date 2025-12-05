@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,9 +36,10 @@ import retrofit2.Response;
 public class SKB extends AppCompatActivity {
 
     private ImageButton btnBack;
-    private EditText etNama, etNik, etAgama, etTTL, etPendidikan, etAlamat, etKeperluan;
+    private EditText etNama, etNik, etTTL, etPendidikan, etAlamat, etKeperluan;
+    private Spinner spinnerAgama;
     private Button btnKirim;
-    private TextView btnPilihFile;
+    private Button btnPilihFile;
     private ImageView imgPreview;
 
     private Uri uriFile;
@@ -50,11 +53,21 @@ public class SKB extends AppCompatActivity {
         // Init EditText
         etNama = findViewById(R.id.etNama);
         etNik = findViewById(R.id.etNik);
-        etAgama = findViewById(R.id.etAgama);
         etTTL = findViewById(R.id.etTTL);
         etPendidikan = findViewById(R.id.etPendidikan);
         etAlamat = findViewById(R.id.etAlamat);
         etKeperluan = findViewById(R.id.etKeperluan);
+
+        spinnerAgama = findViewById(R.id.spinnerAgama);
+
+        // SET DROPDOWN AGAMA
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.agama_resmi_array,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAgama.setAdapter(adapter);
 
         // Init View
         btnKirim = findViewById(R.id.btnKirim);
@@ -78,9 +91,9 @@ public class SKB extends AppCompatActivity {
         });
     }
 
-    // ====================================
+    // =============================
     // PILIH FILE
-    // ====================================
+    // =============================
     private void pilihFile() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -120,100 +133,81 @@ public class SKB extends AppCompatActivity {
         }
     }
 
-    // ====================================
+    // =============================
     // DETEKSI EMOJI
-    // ====================================
+    // =============================
     private boolean containsEmoji(String text) {
         for (int i = 0; i < text.length(); i++) {
             int type = Character.getType(text.charAt(i));
-            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
-                return true;
-            }
+            if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) return true;
         }
         return false;
     }
 
-    // ====================================
-    // VALIDASI FORM + CEK EMOJI
-    // ====================================
+    // =============================
+    // VALIDASI FORM
+    // =============================
     private boolean validateForm() {
 
-        if (etNama.getText().toString().trim().isEmpty()) {
+        String nama = etNama.getText().toString().trim();
+        String nik = etNik.getText().toString().trim();
+
+        // VALIDASI NAMA → hanya huruf dan spasi
+        if (nama.isEmpty()) {
             etNama.setError("Nama tidak boleh kosong");
-            etNama.requestFocus();
             return false;
         }
-        if (containsEmoji(etNama.getText().toString())) {
+        if (!nama.matches("^[a-zA-Z ]+$")) {
+            etNama.setError("Nama hanya boleh berisi huruf dan spasi");
+            return false;
+        }
+        if (containsEmoji(nama)) {
             etNama.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
-        if (etNik.getText().toString().trim().isEmpty()) {
+        // VALIDASI NIK → wajib 16 digit angka
+        if (nik.isEmpty()) {
             etNik.setError("NIK tidak boleh kosong");
-            etNik.requestFocus();
             return false;
         }
-        if (containsEmoji(etNik.getText().toString())) {
+        if (!nik.matches("\\d{16}")) {
+            etNik.setError("NIK harus 16 digit angka");
+            return false;
+        }
+        if (containsEmoji(nik)) {
             etNik.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
-        if (etAgama.getText().toString().trim().isEmpty()) {
-            etAgama.setError("Agama tidak boleh kosong");
-            etAgama.requestFocus();
-            return false;
-        }
-        if (containsEmoji(etAgama.getText().toString())) {
-            etAgama.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
+        // AGAMA dari dropdown → tidak perlu cek manual emoji
 
         if (etTTL.getText().toString().trim().isEmpty()) {
             etTTL.setError("TTL tidak boleh kosong");
-            etTTL.requestFocus();
-            return false;
-        }
-        if (containsEmoji(etTTL.getText().toString())) {
-            etTTL.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
         if (etPendidikan.getText().toString().trim().isEmpty()) {
             etPendidikan.setError("Pendidikan tidak boleh kosong");
-            etPendidikan.requestFocus();
-            return false;
-        }
-        if (containsEmoji(etPendidikan.getText().toString())) {
-            etPendidikan.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
         if (etAlamat.getText().toString().trim().isEmpty()) {
             etAlamat.setError("Alamat tidak boleh kosong");
-            etAlamat.requestFocus();
-            return false;
-        }
-        if (containsEmoji(etAlamat.getText().toString())) {
-            etAlamat.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
         if (etKeperluan.getText().toString().trim().isEmpty()) {
             etKeperluan.setError("Keperluan harus diisi");
-            etKeperluan.requestFocus();
-            return false;
-        }
-        if (containsEmoji(etKeperluan.getText().toString())) {
-            etKeperluan.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
         return true;
     }
 
-    // ====================================
+    // =============================
     // KIRIM DATA
-    // ====================================
+    // =============================
     private void kirimData() {
 
         SharedPreferences pref = getSharedPreferences("prefLogin", MODE_PRIVATE);
@@ -226,7 +220,7 @@ public class SKB extends AppCompatActivity {
 
         RequestBody rbNama = rb(etNama.getText().toString().trim());
         RequestBody rbNik = rb(etNik.getText().toString().trim());
-        RequestBody rbAgama = rb(etAgama.getText().toString().trim());
+        RequestBody rbAgama = rb(spinnerAgama.getSelectedItem().toString());
         RequestBody rbTTL = rb(etTTL.getText().toString().trim());
         RequestBody rbPendidikan = rb(etPendidikan.getText().toString().trim());
         RequestBody rbAlamat = rb(etAlamat.getText().toString().trim());
@@ -285,7 +279,7 @@ public class SKB extends AppCompatActivity {
     private void clearForm() {
         etNama.setText("");
         etNik.setText("");
-        etAgama.setText("");
+        spinnerAgama.setSelection(0);
         etTTL.setText("");
         etPendidikan.setText("");
         etAlamat.setText("");

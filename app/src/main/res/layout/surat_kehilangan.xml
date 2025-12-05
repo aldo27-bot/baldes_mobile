@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="32dp">
 
+        <!-- Tombol Kembali -->
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="48dp"
@@ -25,6 +26,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Title -->
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
@@ -39,6 +41,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnBack"
             app:layout_constraintTop_toTopOf="@+id/btnBack" />
 
+        <!-- Container Form -->
         <LinearLayout
             android:id="@+id/inputContainer"
             android:layout_width="match_parent"
@@ -48,10 +51,11 @@
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/title">
 
+            <!-- Nama -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nama "
+                android:text="Nama"
                 android:textColor="#555555"
                 android:textSize="14sp" />
 
@@ -66,24 +70,25 @@
                 android:padding="12dp"
                 android:textSize="16sp" />
 
+            <!-- Agama -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Agama "
+                android:text="Agama"
                 android:textColor="#555555"
                 android:textSize="14sp" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/e_agama"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_rounded_bedanama"
-                android:hint="Masukkan Agama"
-                android:padding="12dp"
-                android:textSize="16sp" />
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/edittext_rounded_bedanama" />
 
+            <!-- Jenis Kelamin -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,13 +99,15 @@
 
             <Spinner
                 android:id="@+id/e_jenis_kelamin"
-                style="@style/Widget.AppCompat.Light.DropDownItem.Spinner"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:background="@drawable/edittext_rounded_bedanama" /> <TextView
+                android:background="@drawable/edittext_rounded_bedanama" />
+
+            <!-- Tempat Tanggal Lahir -->
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -115,15 +122,15 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_rounded_bedanama"
                 android:hint="Masukkan Tempat dan Tanggal Lahir"
-                android:inputType="text"
                 android:padding="12dp"
                 android:textSize="16sp" />
 
+            <!-- Alamat -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Alamat "
+                android:text="Alamat"
                 android:textColor="#555555"
                 android:textSize="14sp" />
 
@@ -140,6 +147,7 @@
                 android:padding="12dp"
                 android:textSize="16sp" />
 
+            <!-- Kewarganegaraan -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -148,17 +156,17 @@
                 android:textColor="#555555"
                 android:textSize="14sp" />
 
-            <EditText
-                android:id="@+id/e_kewarganegaraan"
+            <Spinner
+                android:id="@+id/e_Kewarganegaraan"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_rounded_bedanama"
-                android:hint="Masukkan Kewarganegaraan"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textSize="16sp" />
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/edittext_rounded_bedanama" />
 
+
+            <!-- Keterangan -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -180,6 +188,7 @@
                 android:padding="12dp"
                 android:textSize="16sp" />
 
+            <!-- Upload File -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -201,30 +210,30 @@
                     android:id="@+id/btn_choose_file"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/btn_upload_file_bedanama"
                     android:text="Pilih File"
                     android:textColor="@color/black"
-                    android:onClick="chooseFile"
+                    android:background="@drawable/btn_upload_file_bedanama"
                     android:backgroundTint="@null"
                     app:backgroundTint="@null"
                     android:foregroundTint="@null"
-                    android:minHeight="50dp"
-                    android:paddingHorizontal="24dp"/>
+                    android:onClick="chooseFile"
+                    android:paddingHorizontal="24dp" />
 
                 <TextView
                     android:id="@+id/t_file_name"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:paddingHorizontal="12dp"
                     android:text="Tidak ada file yang dipilih"
                     android:textColor="#AAAAAA"
                     android:singleLine="true"
-                    android:ellipsize="start"/>
+                    android:ellipsize="start" />
             </LinearLayout>
 
         </LinearLayout>
 
+        <!-- Tombol Kirim -->
         <Button
             android:id="@+id/kirim"
             android:layout_width="0dp"
@@ -237,8 +246,8 @@
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:paddingVertical="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/inputContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

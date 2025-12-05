@@ -191,6 +191,7 @@ public class lupa_password_2 extends AppCompatActivity {
         timer.setText(seconds + " detik");
     }
 
+
     private void resetTimer() {
         timeLeftInMillis = 30000;
     }

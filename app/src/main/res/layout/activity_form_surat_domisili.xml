@@ -183,17 +183,11 @@
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
 
-            <EditText
-                android:id="@+id/etAgama"
+            <Spinner
+                android:id="@+id/spinnerAgama"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Agama yang dianut"
-                android:minHeight="48dp" />
+                android:spinnerMode="dropdown" />
 
             <!-- Status Perkawinan -->
             <TextView
@@ -204,17 +198,11 @@
                 android:textSize="14sp"
                 android:textColor="@color/color_label_text" />
 
-            <EditText
-                android:id="@+id/etStatusPerkawinan"
+            <Spinner
+                android:id="@+id/spinnerStatusPerkawinan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_rounded_bedanama"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:hint="Contoh: Menikah/Belum Menikah"
-                android:minHeight="48dp" />
+                android:spinnerMode="dropdown" />
 
             <!-- Keterangan -->
             <TextView

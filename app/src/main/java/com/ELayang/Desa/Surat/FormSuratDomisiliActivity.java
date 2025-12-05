@@ -36,9 +36,8 @@ import retrofit2.Response;
 public class FormSuratDomisiliActivity extends AppCompatActivity {
 
     ImageButton btnBack;
-    private EditText etNama, etNik, etTTL, etAlamat,
-            etPekerjaan, etAgama, etStatusPerkawinan, etKeterangan;
-    private Spinner spinnerJK;
+    private EditText etNama, etNik, etTTL, etAlamat, etPekerjaan, etKeterangan;
+    private Spinner spinnerJK, spinnerAgama, spinnerStatus;
     private Button btnKirim;
     private TextView btnPilihFile;
     private ImageView imgPreview;
@@ -51,48 +50,55 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_surat_domisili);
 
-        // Inisialisasi EditText
+        // EditText
         etNama = findViewById(R.id.etNama);
         etNik = findViewById(R.id.etNik);
         etTTL = findViewById(R.id.etTTL);
         etAlamat = findViewById(R.id.etAlamat);
         etPekerjaan = findViewById(R.id.etPekerjaan);
-        etAgama = findViewById(R.id.etAgama);
-        etStatusPerkawinan = findViewById(R.id.etStatusPerkawinan);
         etKeterangan = findViewById(R.id.etKeterangan);
 
-        // Inisialisasi Spinner
+        // Spinner Jenis Kelamin
         spinnerJK = findViewById(R.id.spinnerJK);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.jenis_kelamin_array,
-                android.R.layout.simple_spinner_item
+        ArrayAdapter<CharSequence> adapterJK = ArrayAdapter.createFromResource(
+                this, R.array.jenis_kelamin_array, android.R.layout.simple_spinner_item
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerJK.setAdapter(adapter);
+        adapterJK.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerJK.setAdapter(adapterJK);
 
-        // Inisialisasi komponen aksi
+        // Spinner Agama (NEW)
+        spinnerAgama = findViewById(R.id.spinnerAgama);
+        ArrayAdapter<CharSequence> adapterAgama = ArrayAdapter.createFromResource(
+                this, R.array.agama_resmi_array, android.R.layout.simple_spinner_item
+        );
+        adapterAgama.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAgama.setAdapter(adapterAgama);
+
+        // Spinner Status Perkawinan (NEW)
+        spinnerStatus = findViewById(R.id.spinnerStatusPerkawinan);
+        ArrayAdapter<CharSequence> adapterStatus = ArrayAdapter.createFromResource(
+                this, R.array.status_perkawinan_array, android.R.layout.simple_spinner_item
+        );
+        adapterStatus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerStatus.setAdapter(adapterStatus);
+
         btnKirim = findViewById(R.id.btnKirim);
         btnPilihFile = findViewById(R.id.btnPilihFile);
         btnBack = findViewById(R.id.btnBack);
         imgPreview = findViewById(R.id.imgPreview);
 
-        // Tombol Kembali
-        btnBack.setOnClickListener(view -> onBackPressed());
+        btnBack.setOnClickListener(v -> onBackPressed());
 
-        // Pilih File
         btnPilihFile.setOnClickListener(v -> pilihFile());
 
-        // Kirim Data (dengan validasi & konfirmasi)
         btnKirim.setOnClickListener(v -> {
-
             if (!validateForm()) return;
 
             new android.app.AlertDialog.Builder(FormSuratDomisiliActivity.this)
                     .setTitle("Konfirmasi Pengajuan")
                     .setMessage("Kirim Pengajuan Surat Domisili?")
                     .setPositiveButton("KIRIM", (dialog, which) -> kirimData())
-                    .setNegativeButton("BATAL", (dialog, which) -> dialog.dismiss())
+                    .setNegativeButton("BATAL", null)
                     .show();
         });
     }
@@ -129,9 +135,7 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
                         reqFile
                 );
 
-                Log.d("Domisili", "File siap diupload");
             } catch (IOException e) {
-                e.printStackTrace();
                 Toast.makeText(this, "Gagal membaca file", Toast.LENGTH_SHORT).show();
             }
         }
@@ -139,7 +143,7 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
 
     // ======================== VALIDASI ===========================
 
-    // Tambahan: deteksi emoji
+    // Deteksi emoji
     private boolean containsEmoji(String text) {
         for (int i = 0; i < text.length(); i++) {
             int type = Character.getType(text.charAt(i));
@@ -152,85 +156,48 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
 
     private boolean validateForm() {
 
-        if (etNama.getText().toString().trim().isEmpty()) {
+        String nama = etNama.getText().toString().trim();
+        String nik = etNik.getText().toString().trim();
+
+        // Validasi Nama → huruf & spasi saja
+        if (nama.isEmpty()) {
             etNama.setError("Nama tidak boleh kosong");
-            etNama.requestFocus();
+            return false;
+        }
+        if (!nama.matches("^[A-Za-z ]+$")) {
+            etNama.setError("Nama hanya boleh berisi huruf dan spasi");
+            return false;
+        }
+        if (containsEmoji(nama)) {
+            etNama.setError("Nama tidak boleh mengandung emoji");
             return false;
         }
 
-        if (etNik.getText().toString().trim().isEmpty()) {
+        // Validasi NIK → harus 16 digit angka
+        if (nik.isEmpty()) {
             etNik.setError("NIK tidak boleh kosong");
-            etNik.requestFocus();
+            return false;
+        }
+        if (!nik.matches("^[0-9]{16}$")) {
+            etNik.setError("NIK harus 16 digit angka");
             return false;
         }
 
+        // Validasi input wajib lainnya
         if (etTTL.getText().toString().trim().isEmpty()) {
             etTTL.setError("TTL tidak boleh kosong");
-            etTTL.requestFocus();
             return false;
         }
-
         if (etAlamat.getText().toString().trim().isEmpty()) {
             etAlamat.setError("Alamat tidak boleh kosong");
-            etAlamat.requestFocus();
             return false;
         }
-
         if (etPekerjaan.getText().toString().trim().isEmpty()) {
             etPekerjaan.setError("Pekerjaan tidak boleh kosong");
-            etPekerjaan.requestFocus();
             return false;
         }
-
-        if (etAgama.getText().toString().trim().isEmpty()) {
-            etAgama.setError("Agama tidak boleh kosong");
-            etAgama.requestFocus();
-            return false;
-        }
-
-        if (etStatusPerkawinan.getText().toString().trim().isEmpty()) {
-            etStatusPerkawinan.setError("Status Perkawinan tidak boleh kosong");
-            etStatusPerkawinan.requestFocus();
-            return false;
-        }
-
         if (etKeterangan.getText().toString().trim().isEmpty()) {
             etKeterangan.setError("Keterangan tidak boleh kosong");
-            etKeterangan.requestFocus();
-            return false;
-        }
-
-        // ================= TAMBAHAN VALIDASI EMOJI =================
-        if (containsEmoji(etNama.getText().toString())) {
-            etNama.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etNik.getText().toString())) {
-            etNik.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etTTL.getText().toString())) {
-            etTTL.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etAlamat.getText().toString())) {
-            etAlamat.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etPekerjaan.getText().toString())) {
-            etPekerjaan.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etAgama.getText().toString())) {
-            etAgama.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etStatusPerkawinan.getText().toString())) {
-            etStatusPerkawinan.setError("Tidak boleh mengandung emoji");
-            return false;
-        }
-        if (containsEmoji(etKeterangan.getText().toString())) {
-            etKeterangan.setError("Tidak boleh mengandung emoji");
             return false;
         }
 
@@ -247,19 +214,17 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
             return;
         }
 
-        // Ambil data form
         RequestBody nama = rb(etNama.getText().toString().trim());
         RequestBody nik = rb(etNik.getText().toString().trim());
         RequestBody ttl = rb(etTTL.getText().toString().trim());
         RequestBody alamat = rb(etAlamat.getText().toString().trim());
         RequestBody jk = rb(spinnerJK.getSelectedItem().toString());
         RequestBody pekerjaan = rb(etPekerjaan.getText().toString().trim());
-        RequestBody agama = rb(etAgama.getText().toString().trim());
-        RequestBody status = rb(etStatusPerkawinan.getText().toString().trim());
+        RequestBody agama = rb(spinnerAgama.getSelectedItem().toString());
+        RequestBody status = rb(spinnerStatus.getSelectedItem().toString());
         RequestBody keterangan = rb(etKeterangan.getText().toString().trim());
         RequestBody user = rb(username);
 
-        // File opsional → kirim part kosong jika tidak ada
         MultipartBody.Part fileFix = (filePart != null)
                 ? filePart
                 : MultipartBody.Part.createFormData("file", "");
@@ -273,41 +238,24 @@ public class FormSuratDomisiliActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponDomisili> call, Response<ResponDomisili> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String pesan = response.body().getPesan();
-                    if (pesan == null || pesan.isEmpty()) pesan = "Pengajuan selesai";
-
-                    Toast.makeText(FormSuratDomisiliActivity.this, pesan, Toast.LENGTH_SHORT).show();
-                    clearForm();
+                    Toast.makeText(FormSuratDomisiliActivity.this,
+                            response.body().getPesan(), Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(FormSuratDomisiliActivity.this, "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FormSuratDomisiliActivity.this,
+                            "Gagal mengirim data ke server", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponDomisili> call, Throwable t) {
-                String pesanError = t.getMessage() != null ? t.getMessage() : "Kesalahan tidak diketahui";
-                Toast.makeText(FormSuratDomisiliActivity.this, "Kesalahan koneksi: " + pesanError, Toast.LENGTH_LONG).show();
+                Toast.makeText(FormSuratDomisiliActivity.this,
+                        "Kesalahan koneksi: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private RequestBody rb(String value) {
         return RequestBody.create(MediaType.parse("text/plain"), value);
-    }
-
-    private void clearForm() {
-        etNama.setText("");
-        etNik.setText("");
-        etTTL.setText("");
-        etAlamat.setText("");
-        spinnerJK.setSelection(0);
-        etPekerjaan.setText("");
-        etAgama.setText("");
-        etStatusPerkawinan.setText("");
-        etKeterangan.setText("");
-        imgPreview.setImageURI(null);
-        imgPreview.setVisibility(ImageView.GONE);
-        filePart = null;
     }
 }

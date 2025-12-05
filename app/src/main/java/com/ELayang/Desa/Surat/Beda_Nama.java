@@ -87,7 +87,7 @@ public class Beda_Nama extends AppCompatActivity {
     }
 
     // ============================
-    // 🔥 CEK EMOJI (SEPERTI DOMISILI)
+    // CEK EMOJI
     // ============================
     private boolean containsEmoji(String text) {
         for (int i = 0; i < text.length(); i++) {
@@ -99,6 +99,20 @@ public class Beda_Nama extends AppCompatActivity {
         return false;
     }
 
+    // ============================
+    // HANYA HURUF & SPASI
+    // ============================
+    private boolean isOnlyLetters(String text) {
+        return text.matches("^[A-Za-z ]+$");
+    }
+
+    // ============================
+    // NIK HARUS 16 DIGIT ANGKA
+    // ============================
+    private boolean isValidNIK(String nik) {
+        return nik.matches("^\\d{16}$");
+    }
+
     private boolean isValid() {
 
         if (TextUtils.isEmpty(username)) {
@@ -106,18 +120,47 @@ public class Beda_Nama extends AppCompatActivity {
             return false;
         }
 
-        if (etNama.getText().toString().trim().isEmpty()) {
+        // Ambil input
+        String nama = etNama.getText().toString().trim();
+        String namaBaru = etNamaBaru.getText().toString().trim();
+        String nik = etNIK.getText().toString().trim();
+
+        // ============================
+        // CEK NAMA (HANYA HURUF & SPASI)
+        // ============================
+        if (nama.isEmpty()) {
             etNama.setError("Nama Lama wajib diisi");
             return false;
         }
-        if (etNamaBaru.getText().toString().trim().isEmpty()) {
+        if (!isOnlyLetters(nama)) {
+            etNama.setError("Nama Lama hanya boleh berisi huruf dan spasi");
+            return false;
+        }
+
+        if (namaBaru.isEmpty()) {
             etNamaBaru.setError("Nama Baru wajib diisi");
             return false;
         }
-        if (etNIK.getText().toString().trim().isEmpty()) {
+        if (!isOnlyLetters(namaBaru)) {
+            etNamaBaru.setError("Nama Baru hanya boleh berisi huruf dan spasi");
+            return false;
+        }
+
+        // ============================
+        // CEK NIK (HARUS 16 DIGIT)
+        // ============================
+        if (nik.isEmpty()) {
             etNIK.setError("NIK wajib diisi");
             return false;
         }
+        if (!isValidNIK(nik)) {
+            etNIK.setError("NIK harus 16 digit angka");
+            return false;
+        }
+
+        // ============================
+        // CEK FIELD LAIN
+        // ============================
         if (etAlamat.getText().toString().trim().isEmpty()) {
             etAlamat.setError("Alamat wajib diisi");
             return false;
@@ -135,14 +178,14 @@ public class Beda_Nama extends AppCompatActivity {
             return false;
         }
 
-        // ============================================
-        // 🔥 VALIDASI: TIDAK BOLEH MENGANDUNG EMOJI
-        // ============================================
-        if (containsEmoji(etNama.getText().toString())) { etNama.setError("Teks tidak boleh mengandung emoji"); return false; }
-        if (containsEmoji(etNamaBaru.getText().toString())) { etNamaBaru.setError("Teks tidak boleh mengandung emoji"); return false; }
-        if (containsEmoji(etNIK.getText().toString())) { etNIK.setError("Teks tidak boleh mengandung emoji"); return false; }
-        if (containsEmoji(etTTL.getText().toString())) { etTTL.setError("Teks tidak boleh mengandung emoji"); return false; }
+        // ============================
+        // CEK EMOJI
+        // ============================
+        if (containsEmoji(nama)) { etNama.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(namaBaru)) { etNamaBaru.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(nik)) { etNIK.setError("Teks tidak boleh mengandung emoji"); return false; }
         if (containsEmoji(etAlamat.getText().toString())) { etAlamat.setError("Teks tidak boleh mengandung emoji"); return false; }
+        if (containsEmoji(etTTL.getText().toString())) { etTTL.setError("Teks tidak boleh mengandung emoji"); return false; }
         if (containsEmoji(etPekerjaan.getText().toString())) { etPekerjaan.setError("Teks tidak boleh mengandung emoji"); return false; }
         if (containsEmoji(etKeterangan.getText().toString())) { etKeterangan.setError("Teks tidak boleh mengandung emoji"); return false; }
 
