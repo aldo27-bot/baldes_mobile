@@ -104,7 +104,7 @@ public class menu extends AppCompatActivity {
         // Jam buka 08:00–15:00
         int menitSekarang = jam * 60 + menit;
         int buka = 8 * 60;     // 08:00
-        int tutup = 24 * 60;   // 15:00
+        int tutup = 15 * 60;   // 15:00
         boolean isJamBuka = menitSekarang >= buka && menitSekarang <= tutup;
 
         // ====================================
