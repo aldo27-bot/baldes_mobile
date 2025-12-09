@@ -3,6 +3,7 @@ package com.ELayang.Desa.Asset.Notifikasi;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
+import android.content.SharedPreferences;
 
 import androidx.core.app.NotificationCompat;
 
@@ -30,24 +31,35 @@ public class NotificationService extends JobService {
 
                 if (response.body() != null && response.body().getKode() == 1) {
 
-                    // 🔥 Ambil data lengkap dari server
-                    String jenis  = response.body().getJenis();   // contoh: "surat" atau "aspirasi"
-                    String judul  = response.body().getJudul();   // contoh: "SKTM"
-                    String status = response.body().getStatus();  // contoh: "Selesai"
-                    String alasan = response.body().getAlasan();  // opsional
+                    //  Ambil data lengkap dari server
+                    String jenis  = response.body().getJenis();
+                    String judul  = response.body().getJudul();
+                    String status = response.body().getStatus();
+                    String alasan = response.body().getAlasan();
 
-                    NotificationHelper helper = new NotificationHelper(NotificationService.this);
+                    //  Buat ID unik notifikasi
+                    String notifKey = jenis + "_" + judul + "_" + status;
 
-                    // 🔥 Buat notifikasi detail
-                    NotificationCompat.Builder builder = helper.buildNotification(
-                            jenis,
-                            judul,
-                            status,
-                            alasan
-                    );
+                    //  Ambil notifikasi terakhir yang disimpan
+                    String lastNotif = getLastNotif();
 
-                    // 🔥 Tampilkan notifikasi
-                    helper.getManager().notify(1, builder.build());
+                    //  Cek apakah notifikasi ini sudah pernah dikirim
+                    if (!notifKey.equals(lastNotif)) {
+
+                        //  Simpan notifikasi terbaru agar tidak terkirim ulang
+                        saveLastNotif(notifKey);
+
+                        //  Kirim notifikasi
+                        NotificationHelper helper = new NotificationHelper(NotificationService.this);
+                        NotificationCompat.Builder builder = helper.buildNotification(
+                                jenis,
+                                judul,
+                                status,
+                                alasan
+                        );
+
+                        helper.getManager().notify(1, builder.build());
+                    }
                 }
 
                 jobFinished(params, true);
@@ -66,5 +78,21 @@ public class NotificationService extends JobService {
     @Override
     public boolean onStopJob(JobParameters params) {
         return false;
+    }
+
+    // =====================================================================================
+    //  SISTEM ANTI-DUPLIKASI NOTIFIKASI
+    // =====================================================================================
+
+    private String getLastNotif() {
+        SharedPreferences sp = getSharedPreferences("notifPref", MODE_PRIVATE);
+        return sp.getString("lastNotif", "");
+    }
+
+    private void saveLastNotif(String data) {
+        SharedPreferences sp = getSharedPreferences("notifPref", MODE_PRIVATE);
+        sp.edit()
+                .putString("lastNotif", data)
+                .apply();
     }
 }

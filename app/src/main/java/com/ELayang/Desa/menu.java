@@ -84,15 +84,46 @@ public class menu extends AppCompatActivity {
             return true;
         });
 
-        // FAB ➜ BUKA HALAMAN PERMINTAAN SURAT (24 JAM)
+        // ====================================
+        //  CEK JAM & HARI BUKA PELAYANAN
+        // ====================================
+        Calendar calendar = Calendar.getInstance();
+
+        int hari = calendar.get(Calendar.DAY_OF_WEEK);
+        int jam = calendar.get(Calendar.HOUR_OF_DAY);
+        int menit = calendar.get(Calendar.MINUTE);
+
+        // Hari buka (Senin–Jumat)
+        boolean isHariBuka =
+                hari == Calendar.MONDAY ||
+                        hari == Calendar.TUESDAY ||
+                        hari == Calendar.WEDNESDAY ||
+                        hari == Calendar.THURSDAY ||
+                        hari == Calendar.FRIDAY;
+
+        // Jam buka 08:00–15:00
+        int menitSekarang = jam * 60 + menit;
+        int buka = 8 * 60;     // 08:00
+        int tutup = 15 * 60;   // 15:00
+        boolean isJamBuka = menitSekarang >= buka && menitSekarang <= tutup;
+
+        // ====================================
+        // FAB ➜ BUKA HALAMAN PERMINTAAN SURAT
+        // ====================================
         fab.setOnClickListener(v -> {
+
+            if (!isHariBuka || !isJamBuka) {
+                Toast.makeText(this, "Pengajuan tidak dapat dibuka diluar hari & jam kerja", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             startActivity(new Intent(this, permintaan_surat.class));
         });
-        // START NOTIF SCHEDULER
+
         schedulePopupNotif();
     }
 
-        private void schedulePopupNotif() {
+    private void schedulePopupNotif() {
         SharedPreferences sp = getSharedPreferences("prefLogin", MODE_PRIVATE);
         String username = sp.getString("username", "");
 
