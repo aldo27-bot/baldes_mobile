@@ -1,9 +1,34 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
     <style name="Base.Theme.ELades" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- 1️ Warna utama aplikasi -->
+        <item name="colorPrimary">@color/purple_primary</item>
+        <item name="colorPrimaryVariant">@color/purple_dark</item>
+        <item name="colorAccent">@color/blue_fab</item>
+
+        <!-- 2️ Background utama -->
+        <item name="android:colorBackground">@color/white</item>
+
+        <!--  STATUS BAR FIX (Bagian yang diminta)  -->
+        <item name="android:statusBarColor">@color/purple_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Sisanya tetap seperti sebelumnya -->
+        <item name="colorControlActivated">@color/purple_primary</item>
+        <item name="colorOnSurface">@color/colorOutline</item>
+        <item name="android:textColorHint">@color/colorHintText</item>
+        <item name="android:colorControlNormal">@color/white</item>
+        <item name="floatingActionButtonStyle">@style/ELades.FABStyle</item>
+
     </style>
 
-    <style name="Theme.ELades" parent="Base.Theme.ELades"/>
+    <style name="Theme.ELades" parent="Base.Theme.ELades" />
+
+    <style name="ELades.FABStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/blue_fab</item>
+        <item name="rippleColor">@color/purple_primary</item>
+    </style>
+
 </resources>
