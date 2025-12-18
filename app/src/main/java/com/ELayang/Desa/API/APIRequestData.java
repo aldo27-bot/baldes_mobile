@@ -183,10 +183,17 @@ public interface APIRequestData {
     );
 
     @FormUrlEncoded
-    @POST("register/delete_akun.php")
-    Call<ResponDelete> delete(
+    @POST("delete_user.php")
+    Call<ResponDelete> deleteUser(
             @Field("username") String username
     );
+
+
+//    @FormUrlEncoded
+//    @POST("register/delete_akun.php")
+//    Call<ResponDelete> delete(
+//            @Field("username") String username
+//    );
 
     @FormUrlEncoded
     @POST("register/kode_otp.php")

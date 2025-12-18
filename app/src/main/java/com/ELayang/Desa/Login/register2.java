@@ -1,13 +1,14 @@
 package com.ELayang.Desa.Login;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,11 +27,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class register2 extends AppCompatActivity {
-    CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer;
     private long timeLeftInMillis = 30000;
-    Button lanjut, kirimbos;
-    TextView timer;
-    ImageButton kembali;
+    private int gagalOTP = 0;
+
+    private Button lanjut, kirimbos;
+    private TextView timer;
+    private ImageButton kembali;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,178 +44,162 @@ public class register2 extends AppCompatActivity {
         EditText kode_otp = findViewById(R.id.kode_otp);
         kirimbos = findViewById(R.id.kirimbos);
         timer = findViewById(R.id.timer);
+        kembali = findViewById(R.id.kembali);
+        lanjut = findViewById(R.id.lanjut);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("prefRegister", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", "");
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Memproses...");
+        progressDialog.setCancelable(false);
 
-        // ======================================================
-        // 🔥 OTP OTOMATIS TERKIRIM SAAT HALAMAN DIBUKA
-        // ======================================================
-        APIRequestData apiAuto = RetroServer.konekRetrofit().create(APIRequestData.class);
-        Call<ResponOTP> callAuto = apiAuto.kirim_otp(username);
+        SharedPreferences sp = getSharedPreferences("prefRegister", MODE_PRIVATE);
+        String username = sp.getString("username", "");
+        long startTime = sp.getLong("reg_start_time", 0);
 
-        callAuto.enqueue(new Callback<ResponOTP>() {
+        // BACK callback
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
-            public void onResponse(Call<ResponOTP> call, Response<ResponOTP> response) {
-                if (response.body() != null) {
-                    if (response.body().kode == 1) {
-                        Toast.makeText(register2.this, "Kode OTP telah dikirim", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(register2.this, "Gagal mengirim OTP otomatis", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponOTP> call, Throwable t) {
-                Toast.makeText(register2.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void handleOnBackPressed() {
+                confirmCancel(username);
             }
         });
 
-        // Matikan tombol kirim lagi + mulai timer otomatis
+        // AUTO DELETE jika lewat 5 menit
+        long now = System.currentTimeMillis();
+        long fiveMinutes = 5 * 60 * 1000L;
+        if (startTime > 0 && (now - startTime) > fiveMinutes) {
+            deleteUser(username);
+            clearRegistrationPrefs();
+            Toast.makeText(this, "Waktu registrasi habis. Silakan ulangi.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(register2.this, register1.class));
+            finish();
+            return;
+        }
+
         kirimbos.setEnabled(false);
         startTimer();
-        // ======================================================
+        sendOtp(username, false);
 
+        kembali.setOnClickListener(v -> confirmCancel(username));
 
-        // ======================================================
-        //  TOMBOL KEMBALI (hapus data + kembali ke register1)
-        // ======================================================
-        kembali = findViewById(R.id.kembali);
-        kembali.setOnClickListener(v -> {
-            APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-            Call<ResponDelete> call = apiRequestData.delete(username);
-
-            call.enqueue(new Callback<ResponDelete>() {
-                @Override
-                public void onResponse(Call<ResponDelete> call, Response<ResponDelete> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-
-                        if (response.body().kode == 0) {
-                            Intent intent = new Intent(register2.this, register1.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(register2.this, "Gagal menghapus data", Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else {
-                        Toast.makeText(register2.this, "Response kosong", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(register2.this, register1.class));
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponDelete> call, Throwable t) {
-                    Toast.makeText(register2.this, "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(register2.this, register1.class));
-                    finish();
-                }
-            });
-        });
-
-
-        // ======================================================
-        //  TOMBOL LANJUT → cek OTP
-        // ======================================================
-        lanjut = findViewById(R.id.lanjut);
         lanjut.setOnClickListener(v -> {
-            String otp = kode_otp.getText().toString();
+            String otp = kode_otp.getText().toString().trim();
+            if (otp.isEmpty()) {
+                kode_otp.setError("Masukkan kode OTP");
+                kode_otp.requestFocus();
+                return;
+            }
 
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("otp", otp);
-            editor.apply();
+            lanjut.setEnabled(false);
+            progressDialog.show();
+            sp.edit().putString("otp", otp).apply();
 
-            APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-            Call<ResponRegister2> call = apiRequestData.register2(username, otp);
-
+            APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+            Call<ResponRegister2> call = api.register2(username, otp);
             call.enqueue(new Callback<ResponRegister2>() {
                 @Override
                 public void onResponse(Call<ResponRegister2> call, Response<ResponRegister2> response) {
+                    progressDialog.dismiss();
+                    lanjut.setEnabled(true);
+
+                    if (response.body() == null) {
+                        Toast.makeText(register2.this, "Response kosong", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (response.body().kode == 0) {
-                        Intent pindah = new Intent(register2.this, register3.class);
-                        startActivity(pindah);
+                        startActivity(new Intent(register2.this, register3.class));
                         finish();
                     } else if (response.body().kode == 1) {
-                        Toast.makeText(register2.this, "Kode OTP salah", Toast.LENGTH_SHORT).show();
+                        gagalOTP++;
+                        if (gagalOTP >= 3) {
+                            deleteUser(username);
+                            clearRegistrationPrefs();
+                            Toast.makeText(register2.this, "Percobaan terlalu banyak. Registrasi dibatalkan.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(register2.this, register1.class));
+                            finish();
+                        } else {
+                            Toast.makeText(register2.this, "Kode OTP salah", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(register2.this, "Respon tidak dikenali", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponRegister2> call, Throwable t) {
-
+                    progressDialog.dismiss();
+                    lanjut.setEnabled(true);
+                    Toast.makeText(register2.this, "Gagal terhubung: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
-
-        // ======================================================
-        //  TOMBOL "KIRIM LAGI"
-        // ======================================================
         kirimbos.setOnClickListener(view -> {
-            APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-            Call<ResponOTP> call = apiRequestData.kirim_otp(username);
-
-            call.enqueue(new Callback<ResponOTP>() {
-                @Override
-                public void onResponse(Call<ResponOTP> call, Response<ResponOTP> response) {
-                    if (response.body().kode == 0) {
-                        Toast.makeText(register2.this, "Error username tidak ikut", Toast.LENGTH_SHORT).show();
-                    } else if (response.body().kode == 1) {
-                        Toast.makeText(register2.this, "Berhasil terkirim", Toast.LENGTH_SHORT).show();
-                    } else if (response.body().kode == 2) {
-                        Toast.makeText(register2.this, "Gagal mengirim kode OTP", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponOTP> call, Throwable t) {
-                    Toast.makeText(register2.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
             kirimbos.setEnabled(false);
             startTimer();
+            sendOtp(username, true);
         });
     }
 
-
-    // ======================================================
-    // TIMER METHOD
-    // ======================================================
     private void startTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
-
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
-                updateTimer();
+                timer.setText((millisUntilFinished / 1000) + " detik");
             }
 
             @Override
             public void onFinish() {
-                kirimbos.setEnabled(true);
                 timer.setText("Selesai!");
-                resetTimer();
+                kirimbos.setEnabled(true);
+                timeLeftInMillis = 30000;
             }
         }.start();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
+    private void sendOtp(String username, boolean showToast) {
+        APIRequestData apiAuto = RetroServer.konekRetrofit().create(APIRequestData.class);
+        apiAuto.kirim_otp(username).enqueue(new Callback<ResponOTP>() {
+            @Override
+            public void onResponse(Call<ResponOTP> call, Response<ResponOTP> response) {
+                if (response.body() != null && response.body().kode == 1 && showToast)
+                    Toast.makeText(register2.this, "OTP terkirim", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<ResponOTP> call, Throwable t) {
+                if (showToast) Toast.makeText(register2.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void updateTimer() {
-        int seconds = (int) (timeLeftInMillis / 1000);
-        timer.setText(seconds + " detik");
+    private void confirmCancel(String username) {
+        new AlertDialog.Builder(this)
+                .setTitle("Batal Registrasi")
+                .setMessage("Apakah Anda yakin ingin membatalkan pendaftaran? Data sementara akan dihapus.")
+                .setPositiveButton("Ya", (dialog, which) -> {
+                    if (!username.isEmpty()) deleteUser(username);
+                    clearRegistrationPrefs();
+                    Toast.makeText(register2.this, "Registrasi dibatalkan", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(register2.this, register1.class));
+                    finish();
+                })
+                .setNegativeButton("Tidak", null)
+                .show();
     }
 
-    private void resetTimer() {
-        timeLeftInMillis = 30000;
+    private void deleteUser(String username) {
+        if (username.isEmpty()) return;
+        APIRequestData api = RetroServer.konekRetrofit().create(APIRequestData.class);
+        api.deleteUser(username).enqueue(new Callback<ResponDelete>() {
+            @Override public void onResponse(Call<ResponDelete> call, Response<ResponDelete> response) {}
+            @Override public void onFailure(Call<ResponDelete> call, Throwable t) {}
+        });
+    }
+
+    private void clearRegistrationPrefs() {
+        SharedPreferences sp = getSharedPreferences("prefRegister", MODE_PRIVATE);
+        sp.edit().clear().apply();
     }
 }

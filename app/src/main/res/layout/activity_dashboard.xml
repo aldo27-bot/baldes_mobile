@@ -6,17 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_sikunir2"
-    tools:context=".Menu.dashboard">
+    tools:context=".Menu.dashboard"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/nav_atas"
-        android:layout_width="420dp"
+        android:layout_width="600dp"
         android:layout_height="71dp"
-        android:background="@color/purple_dark"
+        android:background="@color/white"
         android:gravity="center"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +29,8 @@
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/logo_kunir_fix" />
+            android:src="@drawable/logo_kunir_fix"
+            android:tint="@color/purple_dark"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout

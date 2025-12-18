@@ -5,12 +5,13 @@
     tools:context=".Menu.Notifikasi"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/purple_dark"
+        android:backgroundTint="@color/white"
         app:cardCornerRadius="0dp">
 
         <com.google.android.material.textview.MaterialTextView
@@ -19,8 +20,9 @@
             android:gravity="center"
             android:padding="15dp"
             android:text="Notifikasi"
-            android:textColor="@color/white"
-            android:textSize="20dp" />
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
     </com.google.android.material.card.MaterialCardView>
 
     <RelativeLayout

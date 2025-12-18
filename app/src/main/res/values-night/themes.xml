@@ -11,9 +11,11 @@
         <!-- 2️ Background utama -->
         <item name="android:colorBackground">@color/white</item>
 
-        <!--  STATUS BAR FIX (Bagian yang diminta)  -->
-        <item name="android:statusBarColor">@color/purple_dark</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <!-- Status bar transparan -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!-- PENTING: ikon status bar jadi hitam -->
+        <item name="android:windowLightStatusBar">true</item>
 
         <!-- Sisanya tetap seperti sebelumnya -->
         <item name="colorControlActivated">@color/purple_primary</item>
